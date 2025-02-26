@@ -14,6 +14,8 @@ A dual screen front-end for your virtual pinball cabinet. As simple as possible.
 
 ## How to use:
 
+- Dependencies: `sudo apt install python3 python3-pyqt5`
+
 - X11: `python3 asap-cabinet-fe.py`
 
 - Wayland: `QT_QPA_PLATFORM=xcb python3 asap-cabinet-fe.py`
