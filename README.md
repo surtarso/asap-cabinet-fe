@@ -8,15 +8,15 @@ A front-end for your virtual pinball cabinet. As simple as possible.
 - Extended settings for many display configurations
 - Extremely lightweight and simple
 - No need to download artpacks, generate your own!*
-- Just what it taked to make a cabinet look good
+- Just what it takes to make a cabinet look good
 
-*Wheel generation not implemented yet.
+*From automated screenshots. Wheel generation not implemented yet.
 
 ## How to use:
 
-X11: `python3 asap-cabinet-fe.py`
+- X11: `python3 asap-cabinet-fe.py`
 
-Wayland: `QT_QPA_PLATFORM=xcb python3 asap-cabinet-fe.py`
+- Wayland: `QT_QPA_PLATFORM=xcb python3 asap-cabinet-fe.py`
 
 ### Using the 'art generation' tool:
 
@@ -37,6 +37,7 @@ Double check and run: `./screenshot_art.sh` and wait.
     - Music support
     - Game title from metadata (instead of filename)
     - Search/sort
+    - generate wheels somehow
 
 ### About
 
