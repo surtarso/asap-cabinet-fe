@@ -26,6 +26,8 @@ Tarso Galvão - feb/2025
 # - setting panel larger
 # - remove cogwheel icon background
 # - grab focus after exiting a game
+# - adjust b2s position (should be on top)
+# - add a default DMD for all tables, animated if possible like a gif
 
 import sys, os, subprocess, configparser
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QWidget, QGraphicsOpacityEffect,
