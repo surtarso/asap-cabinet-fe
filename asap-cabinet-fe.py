@@ -16,6 +16,8 @@ Features:
 - Uses left/right arrow keys for infinite scrolling between tables
 - All images update with fade animation
 - Press Enter to launch table, closing both windows until game exits
+- Settings button to configure for your setup
+- Use the screenshot_art.sh tool to get table media
 
 Dependencies: python3, python3-pyqt5
 
@@ -28,6 +30,8 @@ Tarso Galvão - feb/2025
 # - grab focus after exiting a game
 # - adjust b2s position (should be on top)
 # - add a default DMD for all tables, animated if possible like a gif
+# - keep the launcher window open till table loads so I dont see my desktop
+# - configure keys for ease to use on cabinet joystick
 
 import sys, os, subprocess, configparser
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QWidget, QGraphicsOpacityEffect,
