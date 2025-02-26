@@ -1,6 +1,6 @@
 # As Simple As Possible Cabinet Front-End
 
-A front-end for your virtual pinball cabinet. As simple as possible.
+A dual screen front-end for your virtual pinball cabinet. As simple as possible.
 
 ## Features:
 - Full screen display of table playfield and backglass
