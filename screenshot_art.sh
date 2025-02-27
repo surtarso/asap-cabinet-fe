@@ -102,6 +102,8 @@ find "$ROOT_FOLDER" -name "*.vpx" | while read VPX_PATH; do
         echo -e "${RED}Error: import failed to capture table screenshot.${NC}"
       else
         echo -e "${GREEN}    Saved table screenshot: $TABLE_SCREENSHOT${NC}"
+        # Strip incorrect sRGB profile to fix libpng warning
+        mogrify -strip "$TABLE_SCREENSHOT"
       fi
     else
       echo -e "${RED}Error: VPinballX_GL window not found.${NC}"
@@ -118,6 +120,8 @@ find "$ROOT_FOLDER" -name "*.vpx" | while read VPX_PATH; do
         echo -e "${RED}Error: import failed to capture backglass screenshot.${NC}"
       else
         echo -e "${GREEN}    Saved backglass screenshot: $BACKGLASS_SCREENSHOT${NC}"
+        # Strip incorrect sRGB profile to fix libpng warning
+        mogrify -strip "$TABLE_SCREENSHOT"
       fi
     else
       echo -e "${RED}Error: B2SBackglass window not found.${NC}"
