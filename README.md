@@ -37,11 +37,11 @@ Edit the screenshot_art script and set your paths.
 Double check and run: `./screenshot_art.sh`
 
 ## Roadmap
-    - Video support
     - Music support
     - Game title from metadata (instead of filename)
     - Search/sort
     - generate wheels somehow
+    - keymap support
 
 ### About
 
