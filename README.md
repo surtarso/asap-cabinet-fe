@@ -34,9 +34,12 @@ Dependencies: `sudo apt install xdotool imagemagick`
 
 Edit the screenshot_art script and set your paths.
 
-Double check and run: `./screenshot_art.sh`
+Dry-run to check results: `./screenshot_art.sh --dry-run`
 
-Flags: --missing will display all tables without a wheel.png file.
+Run the main script: `./screenshot_art.sh`
+
+Flags: --wheel will display all tables without a wheel.png file.
+       --dmd will display all tables without a dmd.gif file.
        --force will override existing table/backglass images with new ones.
        --dry-run will print execution without doing anything.
 

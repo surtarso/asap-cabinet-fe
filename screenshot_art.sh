@@ -4,7 +4,7 @@
 # Saves them in table_name/images/ folder as:
 # table.png and backglass.png
 # This script is able to detect if those images already exist and skip. (--force to rebuild)
-# You can check tables without wheels (images/wheel.png) using --missing flag.
+# You can check tables without wheels (images/wheel.png) using --wheel flag.
 # You can check tables without DMD animated gifs (images/dmd.gif) using --dmd flag.
 # Use --dry-run to see the actions without changing anything.
 #
@@ -44,8 +44,8 @@ if [ "$1" == "--dry-run" ]; then
     echo -e "${YELLOW}Dry-run mode: No changes will be made.${NC}"
 fi
 
-# --missing argument, list tables missing wheel.png and exit.
-if [ "$1" == "--missing" ]; then
+# --wheel argument, list tables missing wheel.png and exit.
+if [ "$1" == "--wheel" ]; then
     echo -e "${YELLOW}This script can't generate wheel images."
     echo -e "${BLUE}Using tables directory: $ROOT_FOLDER"
     echo -e "Checking for tables missing wheel.png...${NC}\n"
@@ -64,6 +64,7 @@ if [ "$1" == "--missing" ]; then
     exit 0
 fi
 
+# --dmd argument, list tables missing dmd.gif and exit.
 if [ "$1" == "--dmd" ]; then
     echo -e "${YELLOW}This script can't generate dmd videos."
     echo -e "${BLUE}Using tables directory: $ROOT_FOLDER"
