@@ -46,8 +46,8 @@ Flags: --wheel will display all tables without a wheel.png file.
 ## Roadmap
     - Game title from metadata (instead of filename)
     - Search/sort buttons
-    - generate wheels somehow (?)
-    - keymap support
+    - Keymap support
+    - Generate wheels/dmd somehow (?)
     - Music support (?)
 
 ### About
