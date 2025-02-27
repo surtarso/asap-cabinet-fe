@@ -67,7 +67,8 @@ MAIN_MONITOR_INDEX:      Monitor index for the main window.
 SECONDARY_MONITOR_INDEX: Monitor index for the secondary window.
 FADE_DURATION:           Duration of fade animations in milliseconds.
 """
-CONFIG_FILE = "~/.asap-cabinet-fe/settings.ini"
+
+CONFIG_FILE            = "~/.asap-cabinet-fe/settings.ini"
 
 VPX_ROOT_FOLDER        = "/home/tarso/Games/vpinball/build/tables/"
 EXECUTABLE_CMD         = "/home/tarso/Games/vpinball/build/VPinballX_GL"
@@ -94,7 +95,7 @@ WHEEL_SIZE             = 400 # Square
 WHEEL_MARGIN           = 20
 # Settings panel
 SETTINGS_WIDTH         = 600
-SETTINGS_HEIGHT        = 900
+SETTINGS_HEIGHT        = 980
 
 # Table titles
 FONT_NAME              = "Arial"
@@ -102,9 +103,10 @@ FONT_SIZE              = 32
 BG_COLOR               = "#202020"
 TEXT_COLOR             = "white"
 
-# Monitor binding indices
-MAIN_MONITOR_INDEX = 1        # Main window (vertical)
-SECONDARY_MONITOR_INDEX = 0   # Secondary window (backglass)
+# Main window (vertical)
+MAIN_MONITOR_INDEX = 1
+# Secondary window (backglass)
+SECONDARY_MONITOR_INDEX = 0
 
 # Animation settings
 FADE_DURATION = 300  # milliseconds
@@ -114,7 +116,6 @@ def load_configuration():
     """Loads configuration settings from an ini file or creates the file with default settings if it does not exist."""
     
     global VPX_ROOT_FOLDER, EXECUTABLE_CMD, EXECUTABLE_SUB_CMD
-    global DEFAULT_TABLE_PATH, DEFAULT_WHEEL_PATH, DEFAULT_BACKGLASS_PATH, DEFAULT_DMD_PATH
     global TABLE_IMAGE_PATH, TABLE_WHEEL_PATH, TABLE_BACKGLASS_PATH, TABLE_DMD_PATH
     global WINDOW_WIDTH, WINDOW_HEIGHT, BACKGLASS_WIDTH, BACKGLASS_HEIGHT
     global WHEEL_SIZE, WHEEL_MARGIN, FONT_NAME, FONT_SIZE
@@ -135,16 +136,14 @@ def load_configuration():
             "VPX_ROOT_FOLDER":             VPX_ROOT_FOLDER,
             "EXECUTABLE_CMD":              EXECUTABLE_CMD,
             "EXECUTABLE_SUB_CMD":          EXECUTABLE_SUB_CMD,
-            "DEFAULT_TABLE_PATH":          DEFAULT_TABLE_PATH,
-            "DEFAULT_WHEEL_PATH":          DEFAULT_WHEEL_PATH,
-            "DEFAULT_BACKGLASS_PATH":      DEFAULT_BACKGLASS_PATH,
-            "DEFAULT_DMD_PATH":            DEFAULT_DMD_PATH,
             "TABLE_IMAGE_PATH":            TABLE_IMAGE_PATH,
             "TABLE_WHEEL_PATH":            TABLE_WHEEL_PATH,
             "TABLE_BACKGLASS_PATH":        TABLE_BACKGLASS_PATH,
             "TABLE_DMD_PATH":              TABLE_DMD_PATH,
+            "MAIN_MONITOR_INDEX":      str(MAIN_MONITOR_INDEX),
             "WINDOW_WIDTH":            str(WINDOW_WIDTH),
             "WINDOW_HEIGHT":           str(WINDOW_HEIGHT),
+            "SECONDARY_MONITOR_INDEX": str(SECONDARY_MONITOR_INDEX),
             "BACKGLASS_WIDTH":         str(BACKGLASS_WIDTH),
             "BACKGLASS_HEIGHT":        str(BACKGLASS_HEIGHT),
             "WHEEL_SIZE":              str(WHEEL_SIZE),
@@ -153,8 +152,6 @@ def load_configuration():
             "FONT_SIZE":               str(FONT_SIZE),
             "BG_COLOR":                    BG_COLOR,
             "TEXT_COLOR":                  TEXT_COLOR,
-            "MAIN_MONITOR_INDEX":      str(MAIN_MONITOR_INDEX),
-            "SECONDARY_MONITOR_INDEX": str(SECONDARY_MONITOR_INDEX),
             "FADE_DURATION":           str(FADE_DURATION)
         }
         with open(ini_file, "w") as f:
@@ -163,16 +160,14 @@ def load_configuration():
     VPX_ROOT_FOLDER =             s.get("VPX_ROOT_FOLDER", VPX_ROOT_FOLDER)
     EXECUTABLE_CMD =              s.get("EXECUTABLE_CMD", EXECUTABLE_CMD)
     EXECUTABLE_SUB_CMD =          s.get("EXECUTABLE_SUB_CMD", EXECUTABLE_SUB_CMD)
-    DEFAULT_TABLE_PATH =          s.get("DEFAULT_TABLE_PATH", DEFAULT_TABLE_PATH)
-    DEFAULT_WHEEL_PATH =          s.get("DEFAULT_WHEEL_PATH", DEFAULT_WHEEL_PATH)
-    DEFAULT_BACKGLASS_PATH =      s.get("DEFAULT_BACKGLASS_PATH", DEFAULT_BACKGLASS_PATH)
-    DEFAULT_DMD_PATH =            s.get("DEFAULT_DMD_PATH", DEFAULT_DMD_PATH)
     TABLE_IMAGE_PATH =            s.get("TABLE_IMAGE_PATH", TABLE_IMAGE_PATH)
     TABLE_WHEEL_PATH =            s.get("TABLE_WHEEL_PATH", TABLE_WHEEL_PATH)
     TABLE_BACKGLASS_PATH =        s.get("TABLE_BACKGLASS_PATH", TABLE_BACKGLASS_PATH)
     TABLE_DMD_PATH =              s.get("TABLE_DMD_PATH", TABLE_DMD_PATH)
+    MAIN_MONITOR_INDEX =      int(s.get("MAIN_MONITOR_INDEX", MAIN_MONITOR_INDEX))
     WINDOW_WIDTH =            int(s.get("WINDOW_WIDTH", WINDOW_WIDTH))
     WINDOW_HEIGHT =           int(s.get("WINDOW_HEIGHT", WINDOW_HEIGHT))
+    SECONDARY_MONITOR_INDEX = int(s.get("SECONDARY_MONITOR_INDEX", SECONDARY_MONITOR_INDEX))
     BACKGLASS_WIDTH =         int(s.get("BACKGLASS_WIDTH", BACKGLASS_WIDTH))
     BACKGLASS_HEIGHT =        int(s.get("BACKGLASS_HEIGHT", BACKGLASS_HEIGHT))
     WHEEL_SIZE =              int(s.get("WHEEL_SIZE", WHEEL_SIZE))
@@ -180,20 +175,11 @@ def load_configuration():
     FONT_NAME =                   s.get("FONT_NAME", FONT_NAME)
     FONT_SIZE =               int(s.get("FONT_SIZE", FONT_SIZE))
     BG_COLOR =                    s.get("BG_COLOR", BG_COLOR)
-    TEXT_COLOR =                  s.get("TEXT_COLOR", TEXT_COLOR)
-    MAIN_MONITOR_INDEX =      int(s.get("MAIN_MONITOR_INDEX", MAIN_MONITOR_INDEX))
-    SECONDARY_MONITOR_INDEX = int(s.get("SECONDARY_MONITOR_INDEX", SECONDARY_MONITOR_INDEX))
+    TEXT_COLOR =                  s.get("TEXT_COLOR", TEXT_COLOR) 
     FADE_DURATION =           int(s.get("FADE_DURATION", FADE_DURATION))
 
 # Load configuration on startup
 load_configuration()
-
-# Separator function for settings
-# def add_separator(layout):
-#     separator = QFrame()
-#     separator.setFrameShape(QFrame.HLine)  # Set horizontal line separator
-#     separator.setFrameShadow(QFrame.Plain)  # Optional, can change style
-#     layout.addWidget(separator)
 
 # ---------------- Settings Dialog ----------------
 class SettingsDialog(QDialog):
@@ -245,8 +231,10 @@ class SettingsDialog(QDialog):
         self.wheelImageEdit      = QLineEdit(TABLE_WHEEL_PATH)
         self.backglassImageEdit  = QLineEdit(TABLE_BACKGLASS_PATH)
         self.dmdTableEdit        = QLineEdit(TABLE_DMD_PATH)
+        self.mainMonitor         = QLineEdit(str(MAIN_MONITOR_INDEX))
         self.windowWidthEdit     = QLineEdit(str(WINDOW_WIDTH))
         self.windowHeightEdit    = QLineEdit(str(WINDOW_HEIGHT))
+        self.secondaryMonitor    = QLineEdit(str(SECONDARY_MONITOR_INDEX))
         self.backglassWidthEdit  = QLineEdit(str(BACKGLASS_WIDTH))
         self.backglassHeightEdit = QLineEdit(str(BACKGLASS_HEIGHT))
         self.wheelSizeEdit       = QLineEdit(str(WHEEL_SIZE))
@@ -259,30 +247,29 @@ class SettingsDialog(QDialog):
         
         # Add each field to the layout with a descriptive label
         self.add_section_title("Main Paths (Use absolute paths)")
-        self.layout.addRow("Tables Folder:",         self.vpxRootEdit)
-        self.layout.addRow("VPX Executable:",        self.execCmdEdit)
-        self.layout.addRow("VPX Argument:",          self.execSubCmdEdit)
-        # add_separator(self.layout)
+        self.layout.addRow("Tables Folder:",        self.vpxRootEdit)
+        self.layout.addRow("VPX Executable:",       self.execCmdEdit)
+        self.layout.addRow("VPX Argument:",         self.execSubCmdEdit)
         self.add_section_title("Custom Media Paths (/tables/<table_name/)")
-        self.layout.addRow("Playfield Images Path:", self.tableImageEdit)
-        self.layout.addRow("Wheel Images Path:",     self.wheelImageEdit)
-        self.layout.addRow("Backglass Images Path:", self.backglassImageEdit)
-        self.layout.addRow("DMD GIFs Path:",         self.dmdTableEdit)
-        # add_separator(self.layout)
+        self.layout.addRow("Playfield Images Path:",    self.tableImageEdit)
+        self.layout.addRow("Wheel Images Path:",        self.wheelImageEdit)
+        self.layout.addRow("Backglass Images Path:",    self.backglassImageEdit)
+        self.layout.addRow("DMD GIFs Path:",            self.dmdTableEdit)
         self.add_section_title("Screens Dimensions")
-        self.layout.addRow("Playfield Width:",       self.windowWidthEdit)
-        self.layout.addRow("Playfield Height:",      self.windowHeightEdit)
-        self.layout.addRow("Backglass Width:",       self.backglassWidthEdit)
-        self.layout.addRow("Backglass Height:",      self.backglassHeightEdit)
-        self.layout.addRow("Wheel Size:",            self.wheelSizeEdit)
-        self.layout.addRow("Wheel Margin:",          self.wheelMarginEdit)
-        # add_separator(self.layout)
+        self.layout.addRow("Playfield Monitor:",    self.mainMonitor)
+        self.layout.addRow("Playfield Width:",      self.windowWidthEdit)
+        self.layout.addRow("Playfield Height:",     self.windowHeightEdit)
+        self.layout.addRow("Backglass Monitor:",    self.secondaryMonitor)
+        self.layout.addRow("Backglass Width:",      self.backglassWidthEdit)
+        self.layout.addRow("Backglass Height:",     self.backglassHeightEdit)
         self.add_section_title("Table Title Style")
-        self.layout.addRow("Font Name:",             self.fontNameEdit)
-        self.layout.addRow("Font Size:",             self.fontSizeEdit)
-        self.layout.addRow("Background Color:",      self.bgColorEdit)
-        self.layout.addRow("Text Color:",            self.textColorEdit)
-        self.layout.addRow("Transition Duration:",   self.fadeDurationEdit)
+        self.layout.addRow("Wheel Size:",           self.wheelSizeEdit)
+        self.layout.addRow("Wheel Margin:",         self.wheelMarginEdit)
+        self.layout.addRow("Font Name:",            self.fontNameEdit)
+        self.layout.addRow("Font Size:",            self.fontSizeEdit)
+        self.layout.addRow("Background Color:",     self.bgColorEdit)
+        self.layout.addRow("Text Color:",           self.textColorEdit)
+        self.layout.addRow("Transition Duration:",  self.fadeDurationEdit)
         
         # Create a button box with Ok and Cancel buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -319,8 +306,10 @@ class SettingsDialog(QDialog):
             "TABLE_WHEEL_PATH":     self.wheelImageEdit.text(),
             "TABLE_BACKGLASS_PATH": self.backglassImageEdit.text(),
             "TABLE_DMD_PATH":       self.dmdTableEdit.text(),
+            "MAIN_MONITOR_INDEX":   self.mainMonitor.text(),
             "WINDOW_WIDTH":         self.windowWidthEdit.text(),
             "WINDOW_HEIGHT":        self.windowHeightEdit.text(),
+            "SECONDARY_MONITOR_INDEX": self.secondaryMonitor.text(),
             "BACKGLASS_WIDTH":      self.backglassWidthEdit.text(),
             "BACKGLASS_HEIGHT":     self.backglassHeightEdit.text(),
             "WHEEL_SIZE":           self.wheelSizeEdit.text(),
@@ -495,11 +484,9 @@ class SingleTableViewer(QMainWindow):
     Methods:
         __init__(self, secondary_window=None):
             Initializes the SingleTableViewer instance.
-        _set_font_from_config(self):
-            Sets the font for the table name label from configuration variables.
-        _set_initial_table_name(self):
+        _set_table_name(self):
             Sets the initial table name based on the current table.
-        _update_images_no_animation(self):
+        update_images(self):
             Updates images without animation (used for initial load).
         _update_table_name_label_geometry(self):
             Updates the geometry of the table name label to fit its text and keep it on screen.
@@ -541,7 +528,6 @@ class SingleTableViewer(QMainWindow):
         central.setFocusPolicy(Qt.StrongFocus)
         central.setStyleSheet(f"background-color: {BG_COLOR};")
         central.setAttribute(Qt.WA_NoSystemBackground, True)
-        # central.setAttribute(Qt.WA_TransparentForMouseEvents, True)
         self.setFocus()
         # Create the table label before using it
         self.table_label = QLabel(central)
@@ -557,10 +543,8 @@ class SingleTableViewer(QMainWindow):
         self.table_name_label.setStyleSheet(f"color: {TEXT_COLOR}; font-size: {FONT_SIZE}px; text-align: left; background-color: {BG_COLOR};")
         self.table_name_label.setAlignment(Qt.AlignCenter)
         
-        # Now that the table label and name label are created, set the font
-        self._set_font_from_config()  # Set the font for the table name
         # Set initial table name after loading images
-        self._set_initial_table_name()
+        self._set_table_name()
         # Add a cogwheel settings button in the top-right corner
         self.settingsButton = QPushButton("⚙", central)
         self.settingsButton.setFixedSize(40, 40)
@@ -588,23 +572,16 @@ class SingleTableViewer(QMainWindow):
         self.wheel_effect = QGraphicsOpacityEffect(self.wheel_label)
         self.wheel_label.setGraphicsEffect(self.wheel_effect)
 
-        # Initial display without animation
-        self._update_images_no_animation()
+        # Initial display
+        self.update_images()
 
-    def _set_font_from_config(self):
-        """Set the font for the table name label from config variables."""
-        font = QFont(FONT_NAME, FONT_SIZE)
-        # font.setBold(True)        # Make the font bold
-        # font.setItalic(True)      # Make the font italic
-        # font.setUnderline(True)   # Underline the text
-        self.table_name_label.setFont(font)
-
-    def _set_initial_table_name(self):
-        """Set the table name initially."""
+    ## TABLE TITLE
+    def _set_table_name(self):
+        """Sets the table name."""
         table = self.table_list[self.current_index]
         table_name = os.path.splitext(os.path.basename(table["vpx_file"]))[0]  # Get file name without extension
         self.table_name_label.setText(table_name)
-        
+        self.table_name_label.setFont(QFont(FONT_NAME, FONT_SIZE))
         # Ensure the label's size is adjusted to the text
         self.table_name_label.adjustSize()
 
@@ -623,42 +600,16 @@ class SingleTableViewer(QMainWindow):
         self.table_name_label.setStyleSheet(f"color: {TEXT_COLOR}; text-align: left; background-color: {BG_COLOR};")
         self._update_table_name_label_geometry()
 
-    def _update_images_no_animation(self):
-        """Update images without animation (used for initial load)."""
-        table = self.table_list[self.current_index]
-
-        table_pixmap = QPixmap(table["table_img"])
-        if table_pixmap.isNull():
-            table_pixmap = QPixmap(WINDOW_WIDTH, WINDOW_HEIGHT)
-            table_pixmap.fill(Qt.black)
-        table_scaled = table_pixmap.scaled(WINDOW_WIDTH, WINDOW_HEIGHT,
-                                         Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-        self.table_label.setPixmap(table_scaled)
-        self.table_effect.setOpacity(1.0)
-
-        self.table_name_label.setText(table["table_name"]) # Update the table name
-
-        wheel_pixmap = QPixmap(table["wheel_img"])
-        if wheel_pixmap.isNull():
-            wheel_pixmap = QPixmap(WHEEL_SIZE, WHEEL_SIZE)
-            wheel_pixmap.fill(Qt.transparent)
-        wheel_scaled = wheel_pixmap.scaled(WHEEL_SIZE, WHEEL_SIZE,
-                                         Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.wheel_label.setPixmap(wheel_scaled)
-        self.wheel_effect.setOpacity(1.0)
-
-        if self.secondary:
-            self.secondary.update_image(table["backglass_img"], table["folder"])
-
     def _update_table_name_label_geometry(self):
         """Update the geometry of the table name label to fit its text and keep it on screen."""
         font_metrics = QFontMetrics(self.table_name_label.font())
         text = self.table_name_label.text()
-        # For Qt5 use width(), for Qt6 horizontalAdvance is preferred.
+
         try:
             text_width = font_metrics.horizontalAdvance(text)
         except AttributeError:
             text_width = font_metrics.width(text)
+        
         label_height = font_metrics.height()
         padding = 10  # add 10 pixels of padding on all sides
         label_width = text_width + 2 * padding
@@ -667,8 +618,9 @@ class SingleTableViewer(QMainWindow):
         y_position = WINDOW_HEIGHT - label_height - 20  # fixed 20-pixel margin from the bottom
         self.table_name_label.setGeometry(x_position, y_position, label_width, label_height)
 
+    ## FADE OUT table transition
     def update_images(self):
-        """Update images with fade animation across all displays."""
+        """Update images with fade out animation across all displays."""
         table = self.table_list[self.current_index]
 
         # Prepare new pixmaps for table and wheel images
@@ -719,7 +671,7 @@ class SingleTableViewer(QMainWindow):
         if self.fade_out_backglass:
             self.fade_out_backglass.start()
 
-
+    ## FADE IN table transition
     def _set_new_images(self, table_pixmap, wheel_pixmap, backglass_path, table_folder):
         """Set new images and fade in all displays."""
         self.table_label.setPixmap(table_pixmap)
@@ -750,6 +702,7 @@ class SingleTableViewer(QMainWindow):
             self.fade_in_backglass.setEasingCurve(QEasingCurve.OutQuad)
             self.fade_in_backglass.start()
 
+    ## PLAY
     def launch_table(self):
         """Launch the table and close both windows, reopening after game exits."""
         table = self.table_list[self.current_index]
@@ -774,7 +727,7 @@ class SingleTableViewer(QMainWindow):
             if self.secondary:
                 self.secondary.show()
                 self.secondary.update_image(table["backglass_img"], table["folder"])
-            self._update_images_no_animation()  # Ensure images are in sync
+            self.update_images()  # Ensure images are in sync
 
         except Exception as e:
             print(f"Error launching {table['vpx_file']}: {e}")
@@ -783,6 +736,7 @@ class SingleTableViewer(QMainWindow):
             if self.secondary:
                 self.secondary.show()
 
+    ## SETTINGS
     def openSettings(self):
         """Opens settings dialog, saves settings if accepted, and updates configuration and UI."""
         dialog = SettingsDialog(self)
@@ -806,12 +760,12 @@ class SingleTableViewer(QMainWindow):
                 return # exit the function if error.
             
             load_configuration()
-            self._set_font_from_config()
-            self._set_initial_table_name()
+            self._set_table_name()
             self.table_list = load_table_list()
-            self._update_images_no_animation()
+            self.update_images()
         self.setFocus()
 
+    ## KEY EVENTS
     def keyPressEvent(self, event):
         """Handle key press events to navigate tables, launch a table, or close the window."""
         if event.key() == Qt.Key_Left:
@@ -827,6 +781,7 @@ class SingleTableViewer(QMainWindow):
         else:
             super().keyPressEvent(event)  # Handle other key events
 
+    ## QUIT
     def closeEvent(self, event):
         if self.secondary:
             self.secondary.close()
