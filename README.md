@@ -47,7 +47,7 @@ It will than save those pictures in **tables/my_table/images/** as .png and they
 
 ## Using the 'video_to_gif.sh' tool:
 
-This script will convert all **MP4, WMV and F4V** DMD videos to **animated Gif's** so they can be used with this frontend (in tables/<table_name>/**images/dmd.gif**) or with Ultra.DMD tables in VPX-Linux.
+This script will convert all **MP4, WMV and F4V** DMD videos to **animated Gif's** so they can be displayed with this frontend (in tables/<table_name>/**images/dmd.gif**) or to play tables with Ultra.DMD videos in VPinballX-Linux.
 
 Dependencies: `sudo apt install ffmpeg gifsicle`
 
