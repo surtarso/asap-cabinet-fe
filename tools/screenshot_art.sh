@@ -1,8 +1,10 @@
 #!/bin/bash
+# ----------------------------------------------------------
 # Creates media (playfield + backglass) for asap-cabinet-fe
 # Open all tables and screenshots playfield and backglass
 # Saves them in table_name/images/ folder as:
 # table.png and backglass.png
+# ----------------------------------------------------------
 # This script is able to detect if those images already exist and skip. (--force to rebuild)
 # You can check tables without wheels (images/wheel.png) using --wheel flag.
 # You can check tables without DMD animated gifs (images/dmd.gif) using --dmd flag.
