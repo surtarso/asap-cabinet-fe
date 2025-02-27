@@ -5,19 +5,19 @@
                 ---------------------------------------
                   A Dual-screen VPX Python Front-End
                 ---------------------------------------
-Features:
-- Scans VPX_ROOT_FOLDER recursively for .vpx files.
-- For each table, uses:
-    - Table image: table.png (or DEFAULT_TABLE_PATH if missing)
-    - Backglass image: backglass.png (or DEFAULT_BACKGLASS_PATH if missing)
-    - Wheel image: wheel.png (or DEFAULT_WHEEL_PATH if missing)
-- Main Window (1080x1920): Displays table image full screen with wheel overlay
-- Secondary Window (1280x1024): Displays backglass image
-- Uses left/right arrow keys for infinite scrolling between tables
-- All images update with fade animation
-- Press Enter to launch table, closing both windows until game exits
-- Settings button to configure for your setup
-- Use the screenshot_art.sh tool to get table media
+    Features:
+    - Scans VPX_ROOT_FOLDER recursively for .vpx files.
+    - For each table, uses:
+        - Table image: table.png (or DEFAULT_TABLE_PATH if missing)
+        - Backglass image: backglass.png (or DEFAULT_BACKGLASS_PATH if missing)
+        - Wheel image: wheel.png (or DEFAULT_WHEEL_PATH if missing)
+    - Main Window (1080x1920): Displays table image full screen with wheel overlay
+    - Secondary Window (1280x1024): Displays backglass image
+    - Uses left/right arrow keys for infinite scrolling between tables
+    - All images update with fade animation
+    - Press Enter to launch table, closing both windows until game exits
+    - Settings button to configure for your setup
+    - Use the screenshot_art.sh tool to get table media
 
 Dependencies: python3, python3-pyqt5
 
@@ -27,11 +27,15 @@ Tarso Galvão - feb/2025
 # TODO:
 # - configure keys for ease to use on cabinet joystick
 
-import sys, os, subprocess, configparser
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QWidget, QGraphicsOpacityEffect,
-                             QDialog, QFormLayout, QLineEdit, QDialogButtonBox, QPushButton, QMessageBox)
-from PyQt5.QtGui import QPixmap, QPalette, QColor, QGuiApplication, QFont, QFontMetrics, QMovie
+import os
+import sys
+import subprocess
+import configparser
+
 from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, QSize
+from PyQt5.QtGui import QPixmap, QPalette, QColor, QGuiApplication, QFont, QFontMetrics, QMovie
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QWidget, QGraphicsOpacityEffect,
+                    QDialog, QFormLayout, QLineEdit, QDialogButtonBox, QPushButton, QMessageBox)
 
 # ---------------- Configuration ----------------
 """
@@ -189,26 +193,26 @@ class SettingsDialog(QDialog):
     """
     SettingsDialog is a custom QDialog that provides a user interface for configuring various application settings.
     Attributes:
-        layout (QFormLayout): The form layout that organizes the settings fields.
-        vpxRootEdit (QLineEdit): Input field for the VPX root folder path.
-        execCmdEdit (QLineEdit): Input field for the executable command.
-        execSubCmdEdit (QLineEdit): Input field for the executable sub-command.
-        tableImageEdit (QLineEdit): Input field for the table image path.
-        wheelImageEdit (QLineEdit): Input field for the wheel image path.
-        backglassImageEdit (QLineEdit): Input field for the backglass image path.
-        dmdTableEdit (QLineEdit): Input field for the DMD image path.
-        windowWidthEdit (QLineEdit): Input field for the window width.
-        windowHeightEdit (QLineEdit): Input field for the window height.
-        backglassWidthEdit (QLineEdit): Input field for the backglass width.
-        backglassHeightEdit (QLineEdit): Input field for the backglass height.
-        wheelSizeEdit (QLineEdit): Input field for the wheel size.
-        wheelMarginEdit (QLineEdit): Input field for the wheel margin.
-        fontNameEdit (QLineEdit): Input field for the font name.
-        fontSizeEdit (QLineEdit): Input field for the font size.
-        bgColorEdit (QLineEdit): Input field for the background color.
-        textColorEdit (QLineEdit): Input field for the text color.
-        fadeDurationEdit (QLineEdit): Input field for the fade duration.
-        buttonBox (QDialogButtonBox): Button box containing Ok and Cancel buttons.
+        layout              (QFormLayout): The form layout that organizes the settings fields.
+        vpxRootEdit         (QLineEdit)  : Input field for the VPX root folder path.
+        execCmdEdit         (QLineEdit)  : Input field for the executable command.
+        execSubCmdEdit      (QLineEdit)  : Input field for the executable sub-command.
+        tableImageEdit      (QLineEdit)  : Input field for the table image path.
+        wheelImageEdit      (QLineEdit)  : Input field for the wheel image path.
+        backglassImageEdit  (QLineEdit)  : Input field for the backglass image path.
+        dmdTableEdit        (QLineEdit)  : Input field for the DMD image path.
+        windowWidthEdit     (QLineEdit)  : Input field for the window width.
+        windowHeightEdit    (QLineEdit)  : Input field for the window height.
+        backglassWidthEdit  (QLineEdit)  : Input field for the backglass width.
+        backglassHeightEdit (QLineEdit)  : Input field for the backglass height.
+        wheelSizeEdit       (QLineEdit)  : Input field for the wheel size.
+        wheelMarginEdit     (QLineEdit)  : Input field for the wheel margin.
+        fontNameEdit        (QLineEdit)  : Input field for the font name.
+        fontSizeEdit        (QLineEdit)  : Input field for the font size.
+        bgColorEdit         (QLineEdit)  : Input field for the background color.
+        textColorEdit       (QLineEdit)  : Input field for the text color.
+        fadeDurationEdit    (QLineEdit)  : Input field for the fade duration.
+        buttonBox           (QDialogButtonBox): Button box containing Ok and Cancel buttons.
     Methods:
         __init__(self, parent=None):
             Initializes the SettingsDialog with the given parent widget.
@@ -365,10 +369,10 @@ class SecondaryWindow(QMainWindow):
     SecondaryWindow is a custom QMainWindow subclass designed to display a secondary screen with a backglass image and a DMD (Dot Matrix Display) GIF. 
     It provides functionality to update the displayed backglass image and DMD GIF, with support for table-specific DMDs if available.
     Attributes:
-        label (QLabel): QLabel for displaying the backglass image.
+        label            (QLabel): QLabel for displaying the backglass image.
         backglass_effect (QGraphicsOpacityEffect): Opacity effect for fade animation on the backglass image.
-        dmd_label (QLabel): QLabel for displaying the DMD GIF.
-        dmd_movie (QMovie): QMovie object for handling the DMD GIF animation.
+        dmd_label        (QLabel): QLabel for displaying the DMD GIF.
+        dmd_movie        (QMovie): QMovie object for handling the DMD GIF animation.
     Methods:
         __init__(): Initializes the SecondaryWindow with a frameless window, fixed size, and black background.
         update_image(image_path, table_folder): Updates the backglass image and DMD GIF, prioritizing table-specific DMD if available.
@@ -459,27 +463,38 @@ class SingleTableViewer(QMainWindow):
     It displays table images, table names, and a settings button, and allows navigation through the tables using keyboard inputs. 
     The class also supports launching an external executable associated with the selected table.
     Attributes:
-        secondary (QMainWindow): An optional secondary window for displaying additional content.
-        table_list (list): A list of dictionaries containing table information.
-        current_index (int): The index of the currently displayed table.
-        table_label (QLabel): A label for displaying the table image.
-        table_effect (QGraphicsOpacityEffect): An opacity effect for the table image.
-        table_name_label (QLabel): A label for displaying the table name.
-        settingsButton (QPushButton): A button for opening the settings dialog.
-        wheel_label (QLabel): A label for displaying the wheel image.
-        wheel_effect (QGraphicsOpacityEffect): An opacity effect for the wheel image.
+        secondary           (QMainWindow)           : An optional secondary window for displaying additional content.
+        table_list          (list)                  : A list of dictionaries containing table information.
+        current_index       (int)                   : The index of the currently displayed table.
+        table_label         (QLabel)                : A label for displaying the table image.
+        table_effect        (QGraphicsOpacityEffect): An opacity effect for the table image.
+        table_name_label    (QLabel)                : A label for displaying the table name.
+        settingsButton      (QPushButton)           : A button for opening the settings dialog.
+        wheel_label         (QLabel)                : A label for displaying the wheel image.
+        wheel_effect        (QGraphicsOpacityEffect): An opacity effect for the wheel image.
     Methods:
-        __init__(self, secondary_window=None): Initializes the SingleTableViewer instance.
-        _set_font_from_config(self): Sets the font for the table name label from configuration variables.
-        _set_initial_table_name(self): Sets the initial table name based on the current table.
-        _update_images_no_animation(self): Updates images without animation (used for initial load).
-        _update_table_name_label_geometry(self): Updates the geometry of the table name label to fit its text and keep it on screen.
-        update_images(self): Updates images with fade animation across all displays.
-        _set_new_images(self, table_pixmap, wheel_pixmap, backglass_path, table_folder): Sets new images and fades in all displays.
-        launch_table(self): Launches the table and closes both windows, reopening after the game exits.
-        openSettings(self): Opens the settings dialog and updates the configuration.
-        keyPressEvent(self, event): Handles key press events for navigation and launching tables.
-        closeEvent(self, event): Handles the close event, ensuring the secondary window is also closed.
+        __init__(self, secondary_window=None):
+            Initializes the SingleTableViewer instance.
+        _set_font_from_config(self):
+            Sets the font for the table name label from configuration variables.
+        _set_initial_table_name(self):
+            Sets the initial table name based on the current table.
+        _update_images_no_animation(self):
+            Updates images without animation (used for initial load).
+        _update_table_name_label_geometry(self):
+            Updates the geometry of the table name label to fit its text and keep it on screen.
+        update_images(self):
+            Updates images with fade animation across all displays.
+        _set_new_images(self, table_pixmap, wheel_pixmap, backglass_path, table_folder):
+            Sets new images and fades in all displays.
+        launch_table(self):
+            Launches the table and closes both windows, reopening after the game exits.
+        openSettings(self):
+            Opens the settings dialog and updates the configuration.
+        keyPressEvent(self, event):
+            Handles key press events for navigation and launching tables.
+        closeEvent(self, event):
+            Handles the close event, ensuring the secondary window is also closed.
     """
 
     def __init__(self, secondary_window=None):
@@ -537,8 +552,8 @@ class SingleTableViewer(QMainWindow):
         # Apply a stylesheet to remove the border and make the background transparent
         self.settingsButton.setStyleSheet("""
             QPushButton {
-                font-size: 28px;         /* Increase the font size of the icon */
-                border: none;           /* Remove the button border */
+                font-size:  28px;        /* Increase the font size of the icon */
+                border:     none;        /* Remove the button border */
                 background: transparent; /* Make the background transparent */
             }
         """)
