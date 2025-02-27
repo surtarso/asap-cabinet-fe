@@ -25,10 +25,7 @@ Tarso Galvão - feb/2025
 """
 
 # TODO:
-# - setting panel larger
-# - remove cogwheel icon background
 # - grab focus after exiting a game
-# - adjust b2s position (should be on top)
 # - add a default DMD for all tables, animated if possible like a gif
 # - keep the launcher window open till table loads so I dont see my desktop
 # - configure keys for ease to use on cabinet joystick
@@ -154,8 +151,14 @@ class SettingsDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Settings")
+        
+        # Set the fixed size of the settings dialog to 700x500
+        self.setFixedSize(700, 500)
+        
+        # Create a form layout for the settings fields
         self.layout = QFormLayout(self)
-
+        
+        # Create QLineEdit fields for each setting
         self.vpxRootEdit = QLineEdit(VPX_ROOT_FOLDER)
         self.execCmdEdit = QLineEdit(EXECUTABLE_CMD)
         self.execSubCmdEdit = QLineEdit(EXECUTABLE_SUB_CMD)
@@ -173,7 +176,8 @@ class SettingsDialog(QDialog):
         self.bgColorEdit = QLineEdit(BG_COLOR)
         self.textColorEdit = QLineEdit(TEXT_COLOR)
         self.fadeDurationEdit = QLineEdit(str(FADE_DURATION))
-
+        
+        # Add each field to the layout with a descriptive label
         self.layout.addRow("VPX Root Folder:", self.vpxRootEdit)
         self.layout.addRow("Executable Command:", self.execCmdEdit)
         self.layout.addRow("Executable Sub Cmd:", self.execSubCmdEdit)
@@ -191,13 +195,15 @@ class SettingsDialog(QDialog):
         self.layout.addRow("Background Color:", self.bgColorEdit)
         self.layout.addRow("Text Color:", self.textColorEdit)
         self.layout.addRow("Fade Duration:", self.fadeDurationEdit)
-
+        
+        # Create a button box with Ok and Cancel buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.layout.addRow(self.buttonBox)
 
     def getValues(self):
+        """Retrieve the current settings values from the dialog."""
         return {
             "VPX_ROOT_FOLDER": self.vpxRootEdit.text(),
             "EXECUTABLE_CMD": self.execCmdEdit.text(),
@@ -337,6 +343,16 @@ class SingleTableViewer(QMainWindow):
         self.settingsButton.setFocusPolicy(Qt.NoFocus)
         self.settingsButton.clicked.connect(self.openSettings)
         self.settingsButton.raise_()
+
+        # Apply a stylesheet to remove the border and make the background transparent
+        self.settingsButton.setStyleSheet("""
+            QPushButton {
+                font-size: 28px;         /* Increase the font size of the icon */
+                border: none;           /* Remove the button border */
+                background: transparent; /* Make the background transparent */
+            }
+        """)
+
         wheel_x = WINDOW_WIDTH - WHEEL_SIZE - WHEEL_MARGIN
         wheel_y = WINDOW_HEIGHT - WHEEL_SIZE - WHEEL_MARGIN
         self.wheel_label = QLabel(central)
