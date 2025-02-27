@@ -45,10 +45,12 @@ EXECUTABLE_SUB_CMD = "-Play"
 DEFAULT_TABLE_PATH = "default_table.png"
 DEFAULT_WHEEL_PATH = "default_wheel.png"
 DEFAULT_BACKGLASS_PATH = "default_backglass.png"
+DEFAULT_DMD_PATH   = "" # gif? (nyi)
 
 TABLE_IMAGE_PATH   = "images/table.png"
 TABLE_WHEEL_PATH   = "images/wheel.png"
 TABLE_BACKGLASS_PATH = "images/backglass.png"
+TABLE_DMD_PATH     = "images/dmd.png" # screenshot? (nyi)
 
 # Window and image sizes
 WINDOW_WIDTH       = 1080
@@ -151,7 +153,7 @@ class SettingsDialog(QDialog):
         self.setWindowTitle("Settings")
         
         # Set the fixed size of the settings dialog to 700x500
-        self.setFixedSize(700, 500)
+        self.setFixedSize(700, 710)
         
         # Create a form layout for the settings fields
         self.layout = QFormLayout(self)
@@ -199,6 +201,27 @@ class SettingsDialog(QDialog):
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.layout.addRow(self.buttonBox)
+
+        # --- Begin customization for icon-only, square buttons ---
+        # Retrieve the standard Ok and Cancel buttons from the button box
+        ok_button = self.buttonBox.button(QDialogButtonBox.Ok)
+        cancel_button = self.buttonBox.button(QDialogButtonBox.Cancel)
+
+        # Remove the text from both buttons so that only the icon is displayed
+        ok_button.setText("")
+        cancel_button.setText("")
+
+        # Define a fixed square size for the buttons (adjust as needed)
+        square_size = 40
+
+        # Set both buttons to be square by fixing their width and height
+        ok_button.setFixedSize(square_size, square_size)
+        cancel_button.setFixedSize(square_size, square_size)
+
+        # Adjust the icon size to fill the button area, ensuring a proper icon-only display
+        ok_button.setIconSize(ok_button.size())
+        cancel_button.setIconSize(cancel_button.size())
+        # --- End customization for icon-only, square buttons ---
 
     def getValues(self):
         """Retrieve the current settings values from the dialog."""
