@@ -74,10 +74,10 @@ EXECUTABLE_CMD         = "/home/tarso/Games/vpinball/build/VPinballX_GL"
 EXECUTABLE_SUB_CMD     = "-Play"
 
 # Default images path
-DEFAULT_TABLE_PATH     = "default_table.png"
-DEFAULT_WHEEL_PATH     = "default_wheel.png"
-DEFAULT_BACKGLASS_PATH = "default_backglass.png"
-DEFAULT_DMD_PATH       = "default_dmd.gif"
+DEFAULT_TABLE_PATH     = "img/default_table.png"
+DEFAULT_WHEEL_PATH     = "img/default_wheel.png"
+DEFAULT_BACKGLASS_PATH = "img/default_backglass.png"
+DEFAULT_DMD_PATH       = "img/default_dmd.gif"
 
 # Per table images path
 TABLE_IMAGE_PATH       = "images/table.png"
