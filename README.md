@@ -3,7 +3,7 @@
 A dual screen front-end for your virtual pinball cabinet. "As Simple As Possible".
 
 ## Features:
-- Full screen display of table playfield and backglass
+- Full screen display of table playfield, backglass and DMD
 - Wheel and game title display
 - Extended settings for many display configurations
 - Extremely lightweight and simple
