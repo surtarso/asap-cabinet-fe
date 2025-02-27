@@ -25,14 +25,13 @@ Tarso Galvão - feb/2025
 """
 
 # TODO:
-# - add a default DMD for all tables, animated if possible like a gif
 # - configure keys for ease to use on cabinet joystick
 
 import sys, os, subprocess, configparser
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QWidget, QGraphicsOpacityEffect,
                              QDialog, QFormLayout, QLineEdit, QDialogButtonBox, QPushButton, QMessageBox)
-from PyQt5.QtGui import QPixmap, QPalette, QColor, QGuiApplication, QFont, QFontMetrics
-from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve
+from PyQt5.QtGui import QPixmap, QPalette, QColor, QGuiApplication, QFont, QFontMetrics, QMovie
+from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, QSize
 
 # ---------------- Configuration ----------------
 CONFIG_FILE        = "~/.asap-cabinet-fe/settings.ini"
@@ -45,12 +44,12 @@ EXECUTABLE_SUB_CMD = "-Play"
 DEFAULT_TABLE_PATH = "default_table.png"
 DEFAULT_WHEEL_PATH = "default_wheel.png"
 DEFAULT_BACKGLASS_PATH = "default_backglass.png"
-DEFAULT_DMD_PATH   = "" # gif? (nyi)
+DEFAULT_DMD_PATH   = "default_dmd.gif"
 
 TABLE_IMAGE_PATH   = "images/table.png"
 TABLE_WHEEL_PATH   = "images/wheel.png"
 TABLE_BACKGLASS_PATH = "images/backglass.png"
-TABLE_DMD_PATH     = "images/dmd.png" # screenshot? (nyi)
+TABLE_DMD_PATH     = "images/dmd.gif"
 
 # Window and image sizes
 WINDOW_WIDTH       = 1080
@@ -297,38 +296,79 @@ class SecondaryWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Secondary Display (Backglass)")
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setFixedSize(BACKGLASS_WIDTH, BACKGLASS_HEIGHT)
+        self.setFixedSize(1024, 1024)  # Full screen size
         self.setStyleSheet("background-color: black;")
-        
-        # Create a QLabel to display the image
-        self.label = QLabel(self)
-        # Set alignment to top-center so that the image touches the top of the frame
-        self.label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
-        self.setCentralWidget(self.label)
 
-        # Add an opacity effect for fade animation
+        # QLabel for backglass image (aligned to top)
+        self.label = QLabel(self)
+        self.label.setGeometry(0, 0, 1024, 768)
+        self.label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+
+        # Opacity effect for fade animation
         self.backglass_effect = QGraphicsOpacityEffect(self.label)
         self.label.setGraphicsEffect(self.backglass_effect)
-        self.backglass_effect.setOpacity(1.0)  # Initial opacity
+        self.backglass_effect.setOpacity(1.0)
 
-    def update_image(self, image_path):
-        # Use default image if the specified path does not exist
+        # QLabel for DMD (fills the black bottom part)
+        self.dmd_label = QLabel(self)
+        self.dmd_label.setGeometry(0, 768, 1024, 256)  # Positioned below backglass
+        self.dmd_label.setStyleSheet("background-color: black;")  # Ensure black background
+        self.dmd_label.setAlignment(Qt.AlignCenter)
+
+    def update_image(self, image_path, table_folder):
+        """Update backglass image and DMD GIF, prioritizing table-specific DMD if available."""
+        
+        # --- Update Backglass Image ---
         if not os.path.exists(image_path):
             image_path = DEFAULT_BACKGLASS_PATH
-        
+
         pixmap = QPixmap(image_path)
         if pixmap.isNull():
-            # If the image is invalid, create a black pixmap
-            pixmap = QPixmap(BACKGLASS_WIDTH, BACKGLASS_HEIGHT)
+            pixmap = QPixmap(1024, 768)
             pixmap.fill(Qt.black)
         else:
-            # Scale the pixmap while preserving aspect ratio
-            pixmap = pixmap.scaled(BACKGLASS_WIDTH, BACKGLASS_HEIGHT, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        
-        # Set the scaled pixmap on the label
+            pixmap = pixmap.scaled(1024, 768, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
         self.label.setPixmap(pixmap)
-        # Reset opacity after setting the image
         self.backglass_effect.setOpacity(1.0)
+
+        # --- Determine DMD GIF Path ---
+        table_dmd_path = os.path.join(table_folder, TABLE_DMD_PATH)  # Table-specific DMD
+        dmd_path = table_dmd_path if os.path.exists(table_dmd_path) else DEFAULT_DMD_PATH
+
+        # --- Update DMD GIF ---
+        if os.path.exists(dmd_path):
+            self.dmd_movie = QMovie(dmd_path)
+            self.dmd_movie.setCacheMode(QMovie.CacheAll)
+
+            # Get original GIF size
+            self.dmd_movie.start()  # Start to get correct frame size
+            frame_size = self.dmd_movie.currentPixmap().size()
+            self.dmd_movie.stop()
+
+            # Scale while maintaining aspect ratio
+            dmd_width, dmd_height = frame_size.width(), frame_size.height()
+            if dmd_width > 0 and dmd_height > 0:
+                aspect_ratio = dmd_width / dmd_height
+                new_width = min(1024, int(256 * aspect_ratio))
+                new_height = min(256, int(1024 / aspect_ratio))
+
+                if new_width > 1024:
+                    new_width = 1024
+                    new_height = int(1024 / aspect_ratio)
+                if new_height > 256:
+                    new_height = 256
+                    new_width = int(256 * aspect_ratio)
+
+                self.dmd_movie.setScaledSize(QSize(new_width, new_height))
+
+                # Center the GIF inside the 1024x256 area
+                x_offset = (1024 - new_width) // 2
+                y_offset = (256 - new_height) // 2
+                self.dmd_label.setGeometry(x_offset, 768 + y_offset, new_width, new_height)
+
+            self.dmd_label.setMovie(self.dmd_movie)
+            self.dmd_movie.start()
 
 # ---------------- Main Window ----------------
 class SingleTableViewer(QMainWindow):
@@ -462,7 +502,7 @@ class SingleTableViewer(QMainWindow):
         self.wheel_effect.setOpacity(1.0)
 
         if self.secondary:
-            self.secondary.update_image(table["backglass_img"])
+            self.secondary.update_image(table["backglass_img"], table["folder"])
 
     def _update_table_name_label_geometry(self):
         """Update the geometry of the table name label to fit its text and keep it on screen."""
@@ -527,19 +567,19 @@ class SingleTableViewer(QMainWindow):
             self.fade_out_backglass.setEndValue(0.5)
             self.fade_out_backglass.setEasingCurve(QEasingCurve.InQuad)
 
-        self.fade_out_table.finished.connect(lambda: self._set_new_images(table_scaled, wheel_scaled, table["backglass_img"]))
+        self.fade_out_table.finished.connect(lambda: self._set_new_images(table_scaled, wheel_scaled, table["backglass_img"], table["folder"]))
         self.fade_out_table.start()
         self.fade_out_wheel.start()
         if self.fade_out_backglass:
             self.fade_out_backglass.start()
 
 
-    def _set_new_images(self, table_pixmap, wheel_pixmap, backglass_path):
+    def _set_new_images(self, table_pixmap, wheel_pixmap, backglass_path, table_folder):
         """Set new images and fade in all displays."""
         self.table_label.setPixmap(table_pixmap)
         self.wheel_label.setPixmap(wheel_pixmap)
         if self.secondary:
-            self.secondary.update_image(backglass_path)
+            self.secondary.update_image(backglass_path, table_folder)
 
         # Fade in all elements
         self.fade_in_table = QPropertyAnimation(self.table_effect, b"opacity")
@@ -585,7 +625,7 @@ class SingleTableViewer(QMainWindow):
             self.setFocus()        # Set focus on the main window
             if self.secondary:
                 self.secondary.show()
-                self.secondary.update_image(table["backglass_img"])
+                self.secondary.update_image(table["backglass_img"], table["folder"])
             self._update_images_no_animation()  # Ensure images are in sync
 
         except Exception as e:
