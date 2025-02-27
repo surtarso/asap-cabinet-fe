@@ -1,6 +1,6 @@
 # As Simple As Possible Cabinet Front-End
 
-A dual screen front-end for your virtual pinball cabinet. As simple as possible.
+A dual screen front-end for your virtual pinball cabinet. "As Simple As Possible".
 
 ## Features:
 - Full screen display of table playfield and backglass
@@ -28,7 +28,7 @@ e.g. **tables/my_table/table_name.vpx**
 
 It will scan your tables folder and open each table one by one, wait 12 seconds for the table to fully load and take a screenshot from both app screens (playfield and backglass).
 
-It will than save those pictures in **tables/my_table/images/** as .png and they will be ready for the frontend to read. You still need to download the wheel images yourself.
+It will than save those pictures in **tables/my_table/images/** as .png and they will be ready for the frontend to display. You still need to download the wheel images yourself.
 
 Dependencies: `sudo apt install xdotool imagemagick`
 
@@ -45,4 +45,4 @@ Double check and run: `./screenshot_art.sh`
 
 ### About
 
-This is my personal frontend for my cabinet. It's as simple as possible. If you need help installing and configuring Visual Pinball X check my wiki page, also check my vpx-frontend tools to ease the process of settings tables up.
+This is my personal frontend for my cabinet. It's As Simple As Possible. If you need help installing and configuring Visual Pinball X check my [wiki](https://github.com/surtarso/vpx-frontend/wiki) page, also check my [vpx-frontend](https://github.com/surtarso/vpx-frontend/) tools to ease the process of settings tables up.
