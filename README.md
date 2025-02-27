@@ -10,7 +10,7 @@ A dual screen front-end for your virtual pinball cabinet. "As Simple As Possible
 - No need to download artpacks, generate your own!*
 - Just what it takes to make a cabinet look good
 
-*From automated screenshots. Wheel generation not implemented yet.
+*Playfield and Backglass from automated screenshots. Wheel and DMD generation not implemented yet.
 
 ## How to use:
 
