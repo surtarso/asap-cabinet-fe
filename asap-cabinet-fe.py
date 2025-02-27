@@ -75,7 +75,7 @@ FADE_DURATION = 300  # milliseconds
 # ---------------- Configuration Loader ----------------
 def load_configuration():
     global VPX_ROOT_FOLDER, EXECUTABLE_CMD, EXECUTABLE_SUB_CMD
-    global DEFAULT_TABLE_PATH, DEFAULT_WHEEL_PATH, DEFAULT_BACKGLASS_PATH
+    global DEFAULT_TABLE_PATH, DEFAULT_WHEEL_PATH, DEFAULT_BACKGLASS_PATH, DEFAULT_DMD_PATH
     global TABLE_IMAGE_PATH, TABLE_WHEEL_PATH, TABLE_BACKGLASS_PATH
     global WINDOW_WIDTH, WINDOW_HEIGHT, BACKGLASS_WIDTH, BACKGLASS_HEIGHT
     global WHEEL_SIZE, WHEEL_MARGIN, FONT_NAME, FONT_SIZE
@@ -99,6 +99,7 @@ def load_configuration():
             "DEFAULT_TABLE_PATH": DEFAULT_TABLE_PATH,
             "DEFAULT_WHEEL_PATH": DEFAULT_WHEEL_PATH,
             "DEFAULT_BACKGLASS_PATH": DEFAULT_BACKGLASS_PATH,
+            "DEFAULT_DMD_PATH": DEFAULT_DMD_PATH,
             "TABLE_IMAGE_PATH": TABLE_IMAGE_PATH,
             "TABLE_WHEEL_PATH": TABLE_WHEEL_PATH,
             "TABLE_BACKGLASS_PATH": TABLE_BACKGLASS_PATH,
@@ -125,6 +126,7 @@ def load_configuration():
     DEFAULT_TABLE_PATH = s.get("DEFAULT_TABLE_PATH", DEFAULT_TABLE_PATH)
     DEFAULT_WHEEL_PATH = s.get("DEFAULT_WHEEL_PATH", DEFAULT_WHEEL_PATH)
     DEFAULT_BACKGLASS_PATH = s.get("DEFAULT_BACKGLASS_PATH", DEFAULT_BACKGLASS_PATH)
+    DEFAULT_DMD_PATH = s.get("DEFAULT_DMD_PATH", DEFAULT_DMD_PATH)
     TABLE_IMAGE_PATH = s.get("TABLE_IMAGE_PATH", TABLE_IMAGE_PATH)
     TABLE_WHEEL_PATH = s.get("TABLE_WHEEL_PATH", TABLE_WHEEL_PATH)
     TABLE_BACKGLASS_PATH = s.get("TABLE_BACKGLASS_PATH", TABLE_BACKGLASS_PATH)
@@ -151,8 +153,8 @@ class SettingsDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Settings")
         
-        # Set the fixed size of the settings dialog to 700x500
-        self.setFixedSize(700, 710)
+        # Set the fixed size
+        self.setFixedSize(700, 750)
         
         # Create a form layout for the settings fields
         self.layout = QFormLayout(self)
@@ -164,6 +166,7 @@ class SettingsDialog(QDialog):
         self.tableImageEdit = QLineEdit(TABLE_IMAGE_PATH)
         self.wheelImageEdit = QLineEdit(TABLE_WHEEL_PATH)
         self.backglassImageEdit = QLineEdit(TABLE_BACKGLASS_PATH)
+        self.dmdImageEdit = QLineEdit(DEFAULT_DMD_PATH)
         self.windowWidthEdit = QLineEdit(str(WINDOW_WIDTH))
         self.windowHeightEdit = QLineEdit(str(WINDOW_HEIGHT))
         self.backglassWidthEdit = QLineEdit(str(BACKGLASS_WIDTH))
@@ -183,6 +186,7 @@ class SettingsDialog(QDialog):
         self.layout.addRow("Table Image Path:", self.tableImageEdit)
         self.layout.addRow("Wheel Image Path:", self.wheelImageEdit)
         self.layout.addRow("Backglass Image Path:", self.backglassImageEdit)
+        self.layout.addRow("DMD Image Path:", self.dmdImageEdit)
         self.layout.addRow("Window Width:", self.windowWidthEdit)
         self.layout.addRow("Window Height:", self.windowHeightEdit)
         self.layout.addRow("Backglass Width:", self.backglassWidthEdit)
@@ -231,6 +235,7 @@ class SettingsDialog(QDialog):
             "TABLE_IMAGE_PATH": self.tableImageEdit.text(),
             "TABLE_WHEEL_PATH": self.wheelImageEdit.text(),
             "TABLE_BACKGLASS_PATH": self.backglassImageEdit.text(),
+            "DEFAULT_DMD_PATH": self.dmdImageEdit.text(),
             "WINDOW_WIDTH": self.windowWidthEdit.text(),
             "WINDOW_HEIGHT": self.windowHeightEdit.text(),
             "BACKGLASS_WIDTH": self.backglassWidthEdit.text(),
@@ -259,21 +264,31 @@ def load_table_list():
                 table_name = os.path.splitext(file)[0]
                 # Build the full path to the .vpx file
                 vpx_path = os.path.join(root, file)
+
                 # Construct the expected path for the table image
                 table_img_path = os.path.join(root, TABLE_IMAGE_PATH)
                 # If the table image doesn't exist at the expected path, use a default image path
                 if not os.path.exists(table_img_path):
                     table_img_path = DEFAULT_TABLE_PATH
+
                 # Construct the expected path for the wheel image
                 wheel_img_path = os.path.join(root, TABLE_WHEEL_PATH)
                 # If the wheel image doesn't exist at the expected path, use a default wheel image path
                 if not os.path.exists(wheel_img_path):
                     wheel_img_path = DEFAULT_WHEEL_PATH
+
                 # Construct the expected path for the backglass image
                 backglass_img_path = os.path.join(root, TABLE_BACKGLASS_PATH)
                 # If the backglass image doesn't exist at the expected path, use a default backglass image path
                 if not os.path.exists(backglass_img_path):
                     backglass_img_path = DEFAULT_BACKGLASS_PATH
+
+                # Construct the expected path for the DMD animation (GIF)
+                dmd_img_path = os.path.join(root, TABLE_DMD_PATH)
+                # If the DMD animation doesn't exist at the expected path, use the default DMD path
+                if not os.path.exists(dmd_img_path):
+                    dmd_img_path = DEFAULT_DMD_PATH
+                    
                 # Append a dictionary containing all relevant table information to the tables list
                 tables.append({
                     "table_name": table_name,
@@ -281,7 +296,8 @@ def load_table_list():
                     "folder": root,
                     "table_img": table_img_path,
                     "wheel_img": wheel_img_path,
-                    "backglass_img": backglass_img_path
+                    "backglass_img": backglass_img_path,
+                    "dmd_img": dmd_img_path
                 })
     
     # Sort the list of tables alphabetically by the table name
