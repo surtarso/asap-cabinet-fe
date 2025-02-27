@@ -34,36 +34,69 @@ from PyQt5.QtGui import QPixmap, QPalette, QColor, QGuiApplication, QFont, QFont
 from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, QSize
 
 # ---------------- Configuration ----------------
-CONFIG_FILE        = "~/.asap-cabinet-fe/settings.ini"
+"""
+CONFIG_FILE:             Path to the configuration file.
+VPX_ROOT_FOLDER:         Root folder for .vpx files.
+EXECUTABLE_CMD:          Command to execute the pinball application.
+EXECUTABLE_SUB_CMD:      Sub-command for launching a table.
+DEFAULT_TABLE_PATH:      Default table image path.
+DEFAULT_WHEEL_PATH:      Default wheel image path.
+DEFAULT_BACKGLASS_PATH:  Default backglass image path.
+DEFAULT_DMD_PATH:        Default DMD GIF path.
+TABLE_IMAGE_PATH:        Relative path to table image.
+TABLE_WHEEL_PATH:        Relative path to wheel image.
+TABLE_BACKGLASS_PATH:    Relative path to backglass image.
+TABLE_DMD_PATH:          Relative path to DMD GIF.
+WINDOW_WIDTH:            Width of the main window.
+WINDOW_HEIGHT:           Height of the main window.
+BACKGLASS_WIDTH:         Width of the secondary window.
+BACKGLASS_HEIGHT:        Height of the secondary window.
+WHEEL_SIZE:              Size of the wheel image.
+WHEEL_MARGIN:            Margin around the wheel image.
+SETTINGS_WIDTH:          Width of the settings dialog.
+SETTINGS_HEIGHT:         Height of the settings dialog.
+FONT_NAME:               Font name for table titles.
+FONT_SIZE:               Font size for table titles.
+BG_COLOR:                Background color of the main window.
+TEXT_COLOR:              Text color for table titles.
+MAIN_MONITOR_INDEX:      Monitor index for the main window.
+SECONDARY_MONITOR_INDEX: Monitor index for the secondary window.
+FADE_DURATION:           Duration of fade animations in milliseconds.
+"""
+CONFIG_FILE = "~/.asap-cabinet-fe/settings.ini"
 
-VPX_ROOT_FOLDER    = "/home/tarso/Games/vpinball/build/tables/"
-EXECUTABLE_CMD     = "/home/tarso/Games/vpinball/build/VPinballX_GL"
-EXECUTABLE_SUB_CMD = "-Play"
+VPX_ROOT_FOLDER        = "/home/tarso/Games/vpinball/build/tables/"
+EXECUTABLE_CMD         = "/home/tarso/Games/vpinball/build/VPinballX_GL"
+EXECUTABLE_SUB_CMD     = "-Play"
 
-# Images path:
-DEFAULT_TABLE_PATH = "default_table.png"
-DEFAULT_WHEEL_PATH = "default_wheel.png"
+# Default images path
+DEFAULT_TABLE_PATH     = "default_table.png"
+DEFAULT_WHEEL_PATH     = "default_wheel.png"
 DEFAULT_BACKGLASS_PATH = "default_backglass.png"
-DEFAULT_DMD_PATH   = "default_dmd.gif"
+DEFAULT_DMD_PATH       = "default_dmd.gif"
 
-TABLE_IMAGE_PATH   = "images/table.png"
-TABLE_WHEEL_PATH   = "images/wheel.png"
-TABLE_BACKGLASS_PATH = "images/backglass.png"
-TABLE_DMD_PATH     = "images/dmd.gif"
+# Per table images path
+TABLE_IMAGE_PATH       = "images/table.png"
+TABLE_WHEEL_PATH       = "images/wheel.png"
+TABLE_BACKGLASS_PATH   = "images/backglass.png"
+TABLE_DMD_PATH         = "images/dmd.gif"
 
 # Window and image sizes
-WINDOW_WIDTH       = 1080
-WINDOW_HEIGHT      = 1920
-BACKGLASS_WIDTH    = 1024
-BACKGLASS_HEIGHT   = 1024
-WHEEL_SIZE         = 400 # Square
-WHEEL_MARGIN       = 20
+WINDOW_WIDTH           = 1080
+WINDOW_HEIGHT          = 1920
+BACKGLASS_WIDTH        = 1024
+BACKGLASS_HEIGHT       = 1024
+WHEEL_SIZE             = 400 # Square
+WHEEL_MARGIN           = 20
+# Settings panel
+SETTINGS_WIDTH         = 700
+SETTINGS_HEIGHT        = 750
 
 # Table titles
-FONT_NAME = "Arial"
-FONT_SIZE = 32
-BG_COLOR = "#202020"
-TEXT_COLOR = "white"
+FONT_NAME              = "Arial"
+FONT_SIZE              = 32
+BG_COLOR               = "#202020"
+TEXT_COLOR             = "white"
 
 # Monitor binding indices
 MAIN_MONITOR_INDEX = 1        # Main window (vertical)
@@ -74,8 +107,10 @@ FADE_DURATION = 300  # milliseconds
 
 # ---------------- Configuration Loader ----------------
 def load_configuration():
+    """Loads configuration settings from an ini file or creates the file with default settings if it does not exist."""
+    
     global VPX_ROOT_FOLDER, EXECUTABLE_CMD, EXECUTABLE_SUB_CMD
-    global DEFAULT_TABLE_PATH, DEFAULT_WHEEL_PATH, DEFAULT_BACKGLASS_PATH #, DEFAULT_DMD_PATH
+    global DEFAULT_TABLE_PATH, DEFAULT_WHEEL_PATH, DEFAULT_BACKGLASS_PATH, DEFAULT_DMD_PATH
     global TABLE_IMAGE_PATH, TABLE_WHEEL_PATH, TABLE_BACKGLASS_PATH, TABLE_DMD_PATH
     global WINDOW_WIDTH, WINDOW_HEIGHT, BACKGLASS_WIDTH, BACKGLASS_HEIGHT
     global WHEEL_SIZE, WHEEL_MARGIN, FONT_NAME, FONT_SIZE
@@ -93,115 +128,143 @@ def load_configuration():
         config.read(ini_file)
     else:
         config['Settings'] = {
-            "VPX_ROOT_FOLDER": VPX_ROOT_FOLDER,
-            "EXECUTABLE_CMD": EXECUTABLE_CMD,
-            "EXECUTABLE_SUB_CMD": EXECUTABLE_SUB_CMD,
-            "DEFAULT_TABLE_PATH": DEFAULT_TABLE_PATH,
-            "DEFAULT_WHEEL_PATH": DEFAULT_WHEEL_PATH,
-            "DEFAULT_BACKGLASS_PATH": DEFAULT_BACKGLASS_PATH,
-            # "DEFAULT_DMD_PATH": DEFAULT_DMD_PATH,
-            "TABLE_IMAGE_PATH": TABLE_IMAGE_PATH,
-            "TABLE_WHEEL_PATH": TABLE_WHEEL_PATH,
-            "TABLE_BACKGLASS_PATH": TABLE_BACKGLASS_PATH,
-            "TABLE_DMD_PATH": TABLE_DMD_PATH,
-            "WINDOW_WIDTH": str(WINDOW_WIDTH),
-            "WINDOW_HEIGHT": str(WINDOW_HEIGHT),
-            "BACKGLASS_WIDTH": str(BACKGLASS_WIDTH),
-            "BACKGLASS_HEIGHT": str(BACKGLASS_HEIGHT),
-            "WHEEL_SIZE": str(WHEEL_SIZE),
-            "WHEEL_MARGIN": str(WHEEL_MARGIN),
-            "FONT_NAME": FONT_NAME,
-            "FONT_SIZE": str(FONT_SIZE),
-            "BG_COLOR": BG_COLOR,
-            "TEXT_COLOR": TEXT_COLOR,
-            "MAIN_MONITOR_INDEX": str(MAIN_MONITOR_INDEX),
+            "VPX_ROOT_FOLDER":             VPX_ROOT_FOLDER,
+            "EXECUTABLE_CMD":              EXECUTABLE_CMD,
+            "EXECUTABLE_SUB_CMD":          EXECUTABLE_SUB_CMD,
+            "DEFAULT_TABLE_PATH":          DEFAULT_TABLE_PATH,
+            "DEFAULT_WHEEL_PATH":          DEFAULT_WHEEL_PATH,
+            "DEFAULT_BACKGLASS_PATH":      DEFAULT_BACKGLASS_PATH,
+            "DEFAULT_DMD_PATH":            DEFAULT_DMD_PATH,
+            "TABLE_IMAGE_PATH":            TABLE_IMAGE_PATH,
+            "TABLE_WHEEL_PATH":            TABLE_WHEEL_PATH,
+            "TABLE_BACKGLASS_PATH":        TABLE_BACKGLASS_PATH,
+            "TABLE_DMD_PATH":              TABLE_DMD_PATH,
+            "WINDOW_WIDTH":            str(WINDOW_WIDTH),
+            "WINDOW_HEIGHT":           str(WINDOW_HEIGHT),
+            "BACKGLASS_WIDTH":         str(BACKGLASS_WIDTH),
+            "BACKGLASS_HEIGHT":        str(BACKGLASS_HEIGHT),
+            "WHEEL_SIZE":              str(WHEEL_SIZE),
+            "WHEEL_MARGIN":            str(WHEEL_MARGIN),
+            "FONT_NAME":                   FONT_NAME,
+            "FONT_SIZE":               str(FONT_SIZE),
+            "BG_COLOR":                    BG_COLOR,
+            "TEXT_COLOR":                  TEXT_COLOR,
+            "MAIN_MONITOR_INDEX":      str(MAIN_MONITOR_INDEX),
             "SECONDARY_MONITOR_INDEX": str(SECONDARY_MONITOR_INDEX),
-            "FADE_DURATION": str(FADE_DURATION)
+            "FADE_DURATION":           str(FADE_DURATION)
         }
         with open(ini_file, "w") as f:
             config.write(f)
     s = config['Settings']
-    VPX_ROOT_FOLDER = s.get("VPX_ROOT_FOLDER", VPX_ROOT_FOLDER)
-    EXECUTABLE_CMD = s.get("EXECUTABLE_CMD", EXECUTABLE_CMD)
-    EXECUTABLE_SUB_CMD = s.get("EXECUTABLE_SUB_CMD", EXECUTABLE_SUB_CMD)
-    DEFAULT_TABLE_PATH = s.get("DEFAULT_TABLE_PATH", DEFAULT_TABLE_PATH)
-    DEFAULT_WHEEL_PATH = s.get("DEFAULT_WHEEL_PATH", DEFAULT_WHEEL_PATH)
-    DEFAULT_BACKGLASS_PATH = s.get("DEFAULT_BACKGLASS_PATH", DEFAULT_BACKGLASS_PATH)
-    # DEFAULT_DMD_PATH = s.get("DEFAULT_DMD_PATH", DEFAULT_DMD_PATH)
-    TABLE_IMAGE_PATH = s.get("TABLE_IMAGE_PATH", TABLE_IMAGE_PATH)
-    TABLE_WHEEL_PATH = s.get("TABLE_WHEEL_PATH", TABLE_WHEEL_PATH)
-    TABLE_BACKGLASS_PATH = s.get("TABLE_BACKGLASS_PATH", TABLE_BACKGLASS_PATH)
-    TABLE_DMD_PATH = s.get("TABLE_DMD_PATH", TABLE_DMD_PATH)
-    WINDOW_WIDTH = int(s.get("WINDOW_WIDTH", WINDOW_WIDTH))
-    WINDOW_HEIGHT = int(s.get("WINDOW_HEIGHT", WINDOW_HEIGHT))
-    BACKGLASS_WIDTH = int(s.get("BACKGLASS_WIDTH", BACKGLASS_WIDTH))
-    BACKGLASS_HEIGHT = int(s.get("BACKGLASS_HEIGHT", BACKGLASS_HEIGHT))
-    WHEEL_SIZE = int(s.get("WHEEL_SIZE", WHEEL_SIZE))
-    WHEEL_MARGIN = int(s.get("WHEEL_MARGIN", WHEEL_MARGIN))
-    FONT_NAME = s.get("FONT_NAME", FONT_NAME)
-    FONT_SIZE = int(s.get("FONT_SIZE", FONT_SIZE))
-    BG_COLOR = s.get("BG_COLOR", BG_COLOR)
-    TEXT_COLOR = s.get("TEXT_COLOR", TEXT_COLOR)
-    MAIN_MONITOR_INDEX = int(s.get("MAIN_MONITOR_INDEX", MAIN_MONITOR_INDEX))
+    VPX_ROOT_FOLDER =             s.get("VPX_ROOT_FOLDER", VPX_ROOT_FOLDER)
+    EXECUTABLE_CMD =              s.get("EXECUTABLE_CMD", EXECUTABLE_CMD)
+    EXECUTABLE_SUB_CMD =          s.get("EXECUTABLE_SUB_CMD", EXECUTABLE_SUB_CMD)
+    DEFAULT_TABLE_PATH =          s.get("DEFAULT_TABLE_PATH", DEFAULT_TABLE_PATH)
+    DEFAULT_WHEEL_PATH =          s.get("DEFAULT_WHEEL_PATH", DEFAULT_WHEEL_PATH)
+    DEFAULT_BACKGLASS_PATH =      s.get("DEFAULT_BACKGLASS_PATH", DEFAULT_BACKGLASS_PATH)
+    DEFAULT_DMD_PATH =            s.get("DEFAULT_DMD_PATH", DEFAULT_DMD_PATH)
+    TABLE_IMAGE_PATH =            s.get("TABLE_IMAGE_PATH", TABLE_IMAGE_PATH)
+    TABLE_WHEEL_PATH =            s.get("TABLE_WHEEL_PATH", TABLE_WHEEL_PATH)
+    TABLE_BACKGLASS_PATH =        s.get("TABLE_BACKGLASS_PATH", TABLE_BACKGLASS_PATH)
+    TABLE_DMD_PATH =              s.get("TABLE_DMD_PATH", TABLE_DMD_PATH)
+    WINDOW_WIDTH =            int(s.get("WINDOW_WIDTH", WINDOW_WIDTH))
+    WINDOW_HEIGHT =           int(s.get("WINDOW_HEIGHT", WINDOW_HEIGHT))
+    BACKGLASS_WIDTH =         int(s.get("BACKGLASS_WIDTH", BACKGLASS_WIDTH))
+    BACKGLASS_HEIGHT =        int(s.get("BACKGLASS_HEIGHT", BACKGLASS_HEIGHT))
+    WHEEL_SIZE =              int(s.get("WHEEL_SIZE", WHEEL_SIZE))
+    WHEEL_MARGIN =            int(s.get("WHEEL_MARGIN", WHEEL_MARGIN))
+    FONT_NAME =                   s.get("FONT_NAME", FONT_NAME)
+    FONT_SIZE =               int(s.get("FONT_SIZE", FONT_SIZE))
+    BG_COLOR =                    s.get("BG_COLOR", BG_COLOR)
+    TEXT_COLOR =                  s.get("TEXT_COLOR", TEXT_COLOR)
+    MAIN_MONITOR_INDEX =      int(s.get("MAIN_MONITOR_INDEX", MAIN_MONITOR_INDEX))
     SECONDARY_MONITOR_INDEX = int(s.get("SECONDARY_MONITOR_INDEX", SECONDARY_MONITOR_INDEX))
-    FADE_DURATION = int(s.get("FADE_DURATION", FADE_DURATION))
+    FADE_DURATION =           int(s.get("FADE_DURATION", FADE_DURATION))
 
 # Load configuration on startup
 load_configuration()
         
 # ---------------- Settings Dialog ----------------
 class SettingsDialog(QDialog):
+    """
+    SettingsDialog is a custom QDialog that provides a user interface for configuring various application settings.
+    Attributes:
+        layout (QFormLayout): The form layout that organizes the settings fields.
+        vpxRootEdit (QLineEdit): Input field for the VPX root folder path.
+        execCmdEdit (QLineEdit): Input field for the executable command.
+        execSubCmdEdit (QLineEdit): Input field for the executable sub-command.
+        tableImageEdit (QLineEdit): Input field for the table image path.
+        wheelImageEdit (QLineEdit): Input field for the wheel image path.
+        backglassImageEdit (QLineEdit): Input field for the backglass image path.
+        dmdTableEdit (QLineEdit): Input field for the DMD image path.
+        windowWidthEdit (QLineEdit): Input field for the window width.
+        windowHeightEdit (QLineEdit): Input field for the window height.
+        backglassWidthEdit (QLineEdit): Input field for the backglass width.
+        backglassHeightEdit (QLineEdit): Input field for the backglass height.
+        wheelSizeEdit (QLineEdit): Input field for the wheel size.
+        wheelMarginEdit (QLineEdit): Input field for the wheel margin.
+        fontNameEdit (QLineEdit): Input field for the font name.
+        fontSizeEdit (QLineEdit): Input field for the font size.
+        bgColorEdit (QLineEdit): Input field for the background color.
+        textColorEdit (QLineEdit): Input field for the text color.
+        fadeDurationEdit (QLineEdit): Input field for the fade duration.
+        buttonBox (QDialogButtonBox): Button box containing Ok and Cancel buttons.
+    Methods:
+        __init__(self, parent=None):
+            Initializes the SettingsDialog with the given parent widget.
+        getValues(self):
+            Retrieves the current settings values from the dialog.
+    """
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Settings")
         
         # Set the fixed size
-        self.setFixedSize(700, 750)
+        self.setFixedSize(SETTINGS_WIDTH, SETTINGS_HEIGHT)
         
         # Create a form layout for the settings fields
         self.layout = QFormLayout(self)
         
         # Create QLineEdit fields for each setting
-        self.vpxRootEdit = QLineEdit(VPX_ROOT_FOLDER)
-        self.execCmdEdit = QLineEdit(EXECUTABLE_CMD)
-        self.execSubCmdEdit = QLineEdit(EXECUTABLE_SUB_CMD)
-        self.tableImageEdit = QLineEdit(TABLE_IMAGE_PATH)
-        self.wheelImageEdit = QLineEdit(TABLE_WHEEL_PATH)
-        self.backglassImageEdit = QLineEdit(TABLE_BACKGLASS_PATH)
-        self.dmdTableEdit = QLineEdit(TABLE_DMD_PATH)
-        # self.dmdImageEdit = QLineEdit(DEFAULT_DMD_PATH)
-        self.windowWidthEdit = QLineEdit(str(WINDOW_WIDTH))
-        self.windowHeightEdit = QLineEdit(str(WINDOW_HEIGHT))
-        self.backglassWidthEdit = QLineEdit(str(BACKGLASS_WIDTH))
+        self.vpxRootEdit         = QLineEdit(VPX_ROOT_FOLDER)
+        self.execCmdEdit         = QLineEdit(EXECUTABLE_CMD)
+        self.execSubCmdEdit      = QLineEdit(EXECUTABLE_SUB_CMD)
+        self.tableImageEdit      = QLineEdit(TABLE_IMAGE_PATH)
+        self.wheelImageEdit      = QLineEdit(TABLE_WHEEL_PATH)
+        self.backglassImageEdit  = QLineEdit(TABLE_BACKGLASS_PATH)
+        self.dmdTableEdit        = QLineEdit(TABLE_DMD_PATH)
+        self.windowWidthEdit     = QLineEdit(str(WINDOW_WIDTH))
+        self.windowHeightEdit    = QLineEdit(str(WINDOW_HEIGHT))
+        self.backglassWidthEdit  = QLineEdit(str(BACKGLASS_WIDTH))
         self.backglassHeightEdit = QLineEdit(str(BACKGLASS_HEIGHT))
-        self.wheelSizeEdit = QLineEdit(str(WHEEL_SIZE))
-        self.wheelMarginEdit = QLineEdit(str(WHEEL_MARGIN))
-        self.fontNameEdit = QLineEdit(FONT_NAME)
-        self.fontSizeEdit = QLineEdit(str(FONT_SIZE))
-        self.bgColorEdit = QLineEdit(BG_COLOR)
-        self.textColorEdit = QLineEdit(TEXT_COLOR)
-        self.fadeDurationEdit = QLineEdit(str(FADE_DURATION))
+        self.wheelSizeEdit       = QLineEdit(str(WHEEL_SIZE))
+        self.wheelMarginEdit     = QLineEdit(str(WHEEL_MARGIN))
+        self.fontNameEdit        = QLineEdit(FONT_NAME)
+        self.fontSizeEdit        = QLineEdit(str(FONT_SIZE))
+        self.bgColorEdit         = QLineEdit(BG_COLOR)
+        self.textColorEdit       = QLineEdit(TEXT_COLOR)
+        self.fadeDurationEdit    = QLineEdit(str(FADE_DURATION))
         
         # Add each field to the layout with a descriptive label
-        self.layout.addRow("VPX Root Folder:", self.vpxRootEdit)
-        self.layout.addRow("Executable Command:", self.execCmdEdit)
-        self.layout.addRow("Executable Sub Cmd:", self.execSubCmdEdit)
-        self.layout.addRow("Table Image Path:", self.tableImageEdit)
-        self.layout.addRow("Wheel Image Path:", self.wheelImageEdit)
+        self.layout.addRow("VPX Root Folder:",      self.vpxRootEdit)
+        self.layout.addRow("Executable Command:",   self.execCmdEdit)
+        self.layout.addRow("Executable Sub Cmd:",   self.execSubCmdEdit)
+        self.layout.addRow("Table Image Path:",     self.tableImageEdit)
+        self.layout.addRow("Wheel Image Path:",     self.wheelImageEdit)
         self.layout.addRow("Backglass Image Path:", self.backglassImageEdit)
-        self.layout.addRow("DMD Image Path:", self.dmdTableEdit)
-        # self.layout.addRow("Default DMD Path:", self.dmdImageEdit)
-        self.layout.addRow("Window Width:", self.windowWidthEdit)
-        self.layout.addRow("Window Height:", self.windowHeightEdit)
-        self.layout.addRow("Backglass Width:", self.backglassWidthEdit)
-        self.layout.addRow("Backglass Height:", self.backglassHeightEdit)
-        self.layout.addRow("Wheel Size:", self.wheelSizeEdit)
-        self.layout.addRow("Wheel Margin:", self.wheelMarginEdit)
-        self.layout.addRow("Font Name:", self.fontNameEdit)
-        self.layout.addRow("Font Size:", self.fontSizeEdit)
-        self.layout.addRow("Background Color:", self.bgColorEdit)
-        self.layout.addRow("Text Color:", self.textColorEdit)
-        self.layout.addRow("Fade Duration:", self.fadeDurationEdit)
+        self.layout.addRow("DMD Image Path:",       self.dmdTableEdit)
+        self.layout.addRow("Window Width:",         self.windowWidthEdit)
+        self.layout.addRow("Window Height:",        self.windowHeightEdit)
+        self.layout.addRow("Backglass Width:",      self.backglassWidthEdit)
+        self.layout.addRow("Backglass Height:",     self.backglassHeightEdit)
+        self.layout.addRow("Wheel Size:",           self.wheelSizeEdit)
+        self.layout.addRow("Wheel Margin:",         self.wheelMarginEdit)
+        self.layout.addRow("Font Name:",            self.fontNameEdit)
+        self.layout.addRow("Font Size:",            self.fontSizeEdit)
+        self.layout.addRow("Background Color:",     self.bgColorEdit)
+        self.layout.addRow("Text Color:",           self.textColorEdit)
+        self.layout.addRow("Fade Duration:",        self.fadeDurationEdit)
         
         # Create a button box with Ok and Cancel buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -209,7 +272,6 @@ class SettingsDialog(QDialog):
         self.buttonBox.rejected.connect(self.reject)
         self.layout.addRow(self.buttonBox)
 
-        # --- Begin customization for icon-only, square buttons ---
         # Retrieve the standard Ok and Cancel buttons from the button box
         ok_button = self.buttonBox.button(QDialogButtonBox.Ok)
         cancel_button = self.buttonBox.button(QDialogButtonBox.Cancel)
@@ -228,34 +290,38 @@ class SettingsDialog(QDialog):
         # Adjust the icon size to fill the button area, ensuring a proper icon-only display
         ok_button.setIconSize(ok_button.size())
         cancel_button.setIconSize(cancel_button.size())
-        # --- End customization for icon-only, square buttons ---
 
     def getValues(self):
         """Retrieve the current settings values from the dialog."""
         return {
-            "VPX_ROOT_FOLDER": self.vpxRootEdit.text(),
-            "EXECUTABLE_CMD": self.execCmdEdit.text(),
-            "EXECUTABLE_SUB_CMD": self.execSubCmdEdit.text(),
-            "TABLE_IMAGE_PATH": self.tableImageEdit.text(),
-            "TABLE_WHEEL_PATH": self.wheelImageEdit.text(),
+            "VPX_ROOT_FOLDER":      self.vpxRootEdit.text(),
+            "EXECUTABLE_CMD":       self.execCmdEdit.text(),
+            "EXECUTABLE_SUB_CMD":   self.execSubCmdEdit.text(),
+            "TABLE_IMAGE_PATH":     self.tableImageEdit.text(),
+            "TABLE_WHEEL_PATH":     self.wheelImageEdit.text(),
             "TABLE_BACKGLASS_PATH": self.backglassImageEdit.text(),
-            "TABLE_DMD_PATH": self.dmdTableEdit.text(),
-            # "DEFAULT_DMD_PATH": self.dmdImageEdit.text(),
-            "WINDOW_WIDTH": self.windowWidthEdit.text(),
-            "WINDOW_HEIGHT": self.windowHeightEdit.text(),
-            "BACKGLASS_WIDTH": self.backglassWidthEdit.text(),
-            "BACKGLASS_HEIGHT": self.backglassHeightEdit.text(),
-            "WHEEL_SIZE": self.wheelSizeEdit.text(),
-            "WHEEL_MARGIN": self.wheelMarginEdit.text(),
-            "FONT_NAME": self.fontNameEdit.text(),
-            "FONT_SIZE": self.fontSizeEdit.text(),
-            "BG_COLOR": self.bgColorEdit.text(),
-            "TEXT_COLOR": self.textColorEdit.text(),
-            "FADE_DURATION": self.fadeDurationEdit.text()
+            "TABLE_DMD_PATH":       self.dmdTableEdit.text(),
+            "WINDOW_WIDTH":         self.windowWidthEdit.text(),
+            "WINDOW_HEIGHT":        self.windowHeightEdit.text(),
+            "BACKGLASS_WIDTH":      self.backglassWidthEdit.text(),
+            "BACKGLASS_HEIGHT":     self.backglassHeightEdit.text(),
+            "WHEEL_SIZE":           self.wheelSizeEdit.text(),
+            "WHEEL_MARGIN":         self.wheelMarginEdit.text(),
+            "FONT_NAME":            self.fontNameEdit.text(),
+            "FONT_SIZE":            self.fontSizeEdit.text(),
+            "BG_COLOR":             self.bgColorEdit.text(),
+            "TEXT_COLOR":           self.textColorEdit.text(),
+            "FADE_DURATION":        self.fadeDurationEdit.text()
         }
 
 # ---------------- Table Data Loader ----------------
+def get_image_path(root, subpath, default):
+    """Returns the image path if it exists, otherwise returns the default path."""
+    path = os.path.join(root, subpath)
+    return path if os.path.exists(path) else default
+
 def load_table_list():
+    """Loads and returns a sorted list of dictionaries containing information about .vpx tables found in the VPX_ROOT_FOLDER directory and its subdirectories."""
     # Initialize an empty list to store table information dictionaries
     tables = []
     
@@ -270,39 +336,21 @@ def load_table_list():
                 # Build the full path to the .vpx file
                 vpx_path = os.path.join(root, file)
 
-                # Construct the expected path for the table image
-                table_img_path = os.path.join(root, TABLE_IMAGE_PATH)
-                # If the table image doesn't exist at the expected path, use a default image path
-                if not os.path.exists(table_img_path):
-                    table_img_path = DEFAULT_TABLE_PATH
-
-                # Construct the expected path for the wheel image
-                wheel_img_path = os.path.join(root, TABLE_WHEEL_PATH)
-                # If the wheel image doesn't exist at the expected path, use a default wheel image path
-                if not os.path.exists(wheel_img_path):
-                    wheel_img_path = DEFAULT_WHEEL_PATH
-
-                # Construct the expected path for the backglass image
-                backglass_img_path = os.path.join(root, TABLE_BACKGLASS_PATH)
-                # If the backglass image doesn't exist at the expected path, use a default backglass image path
-                if not os.path.exists(backglass_img_path):
-                    backglass_img_path = DEFAULT_BACKGLASS_PATH
-
-                # Construct the expected path for the DMD animation (GIF)
-                dmd_img_path = os.path.join(root, TABLE_DMD_PATH)
-                # If the DMD animation doesn't exist at the expected path, use the default DMD path
-                if not os.path.exists(dmd_img_path):
-                    dmd_img_path = DEFAULT_DMD_PATH
+                # Get paths using the helper function
+                table_img_path = get_image_path(root, TABLE_IMAGE_PATH, DEFAULT_TABLE_PATH)
+                wheel_img_path = get_image_path(root, TABLE_WHEEL_PATH, DEFAULT_WHEEL_PATH)
+                backglass_img_path = get_image_path(root, TABLE_BACKGLASS_PATH, DEFAULT_BACKGLASS_PATH)
+                dmd_img_path = get_image_path(root, TABLE_DMD_PATH, DEFAULT_DMD_PATH)
 
                 # Append a dictionary containing all relevant table information to the tables list
                 tables.append({
-                    "table_name": table_name,
-                    "vpx_file": vpx_path,
-                    "folder": root,
-                    "table_img": table_img_path,
-                    "wheel_img": wheel_img_path,
+                    "table_name":    table_name,
+                    "vpx_file":      vpx_path,
+                    "folder":        root,
+                    "table_img":     table_img_path,
+                    "wheel_img":     wheel_img_path,
                     "backglass_img": backglass_img_path,
-                    "dmd_img": dmd_img_path
+                    "dmd_img":       dmd_img_path
                 })
     
     # Sort the list of tables alphabetically by the table name
@@ -313,6 +361,19 @@ def load_table_list():
 
 # ---------------- Secondary Window ----------------
 class SecondaryWindow(QMainWindow):
+    '''
+    SecondaryWindow is a custom QMainWindow subclass designed to display a secondary screen with a backglass image and a DMD (Dot Matrix Display) GIF. 
+    It provides functionality to update the displayed backglass image and DMD GIF, with support for table-specific DMDs if available.
+    Attributes:
+        label (QLabel): QLabel for displaying the backglass image.
+        backglass_effect (QGraphicsOpacityEffect): Opacity effect for fade animation on the backglass image.
+        dmd_label (QLabel): QLabel for displaying the DMD GIF.
+        dmd_movie (QMovie): QMovie object for handling the DMD GIF animation.
+    Methods:
+        __init__(): Initializes the SecondaryWindow with a frameless window, fixed size, and black background.
+        update_image(image_path, table_folder): Updates the backglass image and DMD GIF, prioritizing table-specific DMD if available.
+    '''
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Secondary Display (Backglass)")
@@ -393,7 +454,36 @@ class SecondaryWindow(QMainWindow):
 
 # ---------------- Main Window ----------------
 class SingleTableViewer(QMainWindow):
+    """
+    SingleTableViewer is a QMainWindow subclass that provides a graphical interface for viewing and interacting with a list of tables. 
+    It displays table images, table names, and a settings button, and allows navigation through the tables using keyboard inputs. 
+    The class also supports launching an external executable associated with the selected table.
+    Attributes:
+        secondary (QMainWindow): An optional secondary window for displaying additional content.
+        table_list (list): A list of dictionaries containing table information.
+        current_index (int): The index of the currently displayed table.
+        table_label (QLabel): A label for displaying the table image.
+        table_effect (QGraphicsOpacityEffect): An opacity effect for the table image.
+        table_name_label (QLabel): A label for displaying the table name.
+        settingsButton (QPushButton): A button for opening the settings dialog.
+        wheel_label (QLabel): A label for displaying the wheel image.
+        wheel_effect (QGraphicsOpacityEffect): An opacity effect for the wheel image.
+    Methods:
+        __init__(self, secondary_window=None): Initializes the SingleTableViewer instance.
+        _set_font_from_config(self): Sets the font for the table name label from configuration variables.
+        _set_initial_table_name(self): Sets the initial table name based on the current table.
+        _update_images_no_animation(self): Updates images without animation (used for initial load).
+        _update_table_name_label_geometry(self): Updates the geometry of the table name label to fit its text and keep it on screen.
+        update_images(self): Updates images with fade animation across all displays.
+        _set_new_images(self, table_pixmap, wheel_pixmap, backglass_path, table_folder): Sets new images and fades in all displays.
+        launch_table(self): Launches the table and closes both windows, reopening after the game exits.
+        openSettings(self): Opens the settings dialog and updates the configuration.
+        keyPressEvent(self, event): Handles key press events for navigation and launching tables.
+        closeEvent(self, event): Handles the close event, ensuring the secondary window is also closed.
+    """
+
     def __init__(self, secondary_window=None):
+        """Initializes the primary display window with table viewer and settings button."""
         super().__init__()
         self.setWindowTitle("Primary Display (Table Viewer)")
         self.setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT)
@@ -657,6 +747,7 @@ class SingleTableViewer(QMainWindow):
                 self.secondary.show()
 
     def openSettings(self):
+        """Opens settings dialog, saves settings if accepted, and updates configuration and UI."""
         dialog = SettingsDialog(self)
         if dialog.exec_() == QDialog.Accepted:
             values = dialog.getValues()
@@ -685,6 +776,7 @@ class SingleTableViewer(QMainWindow):
         self.setFocus()
 
     def keyPressEvent(self, event):
+        """Handle key press events to navigate tables, launch a table, or close the window."""
         if event.key() == Qt.Key_Left:
             self.current_index = (self.current_index - 1) % len(self.table_list)
             self.update_images()  # Update images when switching tables
@@ -705,6 +797,15 @@ class SingleTableViewer(QMainWindow):
 
 # ---------------- Main Entry Point ----------------
 if __name__ == "__main__":
+    """
+    Main entry point of the application.
+    - Checks the session type to provide a hint for Wayland users.
+    - Initializes the QApplication.
+    - Creates and shows the secondary window for displaying the backglass image.
+    - Creates and shows the main window (SingleTableViewer) for displaying the table image and wheel.
+    - Positions the main and secondary windows on their respective screens based on configuration.
+    - Starts the Qt event loop.
+    """
     session_type = os.environ.get("XDG_SESSION_TYPE", "unknown")
     if session_type.lower() == "wayland":
         print("Running under Wayland. For precise window positioning, consider launching with QT_QPA_PLATFORM=xcb")
