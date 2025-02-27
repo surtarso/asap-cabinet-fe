@@ -28,6 +28,26 @@ SCREENSHOT_DELAY=12 #seconds
 WINDOW_TITLE_VPX="Visual Pinball Player"
 WINDOW_TITLE_BACKGLASS="B2SBackglass"
 
+check_xdotool() {
+    if ! command -v xdotool &> /dev/null; then
+        echo "Error: xdotool is not installed. Please install it to proceed."
+        echo "Debian: sudo apt install xdotool"
+        exit 1
+    fi
+}
+
+check_imagemagick() {
+    if ! command -v convert &> /dev/null; then
+        echo "Error: ImageMagick (convert) is not installed. Please install it to proceed."
+        echo "Debian: sudo apt install imagemagick"
+        exit 1
+    fi
+}
+
+# Run checks
+check_xdotool
+check_imagemagick
+
 # Check for help flag
 if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
     echo -e "${BLUE}Usage: $(basename "$0") [OPTIONS]${NC}"

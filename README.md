@@ -12,7 +12,7 @@ A dual screen front-end for your virtual pinball cabinet. "As Simple As Possible
 
 *Playfield and Backglass from automated screenshots. Wheel and DMD generation not implemented yet.
 
-## How to use:
+## Installation:
 
 - Download: `git clone https://github.com/surtarso/asap-cabinet-fe.git && cd asap-cabinet-fe/`
 
@@ -24,7 +24,7 @@ A dual screen front-end for your virtual pinball cabinet. "As Simple As Possible
 
 ## Using the 'screenshot_art.sh' tool:
 
-The script expects you to organize your tables by folders.
+This script expects you to organize your tables by folders.
 e.g. **/path/to/tables/<my_table>/<table_name.vpx>**
 
 It will scan your tables folder and open each table one by one, wait 12 seconds for the table to fully load and take a screenshot from both app screens (playfield and backglass).
@@ -40,10 +40,25 @@ It will than save those pictures in **tables/my_table/images/** as .png and they
 - Run the main script: `./screenshot_art.sh`
 
 **Flags:** 
-- --wheel will display all tables without a wheel.png file.
-- --dmd will display all tables without a dmd.gif file.
-- --force will override existing table/backglass images with new ones.
-- --dry-run will print execution without doing anything.
+- --wheel       display all tables without a wheel.png file.
+- --dmd         display all tables without a dmd.gif file.
+- --force       override existing table/backglass images with new ones.
+- --dry-run     print execution without doing anything.
+
+## Using the 'video_to_gif.sh' tool:
+
+This script will convert all **MP4, WMV and F4V** DMD videos to **animated Gif's** so they can be used with this frontend (in tables/<table_name>/**images/dmd.gif**) or with Ultra.DMD tables in VPX-Linux.
+
+Dependencies: `sudo apt install ffmpeg gifsicle`
+
+Usage: `./video_to_gif.sh`
+
+**Flags:**
+- -h, --help       Show help
+- --now            Run on the current folder
+- --path <dir>     Run on a specific directory
+- --optimize       Only optimize existing GIFs
+- --optimize <dir> Only optimize existing GIFs in PATH
 
 ## Roadmap
     - Game title from metadata (instead of filename)
