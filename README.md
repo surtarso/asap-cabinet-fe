@@ -1,6 +1,6 @@
 # As Simple As Possible Cabinet Front-End
 
-A dual screen front-end for your virtual pinball cabinet. "As Simple As Possible".
+A dual screen [VPinballX](https://github.com/vpinball/vpinball) front-end for your virtual pinball cabinet. "As Simple As Possible".
 
 ## Features:
 - Full screen dual monitor display of table playfield, backglass and DMD
@@ -40,10 +40,10 @@ It will than save those pictures in **tables/my_table/images/** as .png and they
 - Run the main script: `./screenshot_art.sh`
 
 **Flags:** 
-- --wheel       display all tables without a wheel.png file.
-- --dmd         display all tables without a dmd.gif file.
-- --force       override existing table/backglass images with new ones.
-- --dry-run     print execution without doing anything.
+- --wheel       Display all tables without a wheel.png file.
+- --dmd         Display all tables without a dmd.gif file.
+- --force       Override existing table/backglass images with new ones.
+- --dry-run     Print execution without doing anything.
 
 ## Using the 'video_to_gif.sh' tool:
 
@@ -55,10 +55,10 @@ Usage: `./video_to_gif.sh`
 
 **Flags:**
 - -h, --help       Show help
-- --now            Run on the current folder
-- --path [dir]     Run on a specific directory
-- --optimize       Only optimize existing GIFs
-- --optimize [dir] Only optimize existing GIFs in PATH
+- --now            Convert videos and optimize gifs in the current folder
+- --path [dir]     Convert videos and optimize gifs in a specific directory
+- --optimize       Only optimize existing GIFs in the current folder
+- --optimize [dir] Only optimize existing GIFs in a specified directory
 
 ## Roadmap
     - Game title from metadata (instead of filename)
