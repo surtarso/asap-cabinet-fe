@@ -13,6 +13,7 @@
 RED="\033[0;31m"
 GREEN="\033[0;32m"
 YELLOW="\033[1;33m"
+BLUE='\033[0;34m'
 NC="\033[0m" # No Color
 
 ROOT_FOLDER="/home/tarso/Games/vpinball/build/tables/"
@@ -21,13 +22,31 @@ SCREENSHOT_DELAY=12 #seconds
 WINDOW_TITLE_VPX="Visual Pinball Player"
 WINDOW_TITLE_BACKGLASS="B2SBackglass"
 
+# If the script is called with the --missing argument, list tables missing wheel.png and exit.
+if [ "$1" == "--missing" ]; then
+    echo -e "${BLUE}Using tables directory: $ROOT_FOLDER"
+    echo -e "Checking for tables missing wheel.png...${NC}"
+    # Iterate over each table directory that contains a .vpx file.
+    for vpx_file in "$ROOT_FOLDER"/*/*.vpx; do
+        if [ -f "$vpx_file" ]; then
+            table_dir=$(dirname "$vpx_file")
+            wheel_file="$table_dir/images/wheel.png"
+            if [ ! -f "$wheel_file" ]; then
+                echo -e "${GREEN}->${YELLOW} '$(basename "$table_dir")'${NC}"
+            fi
+        fi
+    done
+    echo -e "${BLUE}These tables have no image source for icons.${NC}"
+    exit 0
+fi
+
 find "$ROOT_FOLDER" -name "*.vpx" | while read VPX_PATH; do
   TABLE_NAME=$(basename "$VPX_PATH" .vpx)
   IMAGES_FOLDER="$(dirname "$VPX_PATH")/images"
   TABLE_SCREENSHOT="$IMAGES_FOLDER/table.png"
   BACKGLASS_SCREENSHOT="$IMAGES_FOLDER/backglass.png"
 
-  echo -e "${NC}Processing $VPX_PATH${NC}"
+  echo -e "${BLUE}Processing $VPX_PATH${NC}"
 
   # Check if images already exist
   if [ -f "$TABLE_SCREENSHOT" ] && [ -f "$BACKGLASS_SCREENSHOT" ]; then
