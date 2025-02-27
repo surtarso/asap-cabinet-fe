@@ -75,8 +75,8 @@ FADE_DURATION = 300  # milliseconds
 # ---------------- Configuration Loader ----------------
 def load_configuration():
     global VPX_ROOT_FOLDER, EXECUTABLE_CMD, EXECUTABLE_SUB_CMD
-    global DEFAULT_TABLE_PATH, DEFAULT_WHEEL_PATH, DEFAULT_BACKGLASS_PATH, DEFAULT_DMD_PATH
-    global TABLE_IMAGE_PATH, TABLE_WHEEL_PATH, TABLE_BACKGLASS_PATH
+    global DEFAULT_TABLE_PATH, DEFAULT_WHEEL_PATH, DEFAULT_BACKGLASS_PATH #, DEFAULT_DMD_PATH
+    global TABLE_IMAGE_PATH, TABLE_WHEEL_PATH, TABLE_BACKGLASS_PATH, TABLE_DMD_PATH
     global WINDOW_WIDTH, WINDOW_HEIGHT, BACKGLASS_WIDTH, BACKGLASS_HEIGHT
     global WHEEL_SIZE, WHEEL_MARGIN, FONT_NAME, FONT_SIZE
     global BG_COLOR, TEXT_COLOR, MAIN_MONITOR_INDEX, SECONDARY_MONITOR_INDEX, FADE_DURATION
@@ -99,10 +99,11 @@ def load_configuration():
             "DEFAULT_TABLE_PATH": DEFAULT_TABLE_PATH,
             "DEFAULT_WHEEL_PATH": DEFAULT_WHEEL_PATH,
             "DEFAULT_BACKGLASS_PATH": DEFAULT_BACKGLASS_PATH,
-            "DEFAULT_DMD_PATH": DEFAULT_DMD_PATH,
+            # "DEFAULT_DMD_PATH": DEFAULT_DMD_PATH,
             "TABLE_IMAGE_PATH": TABLE_IMAGE_PATH,
             "TABLE_WHEEL_PATH": TABLE_WHEEL_PATH,
             "TABLE_BACKGLASS_PATH": TABLE_BACKGLASS_PATH,
+            "TABLE_DMD_PATH": TABLE_DMD_PATH,
             "WINDOW_WIDTH": str(WINDOW_WIDTH),
             "WINDOW_HEIGHT": str(WINDOW_HEIGHT),
             "BACKGLASS_WIDTH": str(BACKGLASS_WIDTH),
@@ -126,10 +127,11 @@ def load_configuration():
     DEFAULT_TABLE_PATH = s.get("DEFAULT_TABLE_PATH", DEFAULT_TABLE_PATH)
     DEFAULT_WHEEL_PATH = s.get("DEFAULT_WHEEL_PATH", DEFAULT_WHEEL_PATH)
     DEFAULT_BACKGLASS_PATH = s.get("DEFAULT_BACKGLASS_PATH", DEFAULT_BACKGLASS_PATH)
-    DEFAULT_DMD_PATH = s.get("DEFAULT_DMD_PATH", DEFAULT_DMD_PATH)
+    # DEFAULT_DMD_PATH = s.get("DEFAULT_DMD_PATH", DEFAULT_DMD_PATH)
     TABLE_IMAGE_PATH = s.get("TABLE_IMAGE_PATH", TABLE_IMAGE_PATH)
     TABLE_WHEEL_PATH = s.get("TABLE_WHEEL_PATH", TABLE_WHEEL_PATH)
     TABLE_BACKGLASS_PATH = s.get("TABLE_BACKGLASS_PATH", TABLE_BACKGLASS_PATH)
+    TABLE_DMD_PATH = s.get("TABLE_DMD_PATH", TABLE_DMD_PATH)
     WINDOW_WIDTH = int(s.get("WINDOW_WIDTH", WINDOW_WIDTH))
     WINDOW_HEIGHT = int(s.get("WINDOW_HEIGHT", WINDOW_HEIGHT))
     BACKGLASS_WIDTH = int(s.get("BACKGLASS_WIDTH", BACKGLASS_WIDTH))
@@ -166,7 +168,8 @@ class SettingsDialog(QDialog):
         self.tableImageEdit = QLineEdit(TABLE_IMAGE_PATH)
         self.wheelImageEdit = QLineEdit(TABLE_WHEEL_PATH)
         self.backglassImageEdit = QLineEdit(TABLE_BACKGLASS_PATH)
-        self.dmdImageEdit = QLineEdit(DEFAULT_DMD_PATH)
+        self.dmdTableEdit = QLineEdit(TABLE_DMD_PATH)
+        # self.dmdImageEdit = QLineEdit(DEFAULT_DMD_PATH)
         self.windowWidthEdit = QLineEdit(str(WINDOW_WIDTH))
         self.windowHeightEdit = QLineEdit(str(WINDOW_HEIGHT))
         self.backglassWidthEdit = QLineEdit(str(BACKGLASS_WIDTH))
@@ -186,7 +189,8 @@ class SettingsDialog(QDialog):
         self.layout.addRow("Table Image Path:", self.tableImageEdit)
         self.layout.addRow("Wheel Image Path:", self.wheelImageEdit)
         self.layout.addRow("Backglass Image Path:", self.backglassImageEdit)
-        self.layout.addRow("DMD Image Path:", self.dmdImageEdit)
+        self.layout.addRow("DMD Image Path:", self.dmdTableEdit)
+        # self.layout.addRow("Default DMD Path:", self.dmdImageEdit)
         self.layout.addRow("Window Width:", self.windowWidthEdit)
         self.layout.addRow("Window Height:", self.windowHeightEdit)
         self.layout.addRow("Backglass Width:", self.backglassWidthEdit)
@@ -235,7 +239,8 @@ class SettingsDialog(QDialog):
             "TABLE_IMAGE_PATH": self.tableImageEdit.text(),
             "TABLE_WHEEL_PATH": self.wheelImageEdit.text(),
             "TABLE_BACKGLASS_PATH": self.backglassImageEdit.text(),
-            "DEFAULT_DMD_PATH": self.dmdImageEdit.text(),
+            "TABLE_DMD_PATH": self.dmdTableEdit.text(),
+            # "DEFAULT_DMD_PATH": self.dmdImageEdit.text(),
             "WINDOW_WIDTH": self.windowWidthEdit.text(),
             "WINDOW_HEIGHT": self.windowHeightEdit.text(),
             "BACKGLASS_WIDTH": self.backglassWidthEdit.text(),
@@ -288,7 +293,7 @@ def load_table_list():
                 # If the DMD animation doesn't exist at the expected path, use the default DMD path
                 if not os.path.exists(dmd_img_path):
                     dmd_img_path = DEFAULT_DMD_PATH
-                    
+
                 # Append a dictionary containing all relevant table information to the tables list
                 tables.append({
                     "table_name": table_name,
