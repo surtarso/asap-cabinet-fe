@@ -30,9 +30,11 @@ It will scan your tables folder and open each table one by one, wait 12 seconds 
 
 It will than save those pictures in **tables/my_table/images/** as .png and they will be ready for the frontend to read. You still need to download the wheel images yourself.
 
-Open the screenshot_art script and set your paths.
+Dependencies: `sudo apt install xdotool imagemagick`
 
-Double check and run: `./screenshot_art.sh` and wait.
+Edit the screenshot_art script and set your paths.
+
+Double check and run: `./screenshot_art.sh`
 
 ## Roadmap
     - Video support

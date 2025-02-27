@@ -254,27 +254,36 @@ class SecondaryWindow(QMainWindow):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setFixedSize(BACKGLASS_WIDTH, BACKGLASS_HEIGHT)
         self.setStyleSheet("background-color: black;")
-
+        
+        # Create a QLabel to display the image
         self.label = QLabel(self)
-        self.label.setAlignment(Qt.AlignCenter)
+        # Set alignment to top-center so that the image touches the top of the frame
+        self.label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
         self.setCentralWidget(self.label)
 
-        # Add opacity effect for fade animation
+        # Add an opacity effect for fade animation
         self.backglass_effect = QGraphicsOpacityEffect(self.label)
         self.label.setGraphicsEffect(self.backglass_effect)
         self.backglass_effect.setOpacity(1.0)  # Initial opacity
 
     def update_image(self, image_path):
+        # Use default image if the specified path does not exist
         if not os.path.exists(image_path):
             image_path = DEFAULT_BACKGLASS_PATH
+        
         pixmap = QPixmap(image_path)
         if pixmap.isNull():
+            # If the image is invalid, create a black pixmap
             pixmap = QPixmap(BACKGLASS_WIDTH, BACKGLASS_HEIGHT)
             pixmap.fill(Qt.black)
         else:
+            # Scale the pixmap while preserving aspect ratio
             pixmap = pixmap.scaled(BACKGLASS_WIDTH, BACKGLASS_HEIGHT, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        
+        # Set the scaled pixmap on the label
         self.label.setPixmap(pixmap)
-        self.backglass_effect.setOpacity(1.0)  # Reset opacity after setting image
+        # Reset opacity after setting the image
+        self.backglass_effect.setOpacity(1.0)
 
 # ---------------- Main Window ----------------
 class SingleTableViewer(QMainWindow):
