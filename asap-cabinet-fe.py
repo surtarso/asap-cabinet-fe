@@ -25,9 +25,7 @@ Tarso Galvão - feb/2025
 """
 
 # TODO:
-# - grab focus after exiting a game
 # - add a default DMD for all tables, animated if possible like a gif
-# - keep the launcher window open till table loads so I dont see my desktop
 # - configure keys for ease to use on cabinet joystick
 
 import sys, os, subprocess, configparser
@@ -226,21 +224,35 @@ class SettingsDialog(QDialog):
 
 # ---------------- Table Data Loader ----------------
 def load_table_list():
+    # Initialize an empty list to store table information dictionaries
     tables = []
+    
+    # Walk through the VPX_ROOT_FOLDER directory and its subdirectories
     for root, dirs, files in os.walk(VPX_ROOT_FOLDER):
+        # Iterate over each file in the current directory
         for file in files:
+            # Check if the file has a .vpx extension (case insensitive)
             if file.lower().endswith(".vpx"):
+                # Extract the table name by removing the file extension
                 table_name = os.path.splitext(file)[0]
+                # Build the full path to the .vpx file
                 vpx_path = os.path.join(root, file)
+                # Construct the expected path for the table image
                 table_img_path = os.path.join(root, TABLE_IMAGE_PATH)
+                # If the table image doesn't exist at the expected path, use a default image path
                 if not os.path.exists(table_img_path):
                     table_img_path = DEFAULT_TABLE_PATH
+                # Construct the expected path for the wheel image
                 wheel_img_path = os.path.join(root, TABLE_WHEEL_PATH)
+                # If the wheel image doesn't exist at the expected path, use a default wheel image path
                 if not os.path.exists(wheel_img_path):
                     wheel_img_path = DEFAULT_WHEEL_PATH
+                # Construct the expected path for the backglass image
                 backglass_img_path = os.path.join(root, TABLE_BACKGLASS_PATH)
+                # If the backglass image doesn't exist at the expected path, use a default backglass image path
                 if not os.path.exists(backglass_img_path):
                     backglass_img_path = DEFAULT_BACKGLASS_PATH
+                # Append a dictionary containing all relevant table information to the tables list
                 tables.append({
                     "table_name": table_name,
                     "vpx_file": vpx_path,
@@ -249,7 +261,11 @@ def load_table_list():
                     "wheel_img": wheel_img_path,
                     "backglass_img": backglass_img_path
                 })
+    
+    # Sort the list of tables alphabetically by the table name
     tables.sort(key=lambda x: x["table_name"])
+    
+    # Return the sorted list of table dictionaries
     return tables
 
 # ---------------- Secondary Window ----------------
@@ -385,11 +401,10 @@ class SingleTableViewer(QMainWindow):
 
         # Get the height of the text based on the current font size
         font_metrics = QFontMetrics(self.table_name_label.font())
-        text_height = font_metrics.height()  # Get the height of the text
 
         # Update label geometry to match the height of the text
         # Here, we calculate the Y position dynamically based on the table index
-        label_height = text_height  # Add some padding to the height
+        label_height = font_metrics.height()  # Get the height of the text
         y_position = WINDOW_HEIGHT - label_height - (self.current_index * (label_height))  # Adjust based on index
 
         # Make sure the table name label is positioned correctly for all tables
@@ -435,10 +450,10 @@ class SingleTableViewer(QMainWindow):
             text_width = font_metrics.horizontalAdvance(text)
         except AttributeError:
             text_width = font_metrics.width(text)
-        text_height = font_metrics.height()
+        label_height = font_metrics.height()
         padding = 10  # add 10 pixels of padding on all sides
         label_width = text_width + 2 * padding
-        label_height = text_height + 2 * padding
+        label_height = label_height + 2 * padding
         x_position = 10  # fixed left margin
         y_position = WINDOW_HEIGHT - label_height - 20  # fixed 20-pixel margin from the bottom
         self.table_name_label.setGeometry(x_position, y_position, label_width, label_height)
@@ -532,9 +547,9 @@ class SingleTableViewer(QMainWindow):
         command = [EXECUTABLE_CMD, EXECUTABLE_SUB_CMD, table["vpx_file"]]
         try:
             # Hide both windows
-            self.hide()
-            if self.secondary:
-                self.secondary.hide()
+            # self.hide()
+            # if self.secondary:
+            #     self.secondary.hide()
 
             # Launch the game and wait for it to finish
             process = subprocess.Popen(command)
