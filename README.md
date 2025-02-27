@@ -36,12 +36,16 @@ Edit the screenshot_art script and set your paths.
 
 Double check and run: `./screenshot_art.sh`
 
+Flags: --missing will display all tables without a wheel.png file.
+       --force will override existing table/backglass images with new ones.
+       --dry-run will print execution without doing anything.
+
 ## Roadmap
-    - Music support
     - Game title from metadata (instead of filename)
-    - Search/sort
-    - generate wheels somehow
+    - Search/sort buttons
+    - generate wheels somehow (?)
     - keymap support
+    - Music support (?)
 
 ### About
 
