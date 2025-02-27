@@ -56,9 +56,9 @@ Usage: `./video_to_gif.sh`
 **Flags:**
 - -h, --help       Show help
 - --now            Run on the current folder
-- --path <dir>     Run on a specific directory
+- --path [dir]     Run on a specific directory
 - --optimize       Only optimize existing GIFs
-- --optimize <dir> Only optimize existing GIFs in PATH
+- --optimize [dir] Only optimize existing GIFs in PATH
 
 ## Roadmap
     - Game title from metadata (instead of filename)
