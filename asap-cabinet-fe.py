@@ -26,6 +26,8 @@ Tarso Galvão - feb/2025
 
 # TODO:
 # - configure keys for ease to use on cabinet joystick
+# - redirect launch output to ~/.asap-cabinet-fe/launcher.log
+# - redirect other outputs to ~/.asap-cabinet-fe/error.log
 
 import os
 import sys
@@ -69,6 +71,8 @@ FADE_DURATION:           Duration of fade animations in milliseconds.
 """
 
 CONFIG_FILE            = "~/.asap-cabinet-fe/settings.ini"
+# LAUNCHER_LOGFILE       = "~/.asap-cabinet-fe/launcher.log"
+# ERROR_LOGFILE          = "~/.asap-cabinet-fe/error.log"
 
 VPX_ROOT_FOLDER        = "/home/tarso/Games/vpinball/build/tables/"
 EXECUTABLE_CMD         = "/home/tarso/Games/vpinball/build/VPinballX_GL"
