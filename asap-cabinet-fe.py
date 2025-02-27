@@ -542,10 +542,14 @@ class SingleTableViewer(QMainWindow):
 
             # Show windows again after game exits
             self.show()
+            self.raise_()          # Bring the main window to the front
+            self.activateWindow()  # Activate the window to accept input
+            self.setFocus()        # Set focus on the main window
             if self.secondary:
                 self.secondary.show()
                 self.secondary.update_image(table["backglass_img"])
             self._update_images_no_animation()  # Ensure images are in sync
+
         except Exception as e:
             print(f"Error launching {table['vpx_file']}: {e}")
             # If there's an error, show windows again
