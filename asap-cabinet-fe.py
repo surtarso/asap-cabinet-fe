@@ -79,7 +79,7 @@ DEFAULT_WHEEL_PATH     = "img/default_wheel.png"
 DEFAULT_BACKGLASS_PATH = "img/default_backglass.png"
 DEFAULT_DMD_PATH       = "img/default_dmd.gif"
 
-# Per table images path
+# Per table images path (/tables/<table_dir>/)
 TABLE_IMAGE_PATH       = "images/table.png"
 TABLE_WHEEL_PATH       = "images/wheel.png"
 TABLE_BACKGLASS_PATH   = "images/backglass.png"
@@ -93,8 +93,8 @@ BACKGLASS_HEIGHT       = 1024
 WHEEL_SIZE             = 400 # Square
 WHEEL_MARGIN           = 20
 # Settings panel
-SETTINGS_WIDTH         = 700
-SETTINGS_HEIGHT        = 750
+SETTINGS_WIDTH         = 600
+SETTINGS_HEIGHT        = 900
 
 # Table titles
 FONT_NAME              = "Arial"
@@ -187,7 +187,14 @@ def load_configuration():
 
 # Load configuration on startup
 load_configuration()
-        
+
+# Separator function for settings
+# def add_separator(layout):
+#     separator = QFrame()
+#     separator.setFrameShape(QFrame.HLine)  # Set horizontal line separator
+#     separator.setFrameShadow(QFrame.Plain)  # Optional, can change style
+#     layout.addWidget(separator)
+
 # ---------------- Settings Dialog ----------------
 class SettingsDialog(QDialog):
     """
@@ -222,14 +229,14 @@ class SettingsDialog(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Settings")
-        
         # Set the fixed size
         self.setFixedSize(SETTINGS_WIDTH, SETTINGS_HEIGHT)
-        
         # Create a form layout for the settings fields
         self.layout = QFormLayout(self)
-        
+        # Use ini path on title
+        ini_path = CONFIG_FILE.replace(os.path.expanduser("~"), "~")
+        self.setWindowTitle(f"[Settings] {ini_path}")
+
         # Create QLineEdit fields for each setting
         self.vpxRootEdit         = QLineEdit(VPX_ROOT_FOLDER)
         self.execCmdEdit         = QLineEdit(EXECUTABLE_CMD)
@@ -251,24 +258,31 @@ class SettingsDialog(QDialog):
         self.fadeDurationEdit    = QLineEdit(str(FADE_DURATION))
         
         # Add each field to the layout with a descriptive label
-        self.layout.addRow("VPX Root Folder:",      self.vpxRootEdit)
-        self.layout.addRow("Executable Command:",   self.execCmdEdit)
-        self.layout.addRow("Executable Sub Cmd:",   self.execSubCmdEdit)
-        self.layout.addRow("Table Image Path:",     self.tableImageEdit)
-        self.layout.addRow("Wheel Image Path:",     self.wheelImageEdit)
-        self.layout.addRow("Backglass Image Path:", self.backglassImageEdit)
-        self.layout.addRow("DMD Image Path:",       self.dmdTableEdit)
-        self.layout.addRow("Window Width:",         self.windowWidthEdit)
-        self.layout.addRow("Window Height:",        self.windowHeightEdit)
-        self.layout.addRow("Backglass Width:",      self.backglassWidthEdit)
-        self.layout.addRow("Backglass Height:",     self.backglassHeightEdit)
-        self.layout.addRow("Wheel Size:",           self.wheelSizeEdit)
-        self.layout.addRow("Wheel Margin:",         self.wheelMarginEdit)
-        self.layout.addRow("Font Name:",            self.fontNameEdit)
-        self.layout.addRow("Font Size:",            self.fontSizeEdit)
-        self.layout.addRow("Background Color:",     self.bgColorEdit)
-        self.layout.addRow("Text Color:",           self.textColorEdit)
-        self.layout.addRow("Fade Duration:",        self.fadeDurationEdit)
+        self.add_section_title("Main Paths (Use absolute paths)")
+        self.layout.addRow("Tables Folder:",         self.vpxRootEdit)
+        self.layout.addRow("VPX Executable:",        self.execCmdEdit)
+        self.layout.addRow("VPX Argument:",          self.execSubCmdEdit)
+        # add_separator(self.layout)
+        self.add_section_title("Custom Media Paths (/tables/<table_name/)")
+        self.layout.addRow("Playfield Images Path:", self.tableImageEdit)
+        self.layout.addRow("Wheel Images Path:",     self.wheelImageEdit)
+        self.layout.addRow("Backglass Images Path:", self.backglassImageEdit)
+        self.layout.addRow("DMD GIFs Path:",         self.dmdTableEdit)
+        # add_separator(self.layout)
+        self.add_section_title("Screens Dimensions")
+        self.layout.addRow("Playfield Width:",       self.windowWidthEdit)
+        self.layout.addRow("Playfield Height:",      self.windowHeightEdit)
+        self.layout.addRow("Backglass Width:",       self.backglassWidthEdit)
+        self.layout.addRow("Backglass Height:",      self.backglassHeightEdit)
+        self.layout.addRow("Wheel Size:",            self.wheelSizeEdit)
+        self.layout.addRow("Wheel Margin:",          self.wheelMarginEdit)
+        # add_separator(self.layout)
+        self.add_section_title("Table Title Style")
+        self.layout.addRow("Font Name:",             self.fontNameEdit)
+        self.layout.addRow("Font Size:",             self.fontSizeEdit)
+        self.layout.addRow("Background Color:",      self.bgColorEdit)
+        self.layout.addRow("Text Color:",            self.textColorEdit)
+        self.layout.addRow("Transition Duration:",   self.fadeDurationEdit)
         
         # Create a button box with Ok and Cancel buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -294,7 +308,7 @@ class SettingsDialog(QDialog):
         # Adjust the icon size to fill the button area, ensuring a proper icon-only display
         ok_button.setIconSize(ok_button.size())
         cancel_button.setIconSize(cancel_button.size())
-
+    
     def getValues(self):
         """Retrieve the current settings values from the dialog."""
         return {
@@ -317,6 +331,12 @@ class SettingsDialog(QDialog):
             "TEXT_COLOR":           self.textColorEdit.text(),
             "FADE_DURATION":        self.fadeDurationEdit.text()
         }
+    
+    def add_section_title(self, title):
+        """ Adds a section title with a distinct style """
+        title_label = QLabel(title)
+        title_label.setStyleSheet("font-weight: bold; font-size: 14px; padding: 5px;")
+        self.layout.addWidget(title_label)
 
 # ---------------- Table Data Loader ----------------
 def get_image_path(root, subpath, default):
@@ -735,7 +755,9 @@ class SingleTableViewer(QMainWindow):
         table = self.table_list[self.current_index]
         command = [EXECUTABLE_CMD, EXECUTABLE_SUB_CMD, table["vpx_file"]]
         try:
-            # Hide both windows
+            # Hides both frontend windows when table loads.
+            # Using this will hide both windows and show your desktop when table loads.
+            # For a seamless transition keep this comented.
             # self.hide()
             # if self.secondary:
             #     self.secondary.hide()
@@ -816,7 +838,7 @@ if __name__ == "__main__":
     Main entry point of the application.
     - Checks the session type to provide a hint for Wayland users.
     - Initializes the QApplication.
-    - Creates and shows the secondary window for displaying the backglass image.
+    - Creates and shows the secondary window (SecondaryWindow) for displaying the backglass image.
     - Creates and shows the main window (SingleTableViewer) for displaying the table image and wheel.
     - Positions the main and secondary windows on their respective screens based on configuration.
     - Starts the Qt event loop.
