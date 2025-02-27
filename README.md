@@ -3,8 +3,8 @@
 A dual screen front-end for your virtual pinball cabinet. "As Simple As Possible".
 
 ## Features:
-- Full screen display of table playfield, backglass and DMD
-- Wheel and game title display
+- Full screen dual monitor display of table playfield, backglass and DMD
+- Navigate tables with titles and wheels
 - Extended settings for many display configurations
 - Extremely lightweight and simple
 - No need to download artpacks, generate your own!*
@@ -14,34 +14,36 @@ A dual screen front-end for your virtual pinball cabinet. "As Simple As Possible
 
 ## How to use:
 
+- Download: `git clone https://github.com/surtarso/asap-cabinet-fe.git && cd asap-cabinet-fe/`
+
 - Dependencies: `sudo apt install python3 python3-pyqt5`
 
 - X11: `python3 asap-cabinet-fe.py`
 
 - Wayland: `QT_QPA_PLATFORM=xcb python3 asap-cabinet-fe.py`
 
-### Using the 'art generation' tool:
+## Using the 'screenshot_art.sh' tool:
 
 The script expects you to organize your tables by folders.
-
-e.g. **tables/my_table/table_name.vpx**
+e.g. **/path/to/tables/<my_table>/<table_name.vpx>**
 
 It will scan your tables folder and open each table one by one, wait 12 seconds for the table to fully load and take a screenshot from both app screens (playfield and backglass).
 
-It will than save those pictures in **tables/my_table/images/** as .png and they will be ready for the frontend to display. You still need to download the wheel images yourself.
+It will than save those pictures in **tables/my_table/images/** as .png and they will be ready for the frontend to display. You still need to download the wheel images and DMD animated gifs yourself.
 
-Dependencies: `sudo apt install xdotool imagemagick`
+- Dependencies: `sudo apt install xdotool imagemagick`
 
-Edit the screenshot_art script and set your paths.
+- Edit the screenshot_art script and set your paths.
 
-Dry-run to check results: `./screenshot_art.sh --dry-run`
+- Dry-run to check results: `./screenshot_art.sh --dry-run`
 
-Run the main script: `./screenshot_art.sh`
+- Run the main script: `./screenshot_art.sh`
 
-Flags: --wheel will display all tables without a wheel.png file.
-       --dmd will display all tables without a dmd.gif file.
-       --force will override existing table/backglass images with new ones.
-       --dry-run will print execution without doing anything.
+**Flags:** 
+- --wheel will display all tables without a wheel.png file.
+- --dmd will display all tables without a dmd.gif file.
+- --force will override existing table/backglass images with new ones.
+- --dry-run will print execution without doing anything.
 
 ## Roadmap
     - Game title from metadata (instead of filename)
