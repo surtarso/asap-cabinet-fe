@@ -26,7 +26,7 @@
 
 - Wayland: `./launch.sh` (or `QT_QPA_PLATFORM=xcb python3 asap-cabinet-fe.py`)
 
-## Using the 'screenshot_art.sh' tool:
+## Using the 'screenshot_art_generator.sh' tool:
 
 This script expects you to organize your tables by folders.
 e.g. **/path/to/tables/<my_table>/<table_name.vpx>**
@@ -39,9 +39,9 @@ It will than save those pictures in **tables/my_table/images/** as .png and they
 
 - Edit the screenshot_art script and set your paths.
 
-- Dry-run to check results: `./screenshot_art.sh --dry-run`
+- Dry-run to check results: `./screenshot_art_generator.sh --dry-run`
 
-- Run the main script: `./screenshot_art.sh`
+- Run the main script: `./screenshot_art_generator.sh`
 
 **screenshot_art_generator.sh flags:** 
 
@@ -50,13 +50,13 @@ It will than save those pictures in **tables/my_table/images/** as .png and they
     --force       Override existing table/backglass images with new ones.
     --dry-run     Print execution without doing anything.
 
-## Using the 'video_to_gif.sh' tool:
+## Using the 'convert_video_to_gif.sh' tool:
 
 This script will convert all **MP4, WMV and F4V** DMD videos to **animated Gif's** so they can be displayed with this frontend (in tables/<table_name>/**images/dmd.gif**) or to play tables with Ultra.DMD videos in VPinballX-Linux.
 
 Dependencies: `sudo apt install ffmpeg gifsicle`
 
-Usage: `./video_to_gif.sh`
+Usage: `./convert_video_to_gif.sh`
 
 **convert_video_to_gif.sh flags:**
 
