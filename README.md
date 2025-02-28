@@ -1,6 +1,10 @@
-# As Simple As Possible Cabinet Front-End
+<h1 align="center">As Simple As Possible Cabinet Front-End</h1>
 
-A dual screen [VPinballX](https://github.com/vpinball/vpinball) front-end for your virtual pinball cabinet. "As Simple As Possible".
+<p align="center">A dual screen <a href="https://github.com/vpinball/vpinball">VPinballX</a> front-end for your virtual pinball cabinet. "As Simple As Possible".</p>
+
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/f376adfc-9481-4237-b67c-2585570cee4c" width="400" />
+</div>
 
 ## Features:
 - Full screen dual monitor display of table playfield, backglass and DMD
@@ -39,11 +43,12 @@ It will than save those pictures in **tables/my_table/images/** as .png and they
 
 - Run the main script: `./screenshot_art.sh`
 
-**Flags:** 
-- --wheel       Display all tables without a wheel.png file.
-- --dmd         Display all tables without a dmd.gif file.
-- --force       Override existing table/backglass images with new ones.
-- --dry-run     Print execution without doing anything.
+**screenshot_art.sh flags:** 
+
+    --wheel       Display all tables without a wheel.png file.
+    --dmd         Display all tables without a dmd.gif file.
+    --force       Override existing table/backglass images with new ones.
+    --dry-run     Print execution without doing anything.
 
 ## Using the 'video_to_gif.sh' tool:
 
@@ -53,12 +58,13 @@ Dependencies: `sudo apt install ffmpeg gifsicle`
 
 Usage: `./video_to_gif.sh`
 
-**Flags:**
-- -h, --help       Show help
-- --now            Convert videos and optimize gifs in the current folder
-- --path [dir]     Convert videos and optimize gifs in a specific directory
-- --optimize       Only optimize existing GIFs in the current folder
-- --optimize [dir] Only optimize existing GIFs in a specified directory
+**video_to_gif.sh flags:**
+
+    -h, --help       Show help
+    --now            Convert videos and optimize gifs in the current folder
+    --path [dir]     Convert videos and optimize gifs in a specific directory
+    --optimize       Only optimize existing GIFs in the current folder
+    --optimize [dir] Only optimize existing GIFs in a specified directory
 
 ## Roadmap
     - Game title from metadata (instead of filename)
