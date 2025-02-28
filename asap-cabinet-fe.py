@@ -27,6 +27,9 @@ Tarso Galvão - feb/2025
 # TODO:
 # - add fade duration, dmd and b2s image size to settings
 # - add option to show/hide launcher on table load to settings
+# - make settings window scrollable and remove fixed size is possible
+# - add a 'sort by letter' button (or a regular search button)
+# - retrieve table names from metadata instead of file (like vpxtool)
 # - configure keys for ease to use on cabinet joystick
 # - redirect launch output to ~/.asap-cabinet-fe/launcher.log
 # - redirect other outputs to ~/.asap-cabinet-fe/error.log
