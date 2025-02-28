@@ -24,7 +24,7 @@
 
 - X11: `python3 asap-cabinet-fe.py`
 
-- Wayland: `QT_QPA_PLATFORM=xcb python3 asap-cabinet-fe.py`
+- Wayland: `./launch.sh` (or `QT_QPA_PLATFORM=xcb python3 asap-cabinet-fe.py`)
 
 ## Using the 'screenshot_art.sh' tool:
 
