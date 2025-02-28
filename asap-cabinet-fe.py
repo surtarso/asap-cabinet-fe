@@ -25,6 +25,7 @@ Tarso Galvão - feb/2025
 """
 
 # TODO:
+# - add animated buttons/hints to indicate left-right to change tables
 # - add fade duration, dmd and b2s image size to settings
 # - add option to show/hide launcher on table load to settings
 # - make settings window scrollable and remove fixed size is possible
@@ -58,12 +59,12 @@ TABLE_IMAGE_PATH:        Relative path to table image.
 TABLE_WHEEL_PATH:        Relative path to wheel image.
 TABLE_BACKGLASS_PATH:    Relative path to backglass image.
 TABLE_DMD_PATH:          Relative path to DMD GIF.
-MAIN_WINDOW_WIDTH:            Width of the main window.
-MAIN_WINDOW_HEIGHT:           Height of the main window.
-BACKGLASS_WINDOW_WIDTH:         Width of the secondary window.
-BACKGLASS_WINDOW_HEIGHT:        Height of the secondary window.
-WHEEL_IMAGE_SIZE:              Size of the wheel image.
-WHEEL_IMAGE_MARGIN:            Margin around the wheel image.
+MAIN_WINDOW_WIDTH:       Width of the main window.
+MAIN_WINDOW_HEIGHT:      Height of the main window.
+BACKGLASS_WINDOW_WIDTH:  Width of the secondary window.
+BACKGLASS_WINDOW_HEIGHT: Height of the secondary window.
+WHEEL_IMAGE_SIZE:        Size of the wheel image.
+WHEEL_IMAGE_MARGIN:      Margin around the wheel image.
 SETTINGS_WIDTH:          Width of the settings dialog.
 SETTINGS_HEIGHT:         Height of the settings dialog.
 FONT_NAME:               Font name for table titles.
@@ -75,58 +76,56 @@ SECONDARY_MONITOR_INDEX: Monitor index for the secondary window.
 FADE_DURATION:           Duration of fade animations in milliseconds.
 """
 
-CONFIG_FILE            = "~/.asap-cabinet-fe/settings.ini"
-# LAUNCHER_LOGFILE       = "~/.asap-cabinet-fe/launcher.log"
-# ERROR_LOGFILE          = "~/.asap-cabinet-fe/error.log"
+CONFIG_FILE             = "~/.asap-cabinet-fe/settings.ini"
+# LAUNCHER_LOGFILE        = "~/.asap-cabinet-fe/launcher.log"
+# ERROR_LOGFILE           = "~/.asap-cabinet-fe/error.log"
 
-VPX_ROOT_FOLDER        = "/home/tarso/Games/vpinball/build/tables/"
-EXECUTABLE_CMD         = "/home/tarso/Games/vpinball/build/VPinballX_GL"
-EXECUTABLE_SUB_CMD     = "-Play"
+VPX_ROOT_FOLDER         = "/home/tarso/Games/vpinball/build/tables/"
+EXECUTABLE_CMD          = "/home/tarso/Games/vpinball/build/VPinballX_GL"
+EXECUTABLE_SUB_CMD      = "-Play"
 
 # Default images path
-DEFAULT_TABLE_PATH     = "img/default_table.png"
-DEFAULT_WHEEL_PATH     = "img/default_wheel.png"
-DEFAULT_BACKGLASS_PATH = "img/default_backglass.png"
-DEFAULT_DMD_PATH       = "img/default_dmd.gif"
+DEFAULT_TABLE_PATH      = "img/default_table.png"
+DEFAULT_WHEEL_PATH      = "img/default_wheel.png"
+DEFAULT_BACKGLASS_PATH  = "img/default_backglass.png"
+DEFAULT_DMD_PATH        = "img/default_dmd.gif"
 
 # Per table images path (/tables/<table_dir>/)
-TABLE_IMAGE_PATH       = "images/table.png"
-TABLE_WHEEL_PATH       = "images/wheel.png"
-TABLE_BACKGLASS_PATH   = "images/backglass.png"
-TABLE_DMD_PATH         = "images/dmd.gif"
+TABLE_IMAGE_PATH        = "images/table.png"
+TABLE_WHEEL_PATH        = "images/wheel.png"
+TABLE_BACKGLASS_PATH    = "images/backglass.png"
+TABLE_DMD_PATH          = "images/dmd.gif"
 
 ## Main window (vertical)
-MAIN_MONITOR_INDEX     = 1
-MAIN_WINDOW_WIDTH      = 1080
-MAIN_WINDOW_HEIGHT     = 1920
+MAIN_MONITOR_INDEX      = 1
+MAIN_WINDOW_WIDTH       = 1080
+MAIN_WINDOW_HEIGHT      = 1920
 # Table titles/wheels
-WHEEL_IMAGE_SIZE       = 400 # Square
-WHEEL_IMAGE_MARGIN     = 20
-FONT_NAME              = "Arial"
-FONT_SIZE              = 32
-BG_COLOR               = "#202020"
-TEXT_COLOR             = "white"
+WHEEL_IMAGE_SIZE        = 400 # Square
+WHEEL_IMAGE_MARGIN      = 20
+FONT_NAME               = "Arial"
+FONT_SIZE               = 32
+BG_COLOR                = "#202020"
+TEXT_COLOR              = "white"
 
 ## Secondary window (backglass)
 SECONDARY_MONITOR_INDEX = 0
 BACKGLASS_WINDOW_WIDTH  = 1024
 BACKGLASS_WINDOW_HEIGHT = 1024
 #images -------------------------(TODO: add to settings)
-BACKGLASS_IMAGE_WIDTH  = 1024
-BACKGLASS_IMAGE_HEIGHT = 768
-DMD_WIDTH              = 1024
-DMD_HEIGHT             = 256
+BACKGLASS_IMAGE_WIDTH   = 1024
+BACKGLASS_IMAGE_HEIGHT  = 768
+DMD_WIDTH               = 1024
+DMD_HEIGHT              = 256
 
-FADE_OPACITY           = 0.5  # 1=off 0=black
+FADE_OPACITY            = 0.5  # 1=off 0=black
 #------------------------------------
 # Transition settings
-FADE_DURATION = 300  # milliseconds
+FADE_DURATION           = 300  # milliseconds
 
 # Settings panel
-SETTINGS_WIDTH         = 600
-SETTINGS_HEIGHT        = 980
-
-
+SETTINGS_WIDTH          = 600
+SETTINGS_HEIGHT         = 980
 
 # ---------------- Configuration Loader ----------------
 def load_configuration():
@@ -158,13 +157,13 @@ def load_configuration():
             "TABLE_BACKGLASS_PATH":        TABLE_BACKGLASS_PATH,
             "TABLE_DMD_PATH":              TABLE_DMD_PATH,
             "MAIN_MONITOR_INDEX":      str(MAIN_MONITOR_INDEX),
-            "MAIN_WINDOW_WIDTH":            str(MAIN_WINDOW_WIDTH),
-            "MAIN_WINDOW_HEIGHT":           str(MAIN_WINDOW_HEIGHT),
+            "MAIN_WINDOW_WIDTH":       str(MAIN_WINDOW_WIDTH),
+            "MAIN_WINDOW_HEIGHT":      str(MAIN_WINDOW_HEIGHT),
             "SECONDARY_MONITOR_INDEX": str(SECONDARY_MONITOR_INDEX),
-            "BACKGLASS_WINDOW_WIDTH":         str(BACKGLASS_WINDOW_WIDTH),
-            "BACKGLASS_WINDOW_HEIGHT":        str(BACKGLASS_WINDOW_HEIGHT),
-            "WHEEL_IMAGE_SIZE":              str(WHEEL_IMAGE_SIZE),
-            "WHEEL_IMAGE_MARGIN":            str(WHEEL_IMAGE_MARGIN),
+            "BACKGLASS_WINDOW_WIDTH":  str(BACKGLASS_WINDOW_WIDTH),
+            "BACKGLASS_WINDOW_HEIGHT": str(BACKGLASS_WINDOW_HEIGHT),
+            "WHEEL_IMAGE_SIZE":        str(WHEEL_IMAGE_SIZE),
+            "WHEEL_IMAGE_MARGIN":      str(WHEEL_IMAGE_MARGIN),
             "FONT_NAME":                   FONT_NAME,
             "FONT_SIZE":               str(FONT_SIZE),
             "BG_COLOR":                    BG_COLOR,
@@ -182,13 +181,13 @@ def load_configuration():
     TABLE_BACKGLASS_PATH =        s.get("TABLE_BACKGLASS_PATH", TABLE_BACKGLASS_PATH)
     TABLE_DMD_PATH =              s.get("TABLE_DMD_PATH", TABLE_DMD_PATH)
     MAIN_MONITOR_INDEX =      int(s.get("MAIN_MONITOR_INDEX", MAIN_MONITOR_INDEX))
-    MAIN_WINDOW_WIDTH =            int(s.get("MAIN_WINDOW_WIDTH", MAIN_WINDOW_WIDTH))
-    MAIN_WINDOW_HEIGHT =           int(s.get("MAIN_WINDOW_HEIGHT", MAIN_WINDOW_HEIGHT))
+    MAIN_WINDOW_WIDTH =       int(s.get("MAIN_WINDOW_WIDTH", MAIN_WINDOW_WIDTH))
+    MAIN_WINDOW_HEIGHT =      int(s.get("MAIN_WINDOW_HEIGHT", MAIN_WINDOW_HEIGHT))
     SECONDARY_MONITOR_INDEX = int(s.get("SECONDARY_MONITOR_INDEX", SECONDARY_MONITOR_INDEX))
-    BACKGLASS_WINDOW_WIDTH =         int(s.get("BACKGLASS_WINDOW_WIDTH", BACKGLASS_WINDOW_WIDTH))
-    BACKGLASS_WINDOW_HEIGHT =        int(s.get("BACKGLASS_WINDOW_HEIGHT", BACKGLASS_WINDOW_HEIGHT))
-    WHEEL_IMAGE_SIZE =              int(s.get("WHEEL_IMAGE_SIZE", WHEEL_IMAGE_SIZE))
-    WHEEL_IMAGE_MARGIN =            int(s.get("WHEEL_IMAGE_MARGIN", WHEEL_IMAGE_MARGIN))
+    BACKGLASS_WINDOW_WIDTH =  int(s.get("BACKGLASS_WINDOW_WIDTH", BACKGLASS_WINDOW_WIDTH))
+    BACKGLASS_WINDOW_HEIGHT = int(s.get("BACKGLASS_WINDOW_HEIGHT", BACKGLASS_WINDOW_HEIGHT))
+    WHEEL_IMAGE_SIZE =        int(s.get("WHEEL_IMAGE_SIZE", WHEEL_IMAGE_SIZE))
+    WHEEL_IMAGE_MARGIN =      int(s.get("WHEEL_IMAGE_MARGIN", WHEEL_IMAGE_MARGIN))
     FONT_NAME =                   s.get("FONT_NAME", FONT_NAME)
     FONT_SIZE =               int(s.get("FONT_SIZE", FONT_SIZE))
     BG_COLOR =                    s.get("BG_COLOR", BG_COLOR)
@@ -268,10 +267,10 @@ class SettingsDialog(QDialog):
         self.layout.addRow("VPX Executable:",       self.execCmdEdit)
         self.layout.addRow("VPX Argument:",         self.execSubCmdEdit)
         self.add_section_title("Custom Media Paths (/tables/<table_name/)")
-        self.layout.addRow("Playfield Images Path:",    self.tableImageEdit)
-        self.layout.addRow("Wheel Images Path:",        self.wheelImageEdit)
-        self.layout.addRow("Backglass Images Path:",    self.backglassImageEdit)
-        self.layout.addRow("DMD GIFs Path:",            self.dmdTableEdit)
+        self.layout.addRow("Playfield Images Path:",self.tableImageEdit)
+        self.layout.addRow("Wheel Images Path:",    self.wheelImageEdit)
+        self.layout.addRow("Backglass Images Path:",self.backglassImageEdit)
+        self.layout.addRow("DMD GIFs Path:",        self.dmdTableEdit)
         self.add_section_title("Screens Dimensions")
         self.layout.addRow("Playfield Monitor:",    self.mainMonitor)
         self.layout.addRow("Playfield Width:",      self.windowWidthEdit)
@@ -316,26 +315,26 @@ class SettingsDialog(QDialog):
     def getValues(self):
         """Retrieve the current settings values from the dialog."""
         return {
-            "VPX_ROOT_FOLDER":      self.vpxRootEdit.text(),
-            "EXECUTABLE_CMD":       self.execCmdEdit.text(),
-            "EXECUTABLE_SUB_CMD":   self.execSubCmdEdit.text(),
-            "TABLE_IMAGE_PATH":     self.tableImageEdit.text(),
-            "TABLE_WHEEL_PATH":     self.wheelImageEdit.text(),
-            "TABLE_BACKGLASS_PATH": self.backglassImageEdit.text(),
-            "TABLE_DMD_PATH":       self.dmdTableEdit.text(),
-            "MAIN_MONITOR_INDEX":   self.mainMonitor.text(),
-            "MAIN_WINDOW_WIDTH":         self.windowWidthEdit.text(),
-            "MAIN_WINDOW_HEIGHT":        self.windowHeightEdit.text(),
+            "VPX_ROOT_FOLDER":         self.vpxRootEdit.text(),
+            "EXECUTABLE_CMD":          self.execCmdEdit.text(),
+            "EXECUTABLE_SUB_CMD":      self.execSubCmdEdit.text(),
+            "TABLE_IMAGE_PATH":        self.tableImageEdit.text(),
+            "TABLE_WHEEL_PATH":        self.wheelImageEdit.text(),
+            "TABLE_BACKGLASS_PATH":    self.backglassImageEdit.text(),
+            "TABLE_DMD_PATH":          self.dmdTableEdit.text(),
+            "MAIN_MONITOR_INDEX":      self.mainMonitor.text(),
+            "MAIN_WINDOW_WIDTH":       self.windowWidthEdit.text(),
+            "MAIN_WINDOW_HEIGHT":      self.windowHeightEdit.text(),
             "SECONDARY_MONITOR_INDEX": self.secondaryMonitor.text(),
-            "BACKGLASS_WINDOW_WIDTH":      self.backglassWidthEdit.text(),
-            "BACKGLASS_WINDOW_HEIGHT":     self.backglassHeightEdit.text(),
-            "WHEEL_IMAGE_SIZE":           self.wheelSizeEdit.text(),
-            "WHEEL_IMAGE_MARGIN":         self.wheelMarginEdit.text(),
-            "FONT_NAME":            self.fontNameEdit.text(),
-            "FONT_SIZE":            self.fontSizeEdit.text(),
-            "BG_COLOR":             self.bgColorEdit.text(),
-            "TEXT_COLOR":           self.textColorEdit.text(),
-            "FADE_DURATION":        self.fadeDurationEdit.text()
+            "BACKGLASS_WINDOW_WIDTH":  self.backglassWidthEdit.text(),
+            "BACKGLASS_WINDOW_HEIGHT": self.backglassHeightEdit.text(),
+            "WHEEL_IMAGE_SIZE":        self.wheelSizeEdit.text(),
+            "WHEEL_IMAGE_MARGIN":      self.wheelMarginEdit.text(),
+            "FONT_NAME":               self.fontNameEdit.text(),
+            "FONT_SIZE":               self.fontSizeEdit.text(),
+            "BG_COLOR":                self.bgColorEdit.text(),
+            "TEXT_COLOR":              self.textColorEdit.text(),
+            "FADE_DURATION":           self.fadeDurationEdit.text()
         }
     
     def add_section_title(self, title):
