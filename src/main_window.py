@@ -86,24 +86,34 @@ class SingleTableViewer(QMainWindow):
         self.leftArrow = QLabel("←", central)
         self.leftArrow.setAlignment(Qt.AlignCenter)
         arrowFont = self.leftArrow.font()
-        arrowFont.setPointSize(32)  # Adjust size as needed
+        arrowFont.setPointSize(28)  # Adjust size as needed
         self.leftArrow.setFont(arrowFont)
-        arrow_width = 80
-        arrow_height = 80
+        arrow_width = 50
+        arrow_height = 50
         current_y = (MAIN_WINDOW_HEIGHT - arrow_height) // 2  # current center position
         bottom_y = MAIN_WINDOW_HEIGHT - arrow_height # lowest possible position (top of arrow at bottom)
         new_y = (current_y + bottom_y) // 2  # midpoint between current and bottom
         self.leftArrow.setGeometry(10, new_y, arrow_width, arrow_height)
-        self.leftArrow.setAttribute(Qt.WA_TranslucentBackground)
-        self.leftArrow.setStyleSheet("background-color: transparent;")
+        # self.leftArrow.setAttribute(Qt.WA_TranslucentBackground)
+        self.leftArrow.setStyleSheet("background-color: {BG_COLOR};")
 
         # Create right arrow label
         self.rightArrow = QLabel("→", central)
         self.rightArrow.setAlignment(Qt.AlignCenter)
         self.rightArrow.setFont(arrowFont)
         self.rightArrow.setGeometry(MAIN_WINDOW_WIDTH - arrow_width - 10, new_y, arrow_width, arrow_height)
-        self.rightArrow.setAttribute(Qt.WA_TranslucentBackground)
-        self.rightArrow.setStyleSheet("background-color: transparent;")
+        # self.rightArrow.setAttribute(Qt.WA_TranslucentBackground)
+        self.rightArrow.setStyleSheet("background-color: {BG_COLOR};")
+
+        arrow_style = """
+            QLabel {
+                border-radius: 20px;  /* Adjust to control roundness */
+                padding-bottom: 5px;  /* Ensures the arrow is not too close to the border */
+            }
+        """
+
+        self.leftArrow.setStyleSheet(arrow_style)
+        self.rightArrow.setStyleSheet(arrow_style)
 
         # Set up QGraphicsOpacityEffect for each arrow
         self.leftArrowEffect = QGraphicsOpacityEffect(self.leftArrow)
@@ -114,7 +124,7 @@ class SingleTableViewer(QMainWindow):
 
         # Set up QPropertyAnimation for the left arrow
         self.leftArrowAnimation = QPropertyAnimation(self.leftArrowEffect, b"opacity")
-        self.leftArrowAnimation.setDuration(1000)  # total duration in milliseconds
+        self.leftArrowAnimation.setDuration(1250)  # total duration in milliseconds
         self.leftArrowAnimation.setStartValue(0.0)
         self.leftArrowAnimation.setKeyValueAt(0.5, 1.0)  # Fully visible halfway through
         self.leftArrowAnimation.setEndValue(0.0)
@@ -123,7 +133,7 @@ class SingleTableViewer(QMainWindow):
 
         # Set up QPropertyAnimation for the right arrow
         self.rightArrowAnimation = QPropertyAnimation(self.rightArrowEffect, b"opacity")
-        self.rightArrowAnimation.setDuration(1000)
+        self.rightArrowAnimation.setDuration(1250)
         self.rightArrowAnimation.setStartValue(0.0)
         self.rightArrowAnimation.setKeyValueAt(0.5, 1.0)
         self.rightArrowAnimation.setEndValue(0.0)
