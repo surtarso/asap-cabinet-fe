@@ -25,6 +25,8 @@ Tarso Galvão - feb/2025
 """
 
 # TODO:
+# - add fade duration, dmd and b2s image size to settings
+# - add option to show/hide launcher on table load to settings
 # - configure keys for ease to use on cabinet joystick
 # - redirect launch output to ~/.asap-cabinet-fe/launcher.log
 # - redirect other outputs to ~/.asap-cabinet-fe/error.log
@@ -53,12 +55,12 @@ TABLE_IMAGE_PATH:        Relative path to table image.
 TABLE_WHEEL_PATH:        Relative path to wheel image.
 TABLE_BACKGLASS_PATH:    Relative path to backglass image.
 TABLE_DMD_PATH:          Relative path to DMD GIF.
-WINDOW_WIDTH:            Width of the main window.
-WINDOW_HEIGHT:           Height of the main window.
-BACKGLASS_WIDTH:         Width of the secondary window.
-BACKGLASS_HEIGHT:        Height of the secondary window.
-WHEEL_SIZE:              Size of the wheel image.
-WHEEL_MARGIN:            Margin around the wheel image.
+MAIN_WINDOW_WIDTH:            Width of the main window.
+MAIN_WINDOW_HEIGHT:           Height of the main window.
+BACKGLASS_WINDOW_WIDTH:         Width of the secondary window.
+BACKGLASS_WINDOW_HEIGHT:        Height of the secondary window.
+WHEEL_IMAGE_SIZE:              Size of the wheel image.
+WHEEL_IMAGE_MARGIN:            Margin around the wheel image.
 SETTINGS_WIDTH:          Width of the settings dialog.
 SETTINGS_HEIGHT:         Height of the settings dialog.
 FONT_NAME:               Font name for table titles.
@@ -90,30 +92,38 @@ TABLE_WHEEL_PATH       = "images/wheel.png"
 TABLE_BACKGLASS_PATH   = "images/backglass.png"
 TABLE_DMD_PATH         = "images/dmd.gif"
 
-# Window and image sizes
-WINDOW_WIDTH           = 1080
-WINDOW_HEIGHT          = 1920
-BACKGLASS_WIDTH        = 1024
-BACKGLASS_HEIGHT       = 1024
-WHEEL_SIZE             = 400 # Square
-WHEEL_MARGIN           = 20
-# Settings panel
-SETTINGS_WIDTH         = 600
-SETTINGS_HEIGHT        = 980
-
-# Table titles
+## Main window (vertical)
+MAIN_MONITOR_INDEX     = 1
+MAIN_WINDOW_WIDTH      = 1080
+MAIN_WINDOW_HEIGHT     = 1920
+# Table titles/wheels
+WHEEL_IMAGE_SIZE       = 400 # Square
+WHEEL_IMAGE_MARGIN     = 20
 FONT_NAME              = "Arial"
 FONT_SIZE              = 32
 BG_COLOR               = "#202020"
 TEXT_COLOR             = "white"
 
-# Main window (vertical)
-MAIN_MONITOR_INDEX = 1
-# Secondary window (backglass)
+## Secondary window (backglass)
 SECONDARY_MONITOR_INDEX = 0
+BACKGLASS_WINDOW_WIDTH  = 1024
+BACKGLASS_WINDOW_HEIGHT = 1024
+#images -------------------------(TODO: add to settings)
+BACKGLASS_IMAGE_WIDTH  = 1024
+BACKGLASS_IMAGE_HEIGHT = 768
+DMD_WIDTH              = 1024
+DMD_HEIGHT             = 256
 
-# Animation settings
+FADE_OPACITY           = 0.5  # 1=off 0=black
+#------------------------------------
+# Transition settings
 FADE_DURATION = 300  # milliseconds
+
+# Settings panel
+SETTINGS_WIDTH         = 600
+SETTINGS_HEIGHT        = 980
+
+
 
 # ---------------- Configuration Loader ----------------
 def load_configuration():
@@ -121,8 +131,8 @@ def load_configuration():
     
     global VPX_ROOT_FOLDER, EXECUTABLE_CMD, EXECUTABLE_SUB_CMD
     global TABLE_IMAGE_PATH, TABLE_WHEEL_PATH, TABLE_BACKGLASS_PATH, TABLE_DMD_PATH
-    global WINDOW_WIDTH, WINDOW_HEIGHT, BACKGLASS_WIDTH, BACKGLASS_HEIGHT
-    global WHEEL_SIZE, WHEEL_MARGIN, FONT_NAME, FONT_SIZE
+    global MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT, BACKGLASS_WINDOW_WIDTH, BACKGLASS_WINDOW_HEIGHT
+    global WHEEL_IMAGE_SIZE, WHEEL_IMAGE_MARGIN, FONT_NAME, FONT_SIZE
     global BG_COLOR, TEXT_COLOR, MAIN_MONITOR_INDEX, SECONDARY_MONITOR_INDEX, FADE_DURATION
 
     ini_file = os.path.expanduser(CONFIG_FILE) 
@@ -145,13 +155,13 @@ def load_configuration():
             "TABLE_BACKGLASS_PATH":        TABLE_BACKGLASS_PATH,
             "TABLE_DMD_PATH":              TABLE_DMD_PATH,
             "MAIN_MONITOR_INDEX":      str(MAIN_MONITOR_INDEX),
-            "WINDOW_WIDTH":            str(WINDOW_WIDTH),
-            "WINDOW_HEIGHT":           str(WINDOW_HEIGHT),
+            "MAIN_WINDOW_WIDTH":            str(MAIN_WINDOW_WIDTH),
+            "MAIN_WINDOW_HEIGHT":           str(MAIN_WINDOW_HEIGHT),
             "SECONDARY_MONITOR_INDEX": str(SECONDARY_MONITOR_INDEX),
-            "BACKGLASS_WIDTH":         str(BACKGLASS_WIDTH),
-            "BACKGLASS_HEIGHT":        str(BACKGLASS_HEIGHT),
-            "WHEEL_SIZE":              str(WHEEL_SIZE),
-            "WHEEL_MARGIN":            str(WHEEL_MARGIN),
+            "BACKGLASS_WINDOW_WIDTH":         str(BACKGLASS_WINDOW_WIDTH),
+            "BACKGLASS_WINDOW_HEIGHT":        str(BACKGLASS_WINDOW_HEIGHT),
+            "WHEEL_IMAGE_SIZE":              str(WHEEL_IMAGE_SIZE),
+            "WHEEL_IMAGE_MARGIN":            str(WHEEL_IMAGE_MARGIN),
             "FONT_NAME":                   FONT_NAME,
             "FONT_SIZE":               str(FONT_SIZE),
             "BG_COLOR":                    BG_COLOR,
@@ -169,13 +179,13 @@ def load_configuration():
     TABLE_BACKGLASS_PATH =        s.get("TABLE_BACKGLASS_PATH", TABLE_BACKGLASS_PATH)
     TABLE_DMD_PATH =              s.get("TABLE_DMD_PATH", TABLE_DMD_PATH)
     MAIN_MONITOR_INDEX =      int(s.get("MAIN_MONITOR_INDEX", MAIN_MONITOR_INDEX))
-    WINDOW_WIDTH =            int(s.get("WINDOW_WIDTH", WINDOW_WIDTH))
-    WINDOW_HEIGHT =           int(s.get("WINDOW_HEIGHT", WINDOW_HEIGHT))
+    MAIN_WINDOW_WIDTH =            int(s.get("MAIN_WINDOW_WIDTH", MAIN_WINDOW_WIDTH))
+    MAIN_WINDOW_HEIGHT =           int(s.get("MAIN_WINDOW_HEIGHT", MAIN_WINDOW_HEIGHT))
     SECONDARY_MONITOR_INDEX = int(s.get("SECONDARY_MONITOR_INDEX", SECONDARY_MONITOR_INDEX))
-    BACKGLASS_WIDTH =         int(s.get("BACKGLASS_WIDTH", BACKGLASS_WIDTH))
-    BACKGLASS_HEIGHT =        int(s.get("BACKGLASS_HEIGHT", BACKGLASS_HEIGHT))
-    WHEEL_SIZE =              int(s.get("WHEEL_SIZE", WHEEL_SIZE))
-    WHEEL_MARGIN =            int(s.get("WHEEL_MARGIN", WHEEL_MARGIN))
+    BACKGLASS_WINDOW_WIDTH =         int(s.get("BACKGLASS_WINDOW_WIDTH", BACKGLASS_WINDOW_WIDTH))
+    BACKGLASS_WINDOW_HEIGHT =        int(s.get("BACKGLASS_WINDOW_HEIGHT", BACKGLASS_WINDOW_HEIGHT))
+    WHEEL_IMAGE_SIZE =              int(s.get("WHEEL_IMAGE_SIZE", WHEEL_IMAGE_SIZE))
+    WHEEL_IMAGE_MARGIN =            int(s.get("WHEEL_IMAGE_MARGIN", WHEEL_IMAGE_MARGIN))
     FONT_NAME =                   s.get("FONT_NAME", FONT_NAME)
     FONT_SIZE =               int(s.get("FONT_SIZE", FONT_SIZE))
     BG_COLOR =                    s.get("BG_COLOR", BG_COLOR)
@@ -236,13 +246,13 @@ class SettingsDialog(QDialog):
         self.backglassImageEdit  = QLineEdit(TABLE_BACKGLASS_PATH)
         self.dmdTableEdit        = QLineEdit(TABLE_DMD_PATH)
         self.mainMonitor         = QLineEdit(str(MAIN_MONITOR_INDEX))
-        self.windowWidthEdit     = QLineEdit(str(WINDOW_WIDTH))
-        self.windowHeightEdit    = QLineEdit(str(WINDOW_HEIGHT))
+        self.windowWidthEdit     = QLineEdit(str(MAIN_WINDOW_WIDTH))
+        self.windowHeightEdit    = QLineEdit(str(MAIN_WINDOW_HEIGHT))
         self.secondaryMonitor    = QLineEdit(str(SECONDARY_MONITOR_INDEX))
-        self.backglassWidthEdit  = QLineEdit(str(BACKGLASS_WIDTH))
-        self.backglassHeightEdit = QLineEdit(str(BACKGLASS_HEIGHT))
-        self.wheelSizeEdit       = QLineEdit(str(WHEEL_SIZE))
-        self.wheelMarginEdit     = QLineEdit(str(WHEEL_MARGIN))
+        self.backglassWidthEdit  = QLineEdit(str(BACKGLASS_WINDOW_WIDTH))
+        self.backglassHeightEdit = QLineEdit(str(BACKGLASS_WINDOW_HEIGHT))
+        self.wheelSizeEdit       = QLineEdit(str(WHEEL_IMAGE_SIZE))
+        self.wheelMarginEdit     = QLineEdit(str(WHEEL_IMAGE_MARGIN))
         self.fontNameEdit        = QLineEdit(FONT_NAME)
         self.fontSizeEdit        = QLineEdit(str(FONT_SIZE))
         self.bgColorEdit         = QLineEdit(BG_COLOR)
@@ -311,13 +321,13 @@ class SettingsDialog(QDialog):
             "TABLE_BACKGLASS_PATH": self.backglassImageEdit.text(),
             "TABLE_DMD_PATH":       self.dmdTableEdit.text(),
             "MAIN_MONITOR_INDEX":   self.mainMonitor.text(),
-            "WINDOW_WIDTH":         self.windowWidthEdit.text(),
-            "WINDOW_HEIGHT":        self.windowHeightEdit.text(),
+            "MAIN_WINDOW_WIDTH":         self.windowWidthEdit.text(),
+            "MAIN_WINDOW_HEIGHT":        self.windowHeightEdit.text(),
             "SECONDARY_MONITOR_INDEX": self.secondaryMonitor.text(),
-            "BACKGLASS_WIDTH":      self.backglassWidthEdit.text(),
-            "BACKGLASS_HEIGHT":     self.backglassHeightEdit.text(),
-            "WHEEL_SIZE":           self.wheelSizeEdit.text(),
-            "WHEEL_MARGIN":         self.wheelMarginEdit.text(),
+            "BACKGLASS_WINDOW_WIDTH":      self.backglassWidthEdit.text(),
+            "BACKGLASS_WINDOW_HEIGHT":     self.backglassHeightEdit.text(),
+            "WHEEL_IMAGE_SIZE":           self.wheelSizeEdit.text(),
+            "WHEEL_IMAGE_MARGIN":         self.wheelMarginEdit.text(),
             "FONT_NAME":            self.fontNameEdit.text(),
             "FONT_SIZE":            self.fontSizeEdit.text(),
             "BG_COLOR":             self.bgColorEdit.text(),
@@ -395,12 +405,12 @@ class SecondaryWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Secondary Display (Backglass)")
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setFixedSize(1024, 1024)  # Full screen size
+        self.setFixedSize(BACKGLASS_WINDOW_WIDTH, BACKGLASS_WINDOW_HEIGHT)  # Full screen size
         self.setStyleSheet("background-color: black;")
 
         # QLabel for backglass image (aligned to top)
         self.label = QLabel(self)
-        self.label.setGeometry(0, 0, 1024, 768)
+        self.label.setGeometry(0, 0, BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT)
         self.label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
 
         # Opacity effect for fade animation
@@ -410,7 +420,7 @@ class SecondaryWindow(QMainWindow):
 
         # QLabel for DMD (fills the black bottom part)
         self.dmd_label = QLabel(self)
-        self.dmd_label.setGeometry(0, 768, 1024, 256)  # Positioned below backglass
+        self.dmd_label.setGeometry(0, BACKGLASS_IMAGE_HEIGHT, DMD_WIDTH, DMD_HEIGHT)  # Positioned below backglass
         self.dmd_label.setStyleSheet("background-color: black;")  # Ensure black background
         self.dmd_label.setAlignment(Qt.AlignCenter)
 
@@ -423,10 +433,10 @@ class SecondaryWindow(QMainWindow):
 
         pixmap = QPixmap(image_path)
         if pixmap.isNull():
-            pixmap = QPixmap(1024, 768)
+            pixmap = QPixmap(BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT)
             pixmap.fill(Qt.black)
         else:
-            pixmap = pixmap.scaled(1024, 768, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            pixmap = pixmap.scaled(BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
         self.label.setPixmap(pixmap)
         self.backglass_effect.setOpacity(1.0)
@@ -449,22 +459,22 @@ class SecondaryWindow(QMainWindow):
             dmd_width, dmd_height = frame_size.width(), frame_size.height()
             if dmd_width > 0 and dmd_height > 0:
                 aspect_ratio = dmd_width / dmd_height
-                new_width = min(1024, int(256 * aspect_ratio))
-                new_height = min(256, int(1024 / aspect_ratio))
+                new_width = min(DMD_WIDTH, int(DMD_HEIGHT * aspect_ratio))
+                new_height = min(DMD_HEIGHT, int(DMD_WIDTH / aspect_ratio))
 
-                if new_width > 1024:
-                    new_width = 1024
-                    new_height = int(1024 / aspect_ratio)
-                if new_height > 256:
-                    new_height = 256
-                    new_width = int(256 * aspect_ratio)
+                if new_width > DMD_WIDTH:
+                    new_width = DMD_WIDTH
+                    new_height = int(DMD_WIDTH / aspect_ratio)
+                if new_height > DMD_HEIGHT:
+                    new_height = DMD_HEIGHT
+                    new_width = int(DMD_HEIGHT * aspect_ratio)
 
                 self.dmd_movie.setScaledSize(QSize(new_width, new_height))
 
                 # Center the GIF inside the 1024x256 area
-                x_offset = (1024 - new_width) // 2
-                y_offset = (256 - new_height) // 2
-                self.dmd_label.setGeometry(x_offset, 768 + y_offset, new_width, new_height)
+                x_offset = (DMD_WIDTH - new_width) // 2
+                y_offset = (DMD_HEIGHT - new_height) // 2
+                self.dmd_label.setGeometry(x_offset, BACKGLASS_IMAGE_HEIGHT + y_offset, new_width, new_height)
 
             self.dmd_label.setMovie(self.dmd_movie)
             self.dmd_movie.start()
@@ -512,7 +522,7 @@ class SingleTableViewer(QMainWindow):
         """Initializes the primary display window with table viewer and settings button."""
         super().__init__()
         self.setWindowTitle("Primary Display (Table Viewer)")
-        self.setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT)
+        self.setFixedSize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)
         self.setWindowFlags(Qt.FramelessWindowHint)
 
         self.secondary = secondary_window
@@ -535,7 +545,7 @@ class SingleTableViewer(QMainWindow):
         self.setFocus()
         # Create the table label before using it
         self.table_label = QLabel(central)
-        self.table_label.setGeometry(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
+        self.table_label.setGeometry(0, 0, MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)
         self.table_label.setScaledContents(True)
         self.table_label.setStyleSheet("border: none;")
         self.table_effect = QGraphicsOpacityEffect(self.table_label)
@@ -543,7 +553,7 @@ class SingleTableViewer(QMainWindow):
 
         # Create the table name label after other elements are set up
         self.table_name_label = QLabel(central)
-        self.table_name_label.setGeometry(10, WINDOW_HEIGHT - 30, WINDOW_WIDTH - 20, 30)
+        self.table_name_label.setGeometry(10, MAIN_WINDOW_HEIGHT - 30, MAIN_WINDOW_WIDTH - 20, 30)
         self.table_name_label.setStyleSheet(f"color: {TEXT_COLOR}; font-size: {FONT_SIZE}px; text-align: left; background-color: {BG_COLOR};")
         self.table_name_label.setAlignment(Qt.AlignCenter)
         
@@ -552,7 +562,7 @@ class SingleTableViewer(QMainWindow):
         # Add a cogwheel settings button in the top-right corner
         self.settingsButton = QPushButton("⚙", central)
         self.settingsButton.setFixedSize(40, 40)
-        self.settingsButton.move(WINDOW_WIDTH - 50, 10)
+        self.settingsButton.move(MAIN_WINDOW_WIDTH - 50, 10)
         self.settingsButton.setFocusPolicy(Qt.NoFocus)
         self.settingsButton.clicked.connect(self.openSettings)
         self.settingsButton.raise_()
@@ -566,10 +576,10 @@ class SingleTableViewer(QMainWindow):
             }
         """)
 
-        wheel_x = WINDOW_WIDTH - WHEEL_SIZE - WHEEL_MARGIN
-        wheel_y = WINDOW_HEIGHT - WHEEL_SIZE - WHEEL_MARGIN
+        wheel_x = MAIN_WINDOW_WIDTH - WHEEL_IMAGE_SIZE - WHEEL_IMAGE_MARGIN
+        wheel_y = MAIN_WINDOW_HEIGHT - WHEEL_IMAGE_SIZE - WHEEL_IMAGE_MARGIN
         self.wheel_label = QLabel(central)
-        self.wheel_label.setGeometry(wheel_x, wheel_y, WHEEL_SIZE, WHEEL_SIZE)
+        self.wheel_label.setGeometry(wheel_x, wheel_y, WHEEL_IMAGE_SIZE, WHEEL_IMAGE_SIZE)
         self.wheel_label.setScaledContents(True)
         self.wheel_label.setAttribute(Qt.WA_TranslucentBackground)
         self.wheel_label.setStyleSheet("background-color: transparent;")
@@ -595,10 +605,10 @@ class SingleTableViewer(QMainWindow):
         # Update label geometry to match the height of the text
         # Here, we calculate the Y position dynamically based on the table index
         label_height = font_metrics.height()  # Get the height of the text
-        y_position = WINDOW_HEIGHT - label_height - (self.current_index * (label_height))  # Adjust based on index
+        y_position = MAIN_WINDOW_HEIGHT - label_height - (self.current_index * (label_height))  # Adjust based on index
 
         # Make sure the table name label is positioned correctly for all tables
-        self.table_name_label.setGeometry(10, y_position, WINDOW_WIDTH - 20, label_height)
+        self.table_name_label.setGeometry(10, y_position, MAIN_WINDOW_WIDTH - 20, label_height)
 
         # Set the style
         self.table_name_label.setStyleSheet(f"color: {TEXT_COLOR}; text-align: left; background-color: {BG_COLOR};")
@@ -619,7 +629,7 @@ class SingleTableViewer(QMainWindow):
         label_width = text_width + 2 * padding
         label_height = label_height + 2 * padding
         x_position = 10  # fixed left margin
-        y_position = WINDOW_HEIGHT - label_height - 20  # fixed 20-pixel margin from the bottom
+        y_position = MAIN_WINDOW_HEIGHT - label_height - 20  # fixed 20-pixel margin from the bottom
         self.table_name_label.setGeometry(x_position, y_position, label_width, label_height)
 
     ## FADE OUT table transition
@@ -630,16 +640,16 @@ class SingleTableViewer(QMainWindow):
         # Prepare new pixmaps for table and wheel images
         table_pixmap = QPixmap(table["table_img"])
         if table_pixmap.isNull():
-            table_pixmap = QPixmap(WINDOW_WIDTH, WINDOW_HEIGHT)
+            table_pixmap = QPixmap(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)
             table_pixmap.fill(Qt.black)
-        table_scaled = table_pixmap.scaled(WINDOW_WIDTH, WINDOW_HEIGHT,
+        table_scaled = table_pixmap.scaled(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT,
                                         Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
 
         wheel_pixmap = QPixmap(table["wheel_img"])
         if wheel_pixmap.isNull():
-            wheel_pixmap = QPixmap(WHEEL_SIZE, WHEEL_SIZE)
+            wheel_pixmap = QPixmap(WHEEL_IMAGE_SIZE, WHEEL_IMAGE_SIZE)
             wheel_pixmap.fill(Qt.transparent)
-        wheel_scaled = wheel_pixmap.scaled(WHEEL_SIZE, WHEEL_SIZE,
+        wheel_scaled = wheel_pixmap.scaled(WHEEL_IMAGE_SIZE, WHEEL_IMAGE_SIZE,
                                         Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
         # Update the table name label
@@ -653,20 +663,20 @@ class SingleTableViewer(QMainWindow):
         self.fade_out_table = QPropertyAnimation(self.table_effect, b"opacity")
         self.fade_out_table.setDuration(FADE_DURATION // 2)
         self.fade_out_table.setStartValue(1.0)
-        self.fade_out_table.setEndValue(0.5)
+        self.fade_out_table.setEndValue(FADE_OPACITY)
         self.fade_out_table.setEasingCurve(QEasingCurve.InQuad)
 
         self.fade_out_wheel = QPropertyAnimation(self.wheel_effect, b"opacity")
         self.fade_out_wheel.setDuration(FADE_DURATION // 2)
         self.fade_out_wheel.setStartValue(1.0)
-        self.fade_out_wheel.setEndValue(0.5)
+        self.fade_out_wheel.setEndValue(FADE_OPACITY)
         self.fade_out_wheel.setEasingCurve(QEasingCurve.InQuad)
 
         self.fade_out_backglass = QPropertyAnimation(self.secondary.backglass_effect, b"opacity") if self.secondary else None
         if self.fade_out_backglass:
             self.fade_out_backglass.setDuration(FADE_DURATION // 2)
             self.fade_out_backglass.setStartValue(1.0)
-            self.fade_out_backglass.setEndValue(0.5)
+            self.fade_out_backglass.setEndValue(FADE_OPACITY)
             self.fade_out_backglass.setEasingCurve(QEasingCurve.InQuad)
 
         self.fade_out_table.finished.connect(lambda: self._set_new_images(table_scaled, wheel_scaled, table["backglass_img"], table["folder"]))
@@ -686,14 +696,14 @@ class SingleTableViewer(QMainWindow):
         # Fade in all elements
         self.fade_in_table = QPropertyAnimation(self.table_effect, b"opacity")
         self.fade_in_table.setDuration(FADE_DURATION // 2)
-        self.fade_in_table.setStartValue(0.5)
+        self.fade_in_table.setStartValue(FADE_OPACITY)
         self.fade_in_table.setEndValue(1.0)
         self.fade_in_table.setEasingCurve(QEasingCurve.OutQuad)
         self.fade_in_table.start()
 
         self.fade_in_wheel = QPropertyAnimation(self.wheel_effect, b"opacity")
         self.fade_in_wheel.setDuration(FADE_DURATION // 2)
-        self.fade_in_wheel.setStartValue(0.5)
+        self.fade_in_wheel.setStartValue(FADE_OPACITY)
         self.fade_in_wheel.setEndValue(1.0)
         self.fade_in_wheel.setEasingCurve(QEasingCurve.OutQuad)
         self.fade_in_wheel.start()
@@ -701,7 +711,7 @@ class SingleTableViewer(QMainWindow):
         if self.secondary:
             self.fade_in_backglass = QPropertyAnimation(self.secondary.backglass_effect, b"opacity")
             self.fade_in_backglass.setDuration(FADE_DURATION // 2)
-            self.fade_in_backglass.setStartValue(0.5)
+            self.fade_in_backglass.setStartValue(FADE_OPACITY)
             self.fade_in_backglass.setEndValue(1.0)
             self.fade_in_backglass.setEasingCurve(QEasingCurve.OutQuad)
             self.fade_in_backglass.start()
@@ -712,6 +722,7 @@ class SingleTableViewer(QMainWindow):
         table = self.table_list[self.current_index]
         command = [EXECUTABLE_CMD, EXECUTABLE_SUB_CMD, table["vpx_file"]]
         try:
+            # TODO: add this to settings panel
             # Hides both frontend windows when table loads.
             # Using this will hide both windows and show your desktop when table loads.
             # For a seamless transition keep this comented.
@@ -820,13 +831,13 @@ if __name__ == "__main__":
         main_geom = main_screen.geometry()
         viewer.windowHandle().setScreen(main_screen)
         viewer.move(main_geom.topLeft())
-        viewer.setGeometry(main_geom.x(), main_geom.y(), WINDOW_WIDTH, WINDOW_HEIGHT)
+        viewer.setGeometry(main_geom.x(), main_geom.y(), MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)
 
     if len(screens) > SECONDARY_MONITOR_INDEX:
         secondary_screen = screens[SECONDARY_MONITOR_INDEX]
         sec_geom = secondary_screen.geometry()
         secondary_window.windowHandle().setScreen(secondary_screen)
         secondary_window.move(sec_geom.topLeft())
-        secondary_window.setGeometry(sec_geom.x(), sec_geom.y(), BACKGLASS_WIDTH, BACKGLASS_HEIGHT)
+        secondary_window.setGeometry(sec_geom.x(), sec_geom.y(), BACKGLASS_WINDOW_WIDTH, BACKGLASS_WINDOW_HEIGHT)
 
     sys.exit(app.exec_())
