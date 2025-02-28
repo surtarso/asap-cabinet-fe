@@ -1,6 +1,6 @@
 <h1 align="center">As Simple As Possible Cabinet Front-End</h1>
 
-<p align="center">A dual screen <a href="https://github.com/vpinball/vpinball">VPinballX</a> front-end for your virtual pinball cabinet. "As Simple As Possible".</p>
+<p align="center">A dual monitor <a href="https://github.com/vpinball/vpinball">VPinballX</a> front-end for your virtual pinball cabinet. "As Simple As Possible".</p>
 
 <div align="center">
   <video src="https://github.com/user-attachments/assets/f376adfc-9481-4237-b67c-2585570cee4c" width="400" />
@@ -60,7 +60,6 @@ Usage: `./video_to_gif.sh`
 
 **video_to_gif.sh flags:**
 
-    -h, --help       Show help
     --now            Convert videos and optimize gifs in the current folder
     --path [dir]     Convert videos and optimize gifs in a specific directory
     --optimize       Only optimize existing GIFs in the current folder
