@@ -35,6 +35,10 @@ Tarso Galvão - feb/2025
 # - redirect launch output to ~/.asap-cabinet-fe/launcher.log
 # - redirect other outputs to ~/.asap-cabinet-fe/error.log
 
+# - rework to use mp4 instead of gif. or both. if it's worth it
+# - make art dynamic (use picture unless no video/gif for table/dmd/b2s)
+# - fix wheel image not respecting aspect ratio
+
 import os
 import sys
 import subprocess

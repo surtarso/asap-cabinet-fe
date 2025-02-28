@@ -33,13 +33,15 @@ check_ffmpeg
 check_gifsicle
 
 show_help() {
+    echo "Create optimized animated GIFs from video files"
+    echo "Useful for asap-cabinet-fe (DMD display) & UltraDMD in VPX Linux"
     echo "Usage: $(basename "$0") [OPTIONS]"
     echo ""
     echo "Options:"
     echo "  -h, --help        Show this help message"
     echo "  --now             Process videos in the current directory"
     echo "  --path <dir>      Process videos in a specified directory"
-    echo "  --optimize [dir]  Only optimize existing GIFs (optionally in PATH)"
+    echo "  --optimize <dir>  Only optimize existing GIFs (optionally in PATH)"
     echo ""
     exit 0
 }

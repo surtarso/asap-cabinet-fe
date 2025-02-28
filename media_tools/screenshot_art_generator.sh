@@ -13,6 +13,8 @@
 # Dependencies: xdotool, imagemagick
 # Tarso Galvão feb/2025
 
+# TODO: switch to --now to execute, and no-arg goes to help
+
 #set -x
 
 # ANSI color codes
@@ -50,6 +52,9 @@ check_imagemagick
 
 # Check for help flag
 if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+    echo -e "Creates media (playfield + backglass) for asap-cabinet-fe"
+    echo -e "Open all tables and screenshots playfield and backglass"
+    echo -e "Saves them in table_name/images/ folder as: table.png and backglass.png"
     echo -e "${BLUE}Usage: $(basename "$0") [OPTIONS]${NC}"
     echo -e "${GREEN}Options:${NC}\n"
     echo -e "  ${BLUE}no argument     ${NC}Generate playfield and backglass images (default)"

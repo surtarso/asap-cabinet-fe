@@ -43,7 +43,7 @@ It will than save those pictures in **tables/my_table/images/** as .png and they
 
 - Run the main script: `./screenshot_art.sh`
 
-**screenshot_art.sh flags:** 
+**screenshot_art_generator.sh flags:** 
 
     --wheel       Display all tables without a wheel.png file.
     --dmd         Display all tables without a dmd.gif file.
@@ -58,7 +58,7 @@ Dependencies: `sudo apt install ffmpeg gifsicle`
 
 Usage: `./video_to_gif.sh`
 
-**video_to_gif.sh flags:**
+**convert_video_to_gif.sh flags:**
 
     --now            Convert videos and optimize gifs in the current folder
     --path [dir]     Convert videos and optimize gifs in a specific directory
