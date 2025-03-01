@@ -21,7 +21,7 @@
     - Search button by querry
     * Use the screenshot_art.sh tool to get table media
 
-Dependencies: python3, python3-pyqt5
+Dependencies: python3, python3-pyqt5, python3-pyqt5.qtmultimedia
 
 Tarso Galvão - feb/2025
 """
@@ -39,7 +39,7 @@ import sys
 import subprocess
 import configparser
 
-from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, QSize
+from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, QSize, QUrl
 from PyQt5.QtGui import QPixmap, QPalette, QColor, QGuiApplication, QFont, QFontMetrics, QMovie
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QWidget, QGraphicsOpacityEffect,
     QVBoxLayout, QScrollArea, QDialog, QFormLayout, QLineEdit, QDialogButtonBox, QPushButton, 
@@ -63,6 +63,9 @@ DEFAULT_DMD_PATH        = "img/default_dmd.gif"
 HINT_ARROW_SIZE         = 48
 HINT_ARROW_COLOR        = "white"
 HINT_ARROW_BG_COLOR     = "#202020"
+
+# Search and Settings icons
+TOP_ICONS_SIZE          = 24
 
 # Settings panel (portrait)
 SETTINGS_WIDTH          = 500
@@ -91,7 +94,6 @@ FONT_NAME               = "Arial"
 FONT_SIZE               = 22
 BG_COLOR                = "#202020"
 TEXT_COLOR              = "white"
-ICONS_SIZE              = 24
 
 ## Secondary window (backglass)
 SECONDARY_MONITOR_INDEX = 0
@@ -400,7 +402,6 @@ def load_table_list():
 
 # ---------------- Secondary Window ----------------
 class SecondaryWindow(QMainWindow):
-
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Secondary Display (Backglass)")
@@ -551,7 +552,7 @@ class SingleTableViewer(QMainWindow):
         # Apply a stylesheet to remove the border and make the background transparent
         self.settingsButton.setStyleSheet(f"""
             QPushButton {{
-            font-size:  {ICONS_SIZE}px;        /* Increase the font size of the icon */
+            font-size:  {TOP_ICONS_SIZE}px;        /* Increase the font size of the icon */
             border:     none;        /* Remove the button border */
             background: transparent; /* Make the background transparent */
             }}
@@ -567,7 +568,7 @@ class SingleTableViewer(QMainWindow):
         # Apply a stylesheet to remove the border and make the background transparent
         self.searchButton.setStyleSheet(f"""
             QPushButton {{
-            font-size:  {ICONS_SIZE}px;        /* Increase the font size of the icon */
+            font-size:  {TOP_ICONS_SIZE}px;        /* Increase the font size of the icon */
             border:     none;        /* Remove the button border */
             background: transparent; /* Make the background transparent */
             }}
