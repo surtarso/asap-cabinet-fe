@@ -27,17 +27,11 @@ Tarso Galvão - feb/2025
 # TODO:
 # - add animated buttons/hints to indicate left-right to change tables
 # - add fade duration, dmd and b2s image size to settings
-# - add option to show/hide launcher on table load to settings
-# - make settings window scrollable and remove fixed size is possible
-# - add a 'sort by letter' button (or a regular search button)
-# - retrieve table names from metadata instead of file (like vpxtool)
-# - configure keys for ease to use on cabinet joystick
+# - make settings window scrollable
+# - add a 'sort by letter' button and a serach by querry button
 # - redirect launch output to ~/.asap-cabinet-fe/launcher.log
 # - redirect other outputs to ~/.asap-cabinet-fe/error.log
-
-# - rework to use mp4 instead of gif. or both. if it's worth it
-# - make art dynamic (use picture unless no video/gif for table/dmd/b2s)
-# - fix wheel image not respecting aspect ratio
+# - settings are not changing after the user saves them, only font related ones.
 
 import os
 import sys
