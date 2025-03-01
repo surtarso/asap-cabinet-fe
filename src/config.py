@@ -50,10 +50,6 @@ DMD_HEIGHT              = 256
 FADE_OPACITY            = 0.5   # Lower value gives a darker fade
 FADE_DURATION           = 300   # Milliseconds
 
-# Settings dialog size
-SETTINGS_WIDTH          = 600
-SETTINGS_HEIGHT         = 980
-
 def load_configuration():
     """
     Loads configuration from the INI file, or creates the file with default settings if missing.
@@ -63,8 +59,11 @@ def load_configuration():
     global TABLE_IMAGE_PATH, TABLE_WHEEL_PATH, TABLE_BACKGLASS_PATH, TABLE_DMD_PATH
     global MAIN_MONITOR_INDEX, MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT
     global SECONDARY_MONITOR_INDEX, BACKGLASS_WINDOW_WIDTH, BACKGLASS_WINDOW_HEIGHT
+
+    global BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT, DMD_WIDTH, DMD_HEIGHT
+
     global WHEEL_IMAGE_SIZE, WHEEL_IMAGE_MARGIN, FONT_NAME, FONT_SIZE
-    global BG_COLOR, TEXT_COLOR, FADE_DURATION
+    global BG_COLOR, TEXT_COLOR, FADE_DURATION, FADE_OPACITY
 
     ini_file = os.path.expanduser(CONFIG_FILE)
     config = configparser.ConfigParser()
@@ -79,44 +78,64 @@ def load_configuration():
             "VPX_ROOT_FOLDER":         VPX_ROOT_FOLDER,
             "EXECUTABLE_CMD":          EXECUTABLE_CMD,
             "EXECUTABLE_SUB_CMD":      EXECUTABLE_SUB_CMD,
+
             "TABLE_IMAGE_PATH":        TABLE_IMAGE_PATH,
             "TABLE_WHEEL_PATH":        TABLE_WHEEL_PATH,
             "TABLE_BACKGLASS_PATH":    TABLE_BACKGLASS_PATH,
             "TABLE_DMD_PATH":          TABLE_DMD_PATH,
+
             "MAIN_MONITOR_INDEX":      str(MAIN_MONITOR_INDEX),
             "MAIN_WINDOW_WIDTH":       str(MAIN_WINDOW_WIDTH),
             "MAIN_WINDOW_HEIGHT":      str(MAIN_WINDOW_HEIGHT),
-            "SECONDARY_MONITOR_INDEX": str(SECONDARY_MONITOR_INDEX),
-            "BACKGLASS_WINDOW_WIDTH":  str(BACKGLASS_WINDOW_WIDTH),
-            "BACKGLASS_WINDOW_HEIGHT": str(BACKGLASS_WINDOW_HEIGHT),
             "WHEEL_IMAGE_SIZE":        str(WHEEL_IMAGE_SIZE),
             "WHEEL_IMAGE_MARGIN":      str(WHEEL_IMAGE_MARGIN),
             "FONT_NAME":               FONT_NAME,
             "FONT_SIZE":               str(FONT_SIZE),
             "BG_COLOR":                BG_COLOR,
             "TEXT_COLOR":              TEXT_COLOR,
-            "FADE_DURATION":           str(FADE_DURATION)
+
+            "SECONDARY_MONITOR_INDEX": str(SECONDARY_MONITOR_INDEX),
+            "BACKGLASS_WINDOW_WIDTH":  str(BACKGLASS_WINDOW_WIDTH),
+            "BACKGLASS_WINDOW_HEIGHT": str(BACKGLASS_WINDOW_HEIGHT),
+            "BACKGLASS_IMAGE_WIDTH":   str(BACKGLASS_IMAGE_WIDTH),
+            "BACKGLASS_IMAGE_HEIGHT":  str(BACKGLASS_IMAGE_HEIGHT),
+            "DMD_WIDTH":               str(DMD_WIDTH),
+            "DMD_HEIGHT":              str(DMD_HEIGHT),
+
+            "FADE_DURATION":           str(FADE_DURATION),
+            "FADE_OPACITY":            str(FADE_OPACITY),
         }
+
         with open(ini_file, "w") as f:
             config.write(f)
     s = config['Settings']
     VPX_ROOT_FOLDER         = s.get("VPX_ROOT_FOLDER", VPX_ROOT_FOLDER)
     EXECUTABLE_CMD          = s.get("EXECUTABLE_CMD", EXECUTABLE_CMD)
     EXECUTABLE_SUB_CMD      = s.get("EXECUTABLE_SUB_CMD", EXECUTABLE_SUB_CMD)
+
     TABLE_IMAGE_PATH        = s.get("TABLE_IMAGE_PATH", TABLE_IMAGE_PATH)
     TABLE_WHEEL_PATH        = s.get("TABLE_WHEEL_PATH", TABLE_WHEEL_PATH)
     TABLE_BACKGLASS_PATH    = s.get("TABLE_BACKGLASS_PATH", TABLE_BACKGLASS_PATH)
     TABLE_DMD_PATH          = s.get("TABLE_DMD_PATH", TABLE_DMD_PATH)
+
     MAIN_MONITOR_INDEX      = int(s.get("MAIN_MONITOR_INDEX", MAIN_MONITOR_INDEX))
     MAIN_WINDOW_WIDTH       = int(s.get("MAIN_WINDOW_WIDTH", MAIN_WINDOW_WIDTH))
     MAIN_WINDOW_HEIGHT      = int(s.get("MAIN_WINDOW_HEIGHT", MAIN_WINDOW_HEIGHT))
-    SECONDARY_MONITOR_INDEX = int(s.get("SECONDARY_MONITOR_INDEX", SECONDARY_MONITOR_INDEX))
-    BACKGLASS_WINDOW_WIDTH  = int(s.get("BACKGLASS_WINDOW_WIDTH", BACKGLASS_WINDOW_WIDTH))
-    BACKGLASS_WINDOW_HEIGHT = int(s.get("BACKGLASS_WINDOW_HEIGHT", BACKGLASS_WINDOW_HEIGHT))
     WHEEL_IMAGE_SIZE        = int(s.get("WHEEL_IMAGE_SIZE", WHEEL_IMAGE_SIZE))
     WHEEL_IMAGE_MARGIN      = int(s.get("WHEEL_IMAGE_MARGIN", WHEEL_IMAGE_MARGIN))
     FONT_NAME               = s.get("FONT_NAME", FONT_NAME)
     FONT_SIZE               = int(s.get("FONT_SIZE", FONT_SIZE))
     BG_COLOR                = s.get("BG_COLOR", BG_COLOR)
     TEXT_COLOR              = s.get("TEXT_COLOR", TEXT_COLOR)
+
+    SECONDARY_MONITOR_INDEX = int(s.get("SECONDARY_MONITOR_INDEX", SECONDARY_MONITOR_INDEX))
+    BACKGLASS_WINDOW_WIDTH  = int(s.get("BACKGLASS_WINDOW_WIDTH", BACKGLASS_WINDOW_WIDTH))
+    BACKGLASS_WINDOW_HEIGHT = int(s.get("BACKGLASS_WINDOW_HEIGHT", BACKGLASS_WINDOW_HEIGHT))
+    BACKGLASS_IMAGE_WIDTH   = int(s.get("BACKGLASS_IMAGE_WIDTH", BACKGLASS_IMAGE_WIDTH))
+    BACKGLASS_IMAGE_HEIGHT  = int(s.get("BACKGLASS_IMAGE_HEIGHT", BACKGLASS_IMAGE_HEIGHT))
+    DMD_WIDTH               = int(s.get("DMD_WIDTH", DMD_WIDTH))
+    DMD_HEIGHT              = int(s.get("DMD_HEIGHT", DMD_HEIGHT))
+
+    
     FADE_DURATION           = int(s.get("FADE_DURATION", FADE_DURATION))
+    FADE_OPACITY            = float(s.get("FADE_OPACITY", FADE_OPACITY))

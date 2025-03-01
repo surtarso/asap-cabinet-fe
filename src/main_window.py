@@ -288,11 +288,12 @@ class SingleTableViewer(QMainWindow):
         python_interpreter = "python3"
 
         try:
-            subprocess.Popen([python_interpreter, settings_app_path]) #works for most desktop environments.
+            subprocess.Popen([python_interpreter, settings_app_path])
         except FileNotFoundError:
             print(f"Error: Settings application not found at: {settings_app_path}")
         except Exception as e:
             print(f"An error occurred: {e}")
+            
         self.setFocus()
 
     def keyPressEvent(self, event):

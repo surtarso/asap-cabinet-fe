@@ -75,7 +75,7 @@ def write_ini_preserve_keys(filename, data):
                 f.write(line)
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="INI File Editor")
+    parser = argparse.ArgumentParser(description="ASAP-Cabinet-FE Settings")
     parser.add_argument(
         "INI_FILE_PATH", nargs="?", default=None,
         help="Path to the INI file to be edited. If not provided, the default path is used."
@@ -134,8 +134,31 @@ class IniEditor:
         # Define explanations for specific keys.
         # Keys here must exactly match the key names in your INI file.
         self.explanations = {
-            "var1": "explanation",
-            "var2": "explanation"
+            "vpx_root_folder": "The root directory where your Visual Pinball X tables (.vpx files) are located.",
+            "executable_cmd": "The path to the Visual Pinball X executable.",
+            "executable_sub_cmd": "The command-line argument used to launch a table in Visual Pinball X (e.g., '-play').",
+            "table_image_path": "The relative path to custom images used for table previews.",
+            "table_wheel_path": "The relative path to custom images used for table wheel art.",
+            "table_backglass_path": "The relative path to custom images used for table backglass displays.",
+            "table_dmd_path": "The relative path to custom images used for table DMD displays.",
+            "main_monitor_index": "The index of the monitor used for the main table display (0, 1, 2, etc.).",
+            "main_window_width": "The width of the main table display window in pixels.",
+            "main_window_height": "The height of the main table display window in pixels.",
+            "wheel_image_size": "The size (width and height) of the table wheel image in pixels.",
+            "wheel_image_margin": "The margin (in pixels) between the table wheel image and the edge of the window.",
+            "font_name": "The name of the font used for text displays.",
+            "font_size": "The size of the font used for text displays in pixels.",
+            "bg_color": "The background color of the application icons (in hexadecimal format).",
+            "text_color": "The color of the text displayed in the application windows.",
+            "secondary_monitor_index": "The index of the monitor used for the secondary backglass/DMD display (0, 1, 2, etc.).",
+            "backglass_window_width": "The width of the backglass display window in pixels.",
+            "backglass_window_height": "The height of the backglass display window in pixels.",
+            "backglass_image_width": "The width of the backglass image in pixels.",
+            "backglass_image_height": "The height of the backglass image in pixels.",
+            "dmd_width": "The width of the DMD display in pixels.",
+            "dmd_height": "The height of the DMD display in pixels.",
+            "fade_duration": "The duration of fade transitions in milliseconds.",
+            "fade_opacity": "The opacity level during fade transitions (0.0 to 1.0)."
         }
 
         self.entry_widgets = {}
@@ -296,7 +319,7 @@ def main():
 
     # Proceed with the application if INI file is valid or updated
     root = tk.Tk()
-    root.title(f"INI Editor - {INI_FILE_PATH}")  # Set window title with the ini file path
+    root.title(f"ASAP-Cabinet-FE Settings - {INI_FILE_PATH}")  # Set window title with the ini file path
     root.geometry("700x500")
 
     app = IniEditor(root, INI_FILE_PATH)
