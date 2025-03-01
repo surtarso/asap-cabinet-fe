@@ -25,13 +25,16 @@ Tarso Galvão - feb/2025
 """
 
 # TODO:
-# - add animated buttons/hints to indicate left-right to change tables
-# - add fade duration, dmd and b2s image size to settings
-# - make settings window scrollable
-# - add a 'sort by letter' button and a serach by querry button
+# - add animated arrow to indicate left-right to change tables on the sides of the screen, 
+#   horizontaly centered
+# - add 'fade duration', 'dmd and b2s image size' variables to settings menu
+# - separate menu options per sections [], make settings window scrollable
+# - add a search by querry button using a magnifier symbol on the top left corner, 
+#   like the settings button one
 # - redirect launch output to ~/.asap-cabinet-fe/launcher.log
 # - redirect other outputs to ~/.asap-cabinet-fe/error.log
-# - settings are not changing after the user saves them, only font related ones.
+# - settings are not changing after the user saves them, only font related ones. 
+#   they get properly saved in the ini and are read when the app reloads.
 
 import os
 import sys
@@ -74,19 +77,25 @@ SECONDARY_MONITOR_INDEX: Monitor index for the secondary window.
 FADE_DURATION:           Duration of fade animations in milliseconds.
 """
 
+# ------------------------------------------
+##          Default values:
+# ------------------------------------------
 CONFIG_FILE             = "~/.asap-cabinet-fe/settings.ini"
 # LAUNCHER_LOGFILE        = "~/.asap-cabinet-fe/launcher.log"
-# ERROR_LOGFILE           = "~/.asap-cabinet-fe/error.log"
-
-VPX_ROOT_FOLDER         = "/home/tarso/Games/vpinball/build/tables/"
-EXECUTABLE_CMD          = "/home/tarso/Games/vpinball/build/VPinballX_GL"
-EXECUTABLE_SUB_CMD      = "-Play"
+# ERROR_LOGFILE           = "~/.asap-cabinet-fe/errors.log"
 
 # Default images path
 DEFAULT_TABLE_PATH      = "img/default_table.png"
 DEFAULT_WHEEL_PATH      = "img/default_wheel.png"
 DEFAULT_BACKGLASS_PATH  = "img/default_backglass.png"
 DEFAULT_DMD_PATH        = "img/default_dmd.gif"
+
+# ------------------------------------------
+##     Included in settins dialog:
+# ------------------------------------------
+VPX_ROOT_FOLDER         = "/home/tarso/Games/vpinball/build/tables/"
+EXECUTABLE_CMD          = "/home/tarso/Games/vpinball/build/VPinballX_GL"
+EXECUTABLE_SUB_CMD      = "-Play"
 
 # Per table images path (/tables/<table_dir>/)
 TABLE_IMAGE_PATH        = "images/table.png"
@@ -98,8 +107,7 @@ TABLE_DMD_PATH          = "images/dmd.gif"
 MAIN_MONITOR_INDEX      = 1
 MAIN_WINDOW_WIDTH       = 1080
 MAIN_WINDOW_HEIGHT      = 1920
-# Table titles/wheels
-WHEEL_IMAGE_SIZE        = 400 # Square
+WHEEL_IMAGE_SIZE        = 400
 WHEEL_IMAGE_MARGIN      = 20
 FONT_NAME               = "Arial"
 FONT_SIZE               = 32
@@ -110,17 +118,15 @@ TEXT_COLOR              = "white"
 SECONDARY_MONITOR_INDEX = 0
 BACKGLASS_WINDOW_WIDTH  = 1024
 BACKGLASS_WINDOW_HEIGHT = 1024
-#images -------------------------(TODO: add to settings)
 BACKGLASS_IMAGE_WIDTH   = 1024
 BACKGLASS_IMAGE_HEIGHT  = 768
 DMD_WIDTH               = 1024
 DMD_HEIGHT              = 256
 
-FADE_OPACITY            = 0.5  # 1=off 0=black
+FADE_OPACITY            = 0.5
 #------------------------------------
 # Transition settings
-FADE_DURATION           = 300  # milliseconds
-
+FADE_DURATION           = 300
 # Settings panel
 SETTINGS_WIDTH          = 600
 SETTINGS_HEIGHT         = 980
@@ -131,9 +137,11 @@ def load_configuration():
     
     global VPX_ROOT_FOLDER, EXECUTABLE_CMD, EXECUTABLE_SUB_CMD
     global TABLE_IMAGE_PATH, TABLE_WHEEL_PATH, TABLE_BACKGLASS_PATH, TABLE_DMD_PATH
-    global MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT, BACKGLASS_WINDOW_WIDTH, BACKGLASS_WINDOW_HEIGHT
+    global MAIN_MONITOR_INDEX, MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT
+    global SECONDARY_MONITOR_INDEX, BACKGLASS_WINDOW_WIDTH, BACKGLASS_WINDOW_HEIGHT
+    global BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT, DMD_WIDTH, DMD_HEIGHT
     global WHEEL_IMAGE_SIZE, WHEEL_IMAGE_MARGIN, FONT_NAME, FONT_SIZE
-    global BG_COLOR, TEXT_COLOR, MAIN_MONITOR_INDEX, SECONDARY_MONITOR_INDEX, FADE_DURATION
+    global BG_COLOR, TEXT_COLOR, FADE_DURATION, FADE_OPACITY
 
     ini_file = os.path.expanduser(CONFIG_FILE) 
     config = configparser.ConfigParser()
@@ -145,52 +153,80 @@ def load_configuration():
 
     if os.path.exists(ini_file):
         config.read(ini_file)
-    else:
-        config['Settings'] = {
-            "VPX_ROOT_FOLDER":             VPX_ROOT_FOLDER,
-            "EXECUTABLE_CMD":              EXECUTABLE_CMD,
-            "EXECUTABLE_SUB_CMD":          EXECUTABLE_SUB_CMD,
-            "TABLE_IMAGE_PATH":            TABLE_IMAGE_PATH,
-            "TABLE_WHEEL_PATH":            TABLE_WHEEL_PATH,
-            "TABLE_BACKGLASS_PATH":        TABLE_BACKGLASS_PATH,
-            "TABLE_DMD_PATH":              TABLE_DMD_PATH,
+    
+    # Ensure 'Main Paths' section exists
+    if 'Main Paths' not in config:
+        config['Main Paths'] = {
+            "VPX_ROOT_FOLDER":         VPX_ROOT_FOLDER,
+            "EXECUTABLE_CMD":          EXECUTABLE_CMD,
+            "EXECUTABLE_SUB_CMD":      EXECUTABLE_SUB_CMD,
+        }
+        config['Custom Images'] = {
+            "TABLE_IMAGE_PATH":        TABLE_IMAGE_PATH,
+            "TABLE_WHEEL_PATH":        TABLE_WHEEL_PATH,
+            "TABLE_BACKGLASS_PATH":    TABLE_BACKGLASS_PATH,
+            "TABLE_DMD_PATH":          TABLE_DMD_PATH,
+        }
+        config['Main Window'] = {
             "MAIN_MONITOR_INDEX":      str(MAIN_MONITOR_INDEX),
             "MAIN_WINDOW_WIDTH":       str(MAIN_WINDOW_WIDTH),
             "MAIN_WINDOW_HEIGHT":      str(MAIN_WINDOW_HEIGHT),
+            "WHEEL_IMAGE_SIZE":        str(WHEEL_IMAGE_SIZE),
+            "WHEEL_IMAGE_MARGIN":      str(WHEEL_IMAGE_MARGIN),
+            "FONT_NAME":               FONT_NAME,
+            "FONT_SIZE":               str(FONT_SIZE),
+            "BG_COLOR":                BG_COLOR,
+            "TEXT_COLOR":              TEXT_COLOR,
+        }
+        config['Secondary Window'] = {
             "SECONDARY_MONITOR_INDEX": str(SECONDARY_MONITOR_INDEX),
             "BACKGLASS_WINDOW_WIDTH":  str(BACKGLASS_WINDOW_WIDTH),
             "BACKGLASS_WINDOW_HEIGHT": str(BACKGLASS_WINDOW_HEIGHT),
-            "WHEEL_IMAGE_SIZE":        str(WHEEL_IMAGE_SIZE),
-            "WHEEL_IMAGE_MARGIN":      str(WHEEL_IMAGE_MARGIN),
-            "FONT_NAME":                   FONT_NAME,
-            "FONT_SIZE":               str(FONT_SIZE),
-            "BG_COLOR":                    BG_COLOR,
-            "TEXT_COLOR":                  TEXT_COLOR,
-            "FADE_DURATION":           str(FADE_DURATION)
+            "BACKGLASS_IMAGE_WIDTH":   str(BACKGLASS_IMAGE_WIDTH),
+            "BACKGLASS_IMAGE_HEIGHT":  str(BACKGLASS_IMAGE_HEIGHT),
+            "DMD_WIDTH":               str(DMD_WIDTH),
+            "DMD_HEIGHT":              str(DMD_HEIGHT),
+        }
+        config['Transitions'] = {
+            "FADE_DURATION":           str(FADE_DURATION),
+            "FADE_OPACITY":            str(FADE_OPACITY),
         }
         with open(ini_file, "w") as f:
             config.write(f)
-    s = config['Settings']
-    VPX_ROOT_FOLDER =             s.get("VPX_ROOT_FOLDER", VPX_ROOT_FOLDER)
-    EXECUTABLE_CMD =              s.get("EXECUTABLE_CMD", EXECUTABLE_CMD)
-    EXECUTABLE_SUB_CMD =          s.get("EXECUTABLE_SUB_CMD", EXECUTABLE_SUB_CMD)
-    TABLE_IMAGE_PATH =            s.get("TABLE_IMAGE_PATH", TABLE_IMAGE_PATH)
-    TABLE_WHEEL_PATH =            s.get("TABLE_WHEEL_PATH", TABLE_WHEEL_PATH)
-    TABLE_BACKGLASS_PATH =        s.get("TABLE_BACKGLASS_PATH", TABLE_BACKGLASS_PATH)
-    TABLE_DMD_PATH =              s.get("TABLE_DMD_PATH", TABLE_DMD_PATH)
-    MAIN_MONITOR_INDEX =      int(s.get("MAIN_MONITOR_INDEX", MAIN_MONITOR_INDEX))
-    MAIN_WINDOW_WIDTH =       int(s.get("MAIN_WINDOW_WIDTH", MAIN_WINDOW_WIDTH))
-    MAIN_WINDOW_HEIGHT =      int(s.get("MAIN_WINDOW_HEIGHT", MAIN_WINDOW_HEIGHT))
-    SECONDARY_MONITOR_INDEX = int(s.get("SECONDARY_MONITOR_INDEX", SECONDARY_MONITOR_INDEX))
-    BACKGLASS_WINDOW_WIDTH =  int(s.get("BACKGLASS_WINDOW_WIDTH", BACKGLASS_WINDOW_WIDTH))
-    BACKGLASS_WINDOW_HEIGHT = int(s.get("BACKGLASS_WINDOW_HEIGHT", BACKGLASS_WINDOW_HEIGHT))
-    WHEEL_IMAGE_SIZE =        int(s.get("WHEEL_IMAGE_SIZE", WHEEL_IMAGE_SIZE))
-    WHEEL_IMAGE_MARGIN =      int(s.get("WHEEL_IMAGE_MARGIN", WHEEL_IMAGE_MARGIN))
-    FONT_NAME =                   s.get("FONT_NAME", FONT_NAME)
-    FONT_SIZE =               int(s.get("FONT_SIZE", FONT_SIZE))
-    BG_COLOR =                    s.get("BG_COLOR", BG_COLOR)
-    TEXT_COLOR =                  s.get("TEXT_COLOR", TEXT_COLOR) 
-    FADE_DURATION =           int(s.get("FADE_DURATION", FADE_DURATION))
+    p = config['Main Paths']
+    VPX_ROOT_FOLDER         = p.get("VPX_ROOT_FOLDER", VPX_ROOT_FOLDER)
+    EXECUTABLE_CMD          = p.get("EXECUTABLE_CMD", EXECUTABLE_CMD)
+    EXECUTABLE_SUB_CMD      = p.get("EXECUTABLE_SUB_CMD", EXECUTABLE_SUB_CMD)
+
+    ci = config['Custom Images']
+    TABLE_IMAGE_PATH        = ci.get("TABLE_IMAGE_PATH", TABLE_IMAGE_PATH)
+    TABLE_WHEEL_PATH        = ci.get("TABLE_WHEEL_PATH", TABLE_WHEEL_PATH)
+    TABLE_BACKGLASS_PATH    = ci.get("TABLE_BACKGLASS_PATH", TABLE_BACKGLASS_PATH)
+    TABLE_DMD_PATH          = ci.get("TABLE_DMD_PATH", TABLE_DMD_PATH)
+
+    mw = config['Main Window']
+    MAIN_MONITOR_INDEX      = int(mw.get("MAIN_MONITOR_INDEX", MAIN_MONITOR_INDEX))
+    MAIN_WINDOW_WIDTH       = int(mw.get("MAIN_WINDOW_WIDTH", MAIN_WINDOW_WIDTH))
+    MAIN_WINDOW_HEIGHT      = int(mw.get("MAIN_WINDOW_HEIGHT", MAIN_WINDOW_HEIGHT))
+    WHEEL_IMAGE_SIZE        = int(mw.get("WHEEL_IMAGE_SIZE", WHEEL_IMAGE_SIZE))
+    WHEEL_IMAGE_MARGIN      = int(mw.get("WHEEL_IMAGE_MARGIN", WHEEL_IMAGE_MARGIN))
+    FONT_NAME               = mw.get("FONT_NAME", FONT_NAME)
+    FONT_SIZE               = int(mw.get("FONT_SIZE", FONT_SIZE))
+    BG_COLOR                = mw.get("BG_COLOR", BG_COLOR)
+    TEXT_COLOR              = mw.get("TEXT_COLOR", TEXT_COLOR)
+
+    sw = config['Secondary Window']
+    SECONDARY_MONITOR_INDEX = int(sw.get("SECONDARY_MONITOR_INDEX", SECONDARY_MONITOR_INDEX))
+    BACKGLASS_WINDOW_WIDTH  = int(sw.get("BACKGLASS_WINDOW_WIDTH", BACKGLASS_WINDOW_WIDTH))
+    BACKGLASS_WINDOW_HEIGHT = int(sw.get("BACKGLASS_WINDOW_HEIGHT", BACKGLASS_WINDOW_HEIGHT))
+    BACKGLASS_IMAGE_WIDTH   = int(sw.get("BACKGLASS_IMAGE_WIDTH", BACKGLASS_IMAGE_WIDTH))
+    BACKGLASS_IMAGE_HEIGHT  = int(sw.get("BACKGLASS_IMAGE_HEIGHT", BACKGLASS_IMAGE_HEIGHT))
+    DMD_WIDTH               = int(sw.get("DMD_WIDTH", DMD_WIDTH))
+    DMD_HEIGHT              = int(sw.get("DMD_HEIGHT", DMD_HEIGHT))
+
+    t = config['Transitions']
+    FADE_DURATION           = int(t.get("FADE_DURATION", FADE_DURATION))
+    FADE_OPACITY            = float(t.get("FADE_OPACITY", FADE_OPACITY))
 
 # Load configuration on startup
 load_configuration()
@@ -219,7 +255,7 @@ class SettingsDialog(QDialog):
         bgColorEdit         (QLineEdit)  : Input field for the background color.
         textColorEdit       (QLineEdit)  : Input field for the text color.
         fadeDurationEdit    (QLineEdit)  : Input field for the fade duration.
-        buttonBox           (QDialogButtonBox): Button box containing Ok and Cancel buttons.
+        fadeOpacityEdit     (QLineEdit)  : Input field for the fade opacity.
     Methods:
         __init__(self, parent=None):
             Initializes the SettingsDialog with the given parent widget.
@@ -251,6 +287,10 @@ class SettingsDialog(QDialog):
         self.secondaryMonitor    = QLineEdit(str(SECONDARY_MONITOR_INDEX))
         self.backglassWidthEdit  = QLineEdit(str(BACKGLASS_WINDOW_WIDTH))
         self.backglassHeightEdit = QLineEdit(str(BACKGLASS_WINDOW_HEIGHT))
+        self.backglassImageWidthEdit = QLineEdit(str(BACKGLASS_IMAGE_WIDTH))
+        self.backglassImageHeightEdit = QLineEdit(str(BACKGLASS_IMAGE_HEIGHT))
+        self.dmdWidthEdit        = QLineEdit(str(DMD_WIDTH))
+        self.dmdHeightEdit       = QLineEdit(str(DMD_HEIGHT))
         self.wheelSizeEdit       = QLineEdit(str(WHEEL_IMAGE_SIZE))
         self.wheelMarginEdit     = QLineEdit(str(WHEEL_IMAGE_MARGIN))
         self.fontNameEdit        = QLineEdit(FONT_NAME)
@@ -258,13 +298,14 @@ class SettingsDialog(QDialog):
         self.bgColorEdit         = QLineEdit(BG_COLOR)
         self.textColorEdit       = QLineEdit(TEXT_COLOR)
         self.fadeDurationEdit    = QLineEdit(str(FADE_DURATION))
+        self.fadeOpacityEdit     = QLineEdit(str(FADE_OPACITY))
         
         # Add each field to the layout with a descriptive label
-        self.add_section_title("Main Paths (Use absolute paths)")
+        self.add_section_title("Main Paths")
         self.layout.addRow("Tables Folder:",        self.vpxRootEdit)
         self.layout.addRow("VPX Executable:",       self.execCmdEdit)
         self.layout.addRow("VPX Argument:",         self.execSubCmdEdit)
-        self.add_section_title("Custom Media Paths (/tables/<table_name/)")
+        self.add_section_title("Custom Images")
         self.layout.addRow("Playfield Images Path:",self.tableImageEdit)
         self.layout.addRow("Wheel Images Path:",    self.wheelImageEdit)
         self.layout.addRow("Backglass Images Path:",self.backglassImageEdit)
@@ -276,6 +317,10 @@ class SettingsDialog(QDialog):
         self.layout.addRow("Backglass Monitor:",    self.secondaryMonitor)
         self.layout.addRow("Backglass Width:",      self.backglassWidthEdit)
         self.layout.addRow("Backglass Height:",     self.backglassHeightEdit)
+        self.layout.addRow("Backglass Image Width:",self.backglassImageWidthEdit)
+        self.layout.addRow("Backglass Image Height:",self.backglassImageHeightEdit)
+        self.layout.addRow("DMD Width:",            self.dmdWidthEdit)
+        self.layout.addRow("DMD Height:",           self.dmdHeightEdit)
         self.add_section_title("Table Title Style")
         self.layout.addRow("Wheel Size:",           self.wheelSizeEdit)
         self.layout.addRow("Wheel Margin:",         self.wheelMarginEdit)
@@ -283,7 +328,9 @@ class SettingsDialog(QDialog):
         self.layout.addRow("Font Size:",            self.fontSizeEdit)
         self.layout.addRow("Background Color:",     self.bgColorEdit)
         self.layout.addRow("Text Color:",           self.textColorEdit)
+        self.add_section_title("Transition Settings")
         self.layout.addRow("Transition Duration:",  self.fadeDurationEdit)
+        self.layout.addRow("Fade Opacity:",         self.fadeOpacityEdit)
         
         # Create a button box with Ok and Cancel buttons
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -326,13 +373,18 @@ class SettingsDialog(QDialog):
             "SECONDARY_MONITOR_INDEX": self.secondaryMonitor.text(),
             "BACKGLASS_WINDOW_WIDTH":  self.backglassWidthEdit.text(),
             "BACKGLASS_WINDOW_HEIGHT": self.backglassHeightEdit.text(),
+            "BACKGLASS_IMAGE_WIDTH":   self.backglassImageWidthEdit.text(),
+            "BACKGLASS_IMAGE_HEIGHT":  self.backglassImageHeightEdit.text(),
+            "DMD_WIDTH":               self.dmdWidthEdit.text(),
+            "DMD_HEIGHT":              self.dmdHeightEdit.text(),
             "WHEEL_IMAGE_SIZE":        self.wheelSizeEdit.text(),
             "WHEEL_IMAGE_MARGIN":      self.wheelMarginEdit.text(),
             "FONT_NAME":               self.fontNameEdit.text(),
             "FONT_SIZE":               self.fontSizeEdit.text(),
             "BG_COLOR":                self.bgColorEdit.text(),
             "TEXT_COLOR":              self.textColorEdit.text(),
-            "FADE_DURATION":           self.fadeDurationEdit.text()
+            "FADE_DURATION":           self.fadeDurationEdit.text(),
+            "FADE_OPACITY":            self.fadeOpacityEdit.text()
         }
     
     def add_section_title(self, title):
@@ -735,22 +787,60 @@ class SingleTableViewer(QMainWindow):
         if dialog.exec_() == QDialog.Accepted:
             values = dialog.getValues()
             config = configparser.ConfigParser()
-            config['Settings'] = values
 
-            # Create the ini_file path
+            # Read existing configuration
             ini_file = os.path.expanduser(CONFIG_FILE)
+            config.read(ini_file)
+
+            # Update the configuration with new values
+            config['Main Paths'] = {
+                "VPX_ROOT_FOLDER": values["VPX_ROOT_FOLDER"],
+                "EXECUTABLE_CMD": values["EXECUTABLE_CMD"],
+                "EXECUTABLE_SUB_CMD": values["EXECUTABLE_SUB_CMD"],
+            }
+            config['Custom Images'] = {
+                "TABLE_IMAGE_PATH": values["TABLE_IMAGE_PATH"],
+                "TABLE_WHEEL_PATH": values["TABLE_WHEEL_PATH"],
+                "TABLE_BACKGLASS_PATH": values["TABLE_BACKGLASS_PATH"],
+                "TABLE_DMD_PATH": values["TABLE_DMD_PATH"],
+            }
+            config['Main Window'] = {
+                "MAIN_MONITOR_INDEX": values["MAIN_MONITOR_INDEX"],
+                "MAIN_WINDOW_WIDTH": values["MAIN_WINDOW_WIDTH"],
+                "MAIN_WINDOW_HEIGHT": values["MAIN_WINDOW_HEIGHT"],
+                "WHEEL_IMAGE_SIZE": values["WHEEL_IMAGE_SIZE"],
+                "WHEEL_IMAGE_MARGIN": values["WHEEL_IMAGE_MARGIN"],
+                "FONT_NAME": values["FONT_NAME"],
+                "FONT_SIZE": values["FONT_SIZE"],
+                "BG_COLOR": values["BG_COLOR"],
+                "TEXT_COLOR": values["TEXT_COLOR"],
+            }
+            config['Secondary Window'] = {
+                "SECONDARY_MONITOR_INDEX": values["SECONDARY_MONITOR_INDEX"],
+                "BACKGLASS_WINDOW_WIDTH": values["BACKGLASS_WINDOW_WIDTH"],
+                "BACKGLASS_WINDOW_HEIGHT": values["BACKGLASS_WINDOW_HEIGHT"],
+                "BACKGLASS_IMAGE_WIDTH": values["BACKGLASS_IMAGE_WIDTH"],
+                "BACKGLASS_IMAGE_HEIGHT": values["BACKGLASS_IMAGE_HEIGHT"],
+                "DMD_WIDTH": values["DMD_WIDTH"],
+                "DMD_HEIGHT": values["DMD_HEIGHT"],
+            }
+            config['Transitions'] = {
+                "FADE_DURATION": values["FADE_DURATION"],
+                "FADE_OPACITY": values["FADE_OPACITY"],
+            }
 
             # Ensure the directory exists
             directory = os.path.dirname(ini_file)
             if not os.path.exists(directory):
                 os.makedirs(directory)
+
             try:
                 with open(ini_file, "w") as f:
                     config.write(f)
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Failed to save settings: {e}")
-                return # exit the function if error.
-            
+                return  # exit the function if error.
+
             load_configuration()
             self._set_table_name()
             self.table_list = load_table_list()
