@@ -26,8 +26,12 @@ Tarso Galvão - feb/2025
 """
 
 # TODO:
+# - switch video engine to mp4 instead of gif on DMD!
+# - add video engine to table and backglass as well.
+# - use png image if no mp4/f4v/wmv video found (fall back to default as usual)
 # - redirect launch output to ~/.asap-cabinet-fe/launcher.log
 # - redirect other outputs to ~/.asap-cabinet-fe/error.log
+# - separate this script into modules
 
 import os
 import sys
