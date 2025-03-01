@@ -1,13 +1,8 @@
-# src/settings_editor.py
-
-import os
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QComboBox,
     QScrollArea, QWidget, QLineEdit, QPushButton, QFormLayout,
-    QMessageBox, QApplication, QToolTip
+    QMessageBox
 )
-from PyQt5.QtCore import Qt
-from src.config import CONFIG_FILE  # Assumes CONFIG_FILE is defined in src/config.py
 
 def read_ini_preserve_keys(filename):
     """
@@ -209,16 +204,3 @@ class IniEditorDialog(QDialog):
             self.accept()  # Close dialog on success
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to save changes: {str(e)}")
-
-# For testing the dialog independently
-if __name__ == "__main__":
-    import sys
-    app = QApplication(sys.argv)
-    ini_file_path = os.path.expanduser(CONFIG_FILE)
-    if not os.path.exists(ini_file_path):
-        # Create a dummy INI file if not present
-        ini_file_path = "dummy.ini"
-        with open(ini_file_path, "w") as f:
-            f.write("[General]\nkey = value\n")
-    editor = IniEditorDialog(ini_file_path)
-    editor.exec_()

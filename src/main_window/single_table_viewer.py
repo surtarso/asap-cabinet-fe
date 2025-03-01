@@ -1,6 +1,4 @@
-# single_table_viewer.py
 import os
-import subprocess
 from PyQt5.QtCore import Qt, QEasingCurve
 from PyQt5.QtGui import QPixmap, QFont, QFontMetrics
 from PyQt5.QtWidgets import QMainWindow
@@ -204,24 +202,6 @@ class SingleTableViewer(QMainWindow):
             # Optionally refresh settings if needed after dialog is accepted
             self.update_images()
         self.setFocus()
-
-    # def openSettings(self):
-    #     """
-    #     Opens the standalone IniEditor application and updates images on close.
-    #     """
-    #     script_dir = os.path.dirname(os.path.abspath(__file__))
-    #     settings_app_path = os.path.join(script_dir, "..", "settings_editor.py")
-    #     python_interpreter = "python3"
-
-    #     try:
-    #         process = subprocess.Popen([python_interpreter, settings_app_path])
-    #         process.wait()  # Wait for the settings editor to close
-    #     except FileNotFoundError:
-    #         print(f"Error: Settings application not found at: {settings_app_path}")
-    #     except Exception as e:
-    #         print(f"An error occurred: {e}")
-
-    #     self.setFocus()
 
     def keyPressEvent(self, event):
         """
