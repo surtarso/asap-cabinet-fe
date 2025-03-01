@@ -1,10 +1,9 @@
 import os
 import sys
 import logging
+import src.config as config
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QGuiApplication
-from src.config import (MAIN_MONITOR_INDEX, MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT,
-                        SECONDARY_MONITOR_INDEX, BACKGLASS_WINDOW_WIDTH, BACKGLASS_WINDOW_HEIGHT, load_configuration)
 from src.secondary_window import SecondaryWindow
 from src.main_window import SingleTableViewer
 
@@ -46,7 +45,7 @@ if __name__ == "__main__":
         logging.error("Running under Wayland. For precise window positioning, consider launching with QT_QPA_PLATFORM=xcb")
     
     # Load application configuration
-    load_configuration()
+    config.load_configuration()
     
     # Create the QApplication instance
     app = QApplication(sys.argv)
@@ -61,19 +60,19 @@ if __name__ == "__main__":
 
     # Position windows on the correct monitors
     screens = QGuiApplication.screens()
-    if len(screens) > MAIN_MONITOR_INDEX:
-        main_screen = screens[MAIN_MONITOR_INDEX]
+    if len(screens) > config.MAIN_MONITOR_INDEX:
+        main_screen = screens[config.MAIN_MONITOR_INDEX]
         main_geom = main_screen.geometry()
         viewer.windowHandle().setScreen(main_screen)
         viewer.move(main_geom.topLeft())
-        viewer.setGeometry(main_geom.x(), main_geom.y(), MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)
+        viewer.setGeometry(main_geom.x(), main_geom.y(), config.MAIN_WINDOW_WIDTH, config.MAIN_WINDOW_HEIGHT)
 
-    if len(screens) > SECONDARY_MONITOR_INDEX:
-        secondary_screen = screens[SECONDARY_MONITOR_INDEX]
+    if len(screens) > config.SECONDARY_MONITOR_INDEX:
+        secondary_screen = screens[config.SECONDARY_MONITOR_INDEX]
         sec_geom = secondary_screen.geometry()
         secondary_window.windowHandle().setScreen(secondary_screen)
         secondary_window.move(sec_geom.topLeft())
-        secondary_window.setGeometry(sec_geom.x(), sec_geom.y(), BACKGLASS_WINDOW_WIDTH, BACKGLASS_WINDOW_HEIGHT)
+        secondary_window.setGeometry(sec_geom.x(), sec_geom.y(), config.BACKGLASS_WINDOW_WIDTH, config.BACKGLASS_WINDOW_HEIGHT)
 
     # Start the Qt event loop
     sys.exit(app.exec_())

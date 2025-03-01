@@ -1,11 +1,11 @@
 import os
 import subprocess
 import logging
-from .config import EXECUTABLE_CMD, EXECUTABLE_SUB_CMD
+import src.config as config
 
 def launch_table(table):
     """Launches the selected table and logs output."""
-    command = [EXECUTABLE_CMD, EXECUTABLE_SUB_CMD, table["vpx_file"]]
+    command = [config.EXECUTABLE_CMD, config.EXECUTABLE_SUB_CMD, table["vpx_file"]]
     
     log_path = os.path.expanduser("~/.asap-cabinet-fe/launcher.log")
     log_dir = os.path.dirname(log_path)
