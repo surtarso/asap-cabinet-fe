@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import QMainWindow, QLabel, QWidget, QPushButton, QGraphics
 from .config import (MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT, BG_COLOR, TEXT_COLOR, FONT_NAME, FONT_SIZE,
                     WHEEL_IMAGE_SIZE, WHEEL_IMAGE_MARGIN, FADE_OPACITY, FADE_DURATION, EXECUTABLE_CMD, EXECUTABLE_SUB_CMD)
 from .table_loader import load_table_list
-from .settings_dialog import SettingsDialog
 
 '''
 This module contains the primary window (table viewer) that lets you navigate tables,
@@ -283,28 +282,17 @@ class SingleTableViewer(QMainWindow):
                 self.secondary.show()
 
     def openSettings(self):
-        from .config import CONFIG_FILE, load_configuration
-        dialog = SettingsDialog(self)
-        if dialog.exec_() == dialog.Accepted:
-            values = dialog.getValues()
-            import configparser
-            config = configparser.ConfigParser()
-            config['Settings'] = values
-            ini_file = os.path.expanduser(CONFIG_FILE)
-            directory = os.path.dirname(ini_file)
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            try:
-                with open(ini_file, "w") as f:
-                    config.write(f)
-            except Exception as e:
-                from PyQt5.QtWidgets import QMessageBox
-                QMessageBox.critical(self, "Error", f"Failed to save settings: {e}")
-                return
-            load_configuration()
-            self._set_table_name()
-            self.table_list = load_table_list()
-            self.update_images()
+        """Opens the standalone IniEditor application."""
+        script_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory of main.py
+        settings_app_path = os.path.join(script_dir, "settings_editor.py") #create the full path.
+        python_interpreter = "python3"
+
+        try:
+            subprocess.Popen([python_interpreter, settings_app_path]) #works for most desktop environments.
+        except FileNotFoundError:
+            print(f"Error: Settings application not found at: {settings_app_path}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
         self.setFocus()
 
     def keyPressEvent(self, event):
