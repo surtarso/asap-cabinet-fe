@@ -25,12 +25,9 @@ Dependencies: python3, python3-pyqt5
 Tarso Galvão - feb/2025
 """
 
-# TODO:
 # - add animated arrow to indicate left-right to change tables on the sides of the screen, 
 #   horizontaly centered
 # - make settings window scrollable
-# - add a search by querry button using a magnifier symbol on the top left corner, 
-#   like the settings button one
 # - redirect launch output to ~/.asap-cabinet-fe/launcher.log
 # - redirect other outputs to ~/.asap-cabinet-fe/error.log
 # - settings are not changing after the user saves them, only font related ones. 
@@ -460,6 +457,23 @@ class SecondaryWindow(QMainWindow):
             self.dmd_label.setMovie(self.dmd_movie)
             self.dmd_movie.start()
 
+# Implement the search dialog
+class SearchDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Search Tables")
+        self.setFixedSize(400, 100)
+        self.layout = QFormLayout(self)
+        self.searchEdit = QLineEdit(self)
+        self.layout.addRow("Search:", self.searchEdit)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        self.layout.addRow(self.buttonBox)
+
+    def getSearchQuery(self):
+        return self.searchEdit.text()
+
 # ---------------- Main Window ----------------
 class SingleTableViewer(QMainWindow):
 
@@ -521,6 +535,23 @@ class SingleTableViewer(QMainWindow):
             }
         """)
 
+        # Add a search button with a magnifier symbol on the top left corner
+        self.searchButton = QPushButton("🔍", central)
+        self.searchButton.setFixedSize(40, 40)
+        self.searchButton.move(10, 10)
+        self.searchButton.setFocusPolicy(Qt.NoFocus)
+        self.searchButton.clicked.connect(self.openSearch)
+        self.searchButton.raise_()
+
+        # Apply a stylesheet to remove the border and make the background transparent
+        self.searchButton.setStyleSheet("""
+            QPushButton {
+                font-size:  28px;        /* Increase the font size of the icon */
+                border:     none;        /* Remove the button border */
+                background: transparent; /* Make the background transparent */
+            }
+        """)
+
         wheel_x = MAIN_WINDOW_WIDTH - WHEEL_IMAGE_SIZE - WHEEL_IMAGE_MARGIN
         wheel_y = MAIN_WINDOW_HEIGHT - WHEEL_IMAGE_SIZE - WHEEL_IMAGE_MARGIN
         self.wheel_label = QLabel(central)
@@ -533,6 +564,19 @@ class SingleTableViewer(QMainWindow):
 
         # Initial display
         self.update_images()
+
+    ## SEARCH
+    def openSearch(self):
+        dialog = SearchDialog(self)
+        if dialog.exec_() == QDialog.Accepted:
+            query = dialog.getSearchQuery().lower()
+            for index, table in enumerate(self.table_list):
+                if query in table["table_name"].lower():
+                    self.current_index = index
+                    self.update_images()
+                    break
+            else:
+                QMessageBox.information(self, "Search", "No matching table found.")
 
     ## TABLE TITLE
     def _set_table_name(self):
