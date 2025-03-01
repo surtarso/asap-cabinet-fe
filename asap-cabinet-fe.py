@@ -26,13 +26,8 @@ Tarso Galvão - feb/2025
 """
 
 # TODO:
-# - add animated arrow to indicate left-right to change tables on the sides of the screen,
-#   horizontaly centered
-# - make settings window scrollable
 # - redirect launch output to ~/.asap-cabinet-fe/launcher.log
 # - redirect other outputs to ~/.asap-cabinet-fe/error.log
-# - settings are not changing after the user saves them, only font related ones. 
-#   they get properly saved in the ini and are read when the app reloads.
 
 import os
 import sys
@@ -576,6 +571,42 @@ class SingleTableViewer(QMainWindow):
         self.wheel_label.setStyleSheet("background-color: transparent;")
         self.wheel_effect = QGraphicsOpacityEffect(self.wheel_label)
         self.wheel_label.setGraphicsEffect(self.wheel_effect)
+
+        # Add left and right arrow indicators
+        self.left_arrow = QLabel("←", central)
+        self.right_arrow = QLabel("→", central)
+
+        # Style the arrows
+        arrow_style = f"padding-bottom: 5px; color: {TEXT_COLOR}; font-size: 48px; background-color: {BG_COLOR};"
+        self.left_arrow.setStyleSheet(arrow_style)
+        self.right_arrow.setStyleSheet(arrow_style)
+
+        # Center the arrows within their background box
+        self.left_arrow.setAlignment(Qt.AlignCenter)
+        self.right_arrow.setAlignment(Qt.AlignCenter)
+
+        # Position arrows
+        arrow_y = (2 * MAIN_WINDOW_HEIGHT) // 3 - 25  # Middle of the bottom third of the screen
+        self.left_arrow.setGeometry(10, arrow_y, 50, 50)
+        self.right_arrow.setGeometry(MAIN_WINDOW_WIDTH - 60, arrow_y, 50, 50)
+
+        # Add fade animation to arrows
+        self.left_arrow_effect = QGraphicsOpacityEffect(self.left_arrow)
+        self.right_arrow_effect = QGraphicsOpacityEffect(self.right_arrow)
+        self.left_arrow.setGraphicsEffect(self.left_arrow_effect)
+        self.right_arrow.setGraphicsEffect(self.right_arrow_effect)
+
+        self.left_arrow_animation = QPropertyAnimation(self.left_arrow_effect, b"opacity")
+        self.right_arrow_animation = QPropertyAnimation(self.right_arrow_effect, b"opacity")
+
+        for animation in [self.left_arrow_animation, self.right_arrow_animation]:
+            animation.setDuration(1000)
+            animation.setStartValue(1.0)
+            animation.setKeyValueAt(0.5, 0.5)
+            animation.setEndValue(1.0)
+            animation.setEasingCurve(QEasingCurve.InOutQuad)
+            animation.setLoopCount(-1)  # Loop indefinitely
+            animation.start()
 
         # Initial display
         self.update_images()
