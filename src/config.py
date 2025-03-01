@@ -159,3 +159,4 @@ def load_configuration():
     FADE_DURATION           = int(t.get("FADE_DURATION", FADE_DURATION))
     FADE_OPACITY            = float(t.get("FADE_OPACITY", FADE_OPACITY))
 
+load_configuration()
