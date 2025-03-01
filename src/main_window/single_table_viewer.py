@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QMainWindow
 # Use relative imports since this file is inside the main_window package
 from ..config import (MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT, BG_COLOR, TEXT_COLOR,
                       FONT_NAME, FONT_SIZE, WHEEL_IMAGE_SIZE, WHEEL_IMAGE_MARGIN,
-                      FADE_OPACITY, FADE_DURATION)
+                      FADE_OPACITY, FADE_DURATION, CONFIG_FILE)
 from ..table_loader import load_table_list
 from ..game_launcher import launch_table
 from .ui_components import (
@@ -20,6 +20,7 @@ from .ui_components import (
     create_arrow_label
 )
 from .animations import create_fade_animation, create_loop_fade_animation
+from src.settings_editor import IniEditorDialog
 
 class SingleTableViewer(QMainWindow):
     """
@@ -196,22 +197,31 @@ class SingleTableViewer(QMainWindow):
         launch_table(table)
 
     def openSettings(self):
-        """
-        Opens the standalone IniEditor application and updates images on close.
-        """
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        settings_app_path = os.path.join(script_dir, "..", "settings_editor.py")
-        python_interpreter = "python3"
-
-        try:
-            process = subprocess.Popen([python_interpreter, settings_app_path])
-            process.wait()  # Wait for the settings editor to close
-        except FileNotFoundError:
-            print(f"Error: Settings application not found at: {settings_app_path}")
-        except Exception as e:
-            print(f"An error occurred: {e}")
-
+        """Opens the integrated settings editor dialog."""
+        ini_file_path = os.path.expanduser(CONFIG_FILE)
+        editor_dialog = IniEditorDialog(ini_file_path, self)
+        if editor_dialog.exec_():
+            # Optionally refresh settings if needed after dialog is accepted
+            self.update_images()
         self.setFocus()
+
+    # def openSettings(self):
+    #     """
+    #     Opens the standalone IniEditor application and updates images on close.
+    #     """
+    #     script_dir = os.path.dirname(os.path.abspath(__file__))
+    #     settings_app_path = os.path.join(script_dir, "..", "settings_editor.py")
+    #     python_interpreter = "python3"
+
+    #     try:
+    #         process = subprocess.Popen([python_interpreter, settings_app_path])
+    #         process.wait()  # Wait for the settings editor to close
+    #     except FileNotFoundError:
+    #         print(f"Error: Settings application not found at: {settings_app_path}")
+    #     except Exception as e:
+    #         print(f"An error occurred: {e}")
+
+    #     self.setFocus()
 
     def keyPressEvent(self, event):
         """

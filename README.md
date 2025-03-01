@@ -21,7 +21,7 @@
 
 - Download: `git clone https://github.com/surtarso/asap-cabinet-fe.git && cd asap-cabinet-fe/`
 
-- Dependencies: `sudo apt install python3 python3-pyqt5 python3-tk`
+- Dependencies: `sudo apt install python3 python3-pyqt5`
 
 - X11: `python3 asap-cabinet-fe.py`
 
