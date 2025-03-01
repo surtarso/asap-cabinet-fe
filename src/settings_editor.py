@@ -1,5 +1,5 @@
 import os
-import argparse
+import sys
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
@@ -73,14 +73,6 @@ def write_ini_preserve_keys(filename, data):
             else:
                 # For other lines, just write them as is
                 f.write(line)
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="ASAP-Cabinet-FE Settings")
-    parser.add_argument(
-        "INI_FILE_PATH", nargs="?", default=None,
-        help="Path to the INI file to be edited. If not provided, the default path is used."
-    )
-    return parser.parse_args()
 
 class ToolTip:
     """
@@ -202,10 +194,6 @@ class IniEditor:
         save_button = ttk.Button(button_frame, text="Save", command=self.save_changes)
         save_button.pack(side=tk.LEFT, padx=5)
 
-        # Change INI button
-        change_ini_button = ttk.Button(button_frame, text="Change INI", command=self.change_ini)
-        change_ini_button.pack(side=tk.LEFT, padx=5)
-
         # Exit button
         exit_button = ttk.Button(button_frame, text="Exit", command=self.master.quit)
         exit_button.pack(side=tk.LEFT, padx=5)
@@ -219,19 +207,6 @@ class IniEditor:
         Updates the window title based on the currently selected INI file.
         '''
         self.master.title(f"INI Editor - {self.INI_FILE_PATH}")
-
-    def change_ini(self):
-        '''
-        Opens a file dialog to choose a new INI file and update the UI accordingly.
-        '''
-        new_ini_file = filedialog.askopenfilename(
-            title="Select INI File", filetypes=[("INI Files", "*.ini"), ("All Files", "*.*")]
-        )
-        if new_ini_file:
-            self.INI_FILE_PATH = new_ini_file
-            self.ini_data = read_ini_preserve_keys(self.INI_FILE_PATH)
-            self.load_section(list(self.ini_data.keys())[0])  # Load the first section
-            self.update_title()  # Update the window title after changing the INI file
 
     def on_section_change(self, event):
         '''
@@ -270,7 +245,7 @@ class IniEditor:
                 ToolTip(tooltip_label, self.explanations[key])  # Bind tooltip to the "?" label
 
             # Entry field for value (increase width here for longer fields)
-            entry = ttk.Entry(self.inner_frame, width=35)  # Increased width to make text field longer
+            entry = ttk.Entry(self.inner_frame, width=45)  # Increased width to make text field longer
             entry.grid(row=i, column=2, padx=5, pady=2, sticky='ew')  # 'ew' ensures it expands horizontally
             entry.insert(0, value)
             self.entry_widgets[key] = entry
@@ -320,7 +295,7 @@ def main():
     # Proceed with the application if INI file is valid or updated
     root = tk.Tk()
     root.title(f"ASAP-Cabinet-FE Settings - {INI_FILE_PATH}")  # Set window title with the ini file path
-    root.geometry("700x500")
+    root.geometry("600x400")
 
     app = IniEditor(root, INI_FILE_PATH)
     root.mainloop()
