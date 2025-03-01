@@ -11,13 +11,14 @@
         - Table image: table.png (or DEFAULT_TABLE_PATH if missing)
         - Backglass image: backglass.png (or DEFAULT_BACKGLASS_PATH if missing)
         - Wheel image: wheel.png (or DEFAULT_WHEEL_PATH if missing)
+        - DMD animation: dmd.gif (of DEFAULT_DMD_PATH if missing)
     - Main Window (1080x1920): Displays table image full screen with wheel overlay
-    - Secondary Window (1280x1024): Displays backglass image
+    - Secondary Window (1280x1024): Displays backglass image and DMD
     - Uses left/right arrow keys for infinite scrolling between tables
     - All images update with fade animation
-    - Press Enter to launch table, closing both windows until game exits
+    - Press Enter to launch table
     - Settings button to configure for your setup
-    - Use the screenshot_art.sh tool to get table media
+    * Use the screenshot_art.sh tool to get table media
 
 Dependencies: python3, python3-pyqt5
 
@@ -27,8 +28,7 @@ Tarso Galvão - feb/2025
 # TODO:
 # - add animated arrow to indicate left-right to change tables on the sides of the screen, 
 #   horizontaly centered
-# - add 'fade duration', 'dmd and b2s image size' variables to settings menu
-# - separate menu options per sections [], make settings window scrollable
+# - make settings window scrollable
 # - add a search by querry button using a magnifier symbol on the top left corner, 
 #   like the settings button one
 # - redirect launch output to ~/.asap-cabinet-fe/launcher.log
@@ -46,37 +46,7 @@ from PyQt5.QtGui import QPixmap, QPalette, QColor, QGuiApplication, QFont, QFont
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QWidget, QGraphicsOpacityEffect,
                     QDialog, QFormLayout, QLineEdit, QDialogButtonBox, QPushButton, QMessageBox)
 
-# ---------------- Configuration ----------------
-"""
-CONFIG_FILE:             Path to the configuration file.
-VPX_ROOT_FOLDER:         Root folder for .vpx files.
-EXECUTABLE_CMD:          Command to execute the pinball application.
-EXECUTABLE_SUB_CMD:      Sub-command for launching a table.
-DEFAULT_TABLE_PATH:      Default table image path.
-DEFAULT_WHEEL_PATH:      Default wheel image path.
-DEFAULT_BACKGLASS_PATH:  Default backglass image path.
-DEFAULT_DMD_PATH:        Default DMD GIF path.
-TABLE_IMAGE_PATH:        Relative path to table image.
-TABLE_WHEEL_PATH:        Relative path to wheel image.
-TABLE_BACKGLASS_PATH:    Relative path to backglass image.
-TABLE_DMD_PATH:          Relative path to DMD GIF.
-MAIN_WINDOW_WIDTH:       Width of the main window.
-MAIN_WINDOW_HEIGHT:      Height of the main window.
-BACKGLASS_WINDOW_WIDTH:  Width of the secondary window.
-BACKGLASS_WINDOW_HEIGHT: Height of the secondary window.
-WHEEL_IMAGE_SIZE:        Size of the wheel image.
-WHEEL_IMAGE_MARGIN:      Margin around the wheel image.
-SETTINGS_WIDTH:          Width of the settings dialog.
-SETTINGS_HEIGHT:         Height of the settings dialog.
-FONT_NAME:               Font name for table titles.
-FONT_SIZE:               Font size for table titles.
-BG_COLOR:                Background color of the main window.
-TEXT_COLOR:              Text color for table titles.
-MAIN_MONITOR_INDEX:      Monitor index for the main window.
-SECONDARY_MONITOR_INDEX: Monitor index for the secondary window.
-FADE_DURATION:           Duration of fade animations in milliseconds.
-"""
-
+# ------------- Configuration --------------
 # ------------------------------------------
 ##          Default values:
 # ------------------------------------------
@@ -89,6 +59,10 @@ DEFAULT_TABLE_PATH      = "img/default_table.png"
 DEFAULT_WHEEL_PATH      = "img/default_wheel.png"
 DEFAULT_BACKGLASS_PATH  = "img/default_backglass.png"
 DEFAULT_DMD_PATH        = "img/default_dmd.gif"
+
+# Settings panel (portrait)
+SETTINGS_WIDTH          = 700
+SETTINGS_HEIGHT         = 1200
 
 # ------------------------------------------
 ##     Included in settins dialog:
@@ -110,7 +84,7 @@ MAIN_WINDOW_HEIGHT      = 1920
 WHEEL_IMAGE_SIZE        = 250
 WHEEL_IMAGE_MARGIN      = 24
 FONT_NAME               = "Arial"
-FONT_SIZE               = 32
+FONT_SIZE               = 22
 BG_COLOR                = "#202020"
 TEXT_COLOR              = "white"
 
@@ -123,13 +97,9 @@ BACKGLASS_IMAGE_HEIGHT  = 768
 DMD_WIDTH               = 1024
 DMD_HEIGHT              = 256
 
-FADE_OPACITY            = 0.5
-#------------------------------------
 # Transition settings
 FADE_DURATION           = 300
-# Settings panel
-SETTINGS_WIDTH          = 600
-SETTINGS_HEIGHT         = 980
+FADE_OPACITY            = 0.5
 
 # ---------------- Configuration Loader ----------------
 def load_configuration():
@@ -233,35 +203,6 @@ load_configuration()
 
 # ---------------- Settings Dialog ----------------
 class SettingsDialog(QDialog):
-    """
-    SettingsDialog is a custom QDialog that provides a user interface for configuring various application settings.
-    Attributes:
-        layout              (QFormLayout): The form layout that organizes the settings fields.
-        vpxRootEdit         (QLineEdit)  : Input field for the VPX root folder path.
-        execCmdEdit         (QLineEdit)  : Input field for the executable command.
-        execSubCmdEdit      (QLineEdit)  : Input field for the executable sub-command.
-        tableImageEdit      (QLineEdit)  : Input field for the table image path.
-        wheelImageEdit      (QLineEdit)  : Input field for the wheel image path.
-        backglassImageEdit  (QLineEdit)  : Input field for the backglass image path.
-        dmdTableEdit        (QLineEdit)  : Input field for the DMD image path.
-        windowWidthEdit     (QLineEdit)  : Input field for the window width.
-        windowHeightEdit    (QLineEdit)  : Input field for the window height.
-        backglassWidthEdit  (QLineEdit)  : Input field for the backglass width.
-        backglassHeightEdit (QLineEdit)  : Input field for the backglass height.
-        wheelSizeEdit       (QLineEdit)  : Input field for the wheel size.
-        wheelMarginEdit     (QLineEdit)  : Input field for the wheel margin.
-        fontNameEdit        (QLineEdit)  : Input field for the font name.
-        fontSizeEdit        (QLineEdit)  : Input field for the font size.
-        bgColorEdit         (QLineEdit)  : Input field for the background color.
-        textColorEdit       (QLineEdit)  : Input field for the text color.
-        fadeDurationEdit    (QLineEdit)  : Input field for the fade duration.
-        fadeOpacityEdit     (QLineEdit)  : Input field for the fade opacity.
-    Methods:
-        __init__(self, parent=None):
-            Initializes the SettingsDialog with the given parent widget.
-        getValues(self):
-            Retrieves the current settings values from the dialog.
-    """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -390,7 +331,7 @@ class SettingsDialog(QDialog):
     def add_section_title(self, title):
         """ Adds a section title with a distinct style """
         title_label = QLabel(title)
-        title_label.setStyleSheet("font-weight: bold; font-size: 14px; padding: 5px;")
+        title_label.setStyleSheet("font-size: 14px; padding: 5px;")
         self.layout.addWidget(title_label)
 
 # ---------------- Table Data Loader ----------------
@@ -440,18 +381,6 @@ def load_table_list():
 
 # ---------------- Secondary Window ----------------
 class SecondaryWindow(QMainWindow):
-    '''
-    SecondaryWindow is a custom QMainWindow subclass designed to display a secondary screen with a backglass image and a DMD (Dot Matrix Display) GIF. 
-    It provides functionality to update the displayed backglass image and DMD GIF, with support for table-specific DMDs if available.
-    Attributes:
-        label            (QLabel): QLabel for displaying the backglass image.
-        backglass_effect (QGraphicsOpacityEffect): Opacity effect for fade animation on the backglass image.
-        dmd_label        (QLabel): QLabel for displaying the DMD GIF.
-        dmd_movie        (QMovie): QMovie object for handling the DMD GIF animation.
-    Methods:
-        __init__(): Initializes the SecondaryWindow with a frameless window, fixed size, and black background.
-        update_image(image_path, table_folder): Updates the backglass image and DMD GIF, prioritizing table-specific DMD if available.
-    '''
 
     def __init__(self):
         super().__init__()
@@ -533,42 +462,6 @@ class SecondaryWindow(QMainWindow):
 
 # ---------------- Main Window ----------------
 class SingleTableViewer(QMainWindow):
-    """
-    SingleTableViewer is a QMainWindow subclass that provides a graphical interface for viewing and interacting with a list of tables. 
-    It displays table images, table names, and a settings button, and allows navigation through the tables using keyboard inputs. 
-    The class also supports launching an external executable associated with the selected table.
-    Attributes:
-        secondary           (QMainWindow)           : An optional secondary window for displaying additional content.
-        table_list          (list)                  : A list of dictionaries containing table information.
-        current_index       (int)                   : The index of the currently displayed table.
-        table_label         (QLabel)                : A label for displaying the table image.
-        table_effect        (QGraphicsOpacityEffect): An opacity effect for the table image.
-        table_name_label    (QLabel)                : A label for displaying the table name.
-        settingsButton      (QPushButton)           : A button for opening the settings dialog.
-        wheel_label         (QLabel)                : A label for displaying the wheel image.
-        wheel_effect        (QGraphicsOpacityEffect): An opacity effect for the wheel image.
-    Methods:
-        __init__(self, secondary_window=None):
-            Initializes the SingleTableViewer instance.
-        _set_table_name(self):
-            Sets the initial table name based on the current table.
-        update_images(self):
-            Updates images without animation (used for initial load).
-        _update_table_name_label_geometry(self):
-            Updates the geometry of the table name label to fit its text and keep it on screen.
-        update_images(self):
-            Updates images with fade animation across all displays.
-        _set_new_images(self, table_pixmap, wheel_pixmap, backglass_path, table_folder):
-            Sets new images and fades in all displays.
-        launch_table(self):
-            Launches the table and closes both windows, reopening after the game exits.
-        openSettings(self):
-            Opens the settings dialog and updates the configuration.
-        keyPressEvent(self, event):
-            Handles key press events for navigation and launching tables.
-        closeEvent(self, event):
-            Handles the close event, ensuring the secondary window is also closed.
-    """
 
     def __init__(self, secondary_window=None):
         """Initializes the primary display window with table viewer and settings button."""
@@ -891,15 +784,7 @@ class SingleTableViewer(QMainWindow):
 
 # ---------------- Main Entry Point ----------------
 if __name__ == "__main__":
-    """
-    Main entry point of the application.
-    - Checks the session type to provide a hint for Wayland users.
-    - Initializes the QApplication.
-    - Creates and shows the secondary window (SecondaryWindow) for displaying the backglass image.
-    - Creates and shows the main window (SingleTableViewer) for displaying the table image and wheel.
-    - Positions the main and secondary windows on their respective screens based on configuration.
-    - Starts the Qt event loop.
-    """
+
     session_type = os.environ.get("XDG_SESSION_TYPE", "unknown")
     if session_type.lower() == "wayland":
         print("Running under Wayland. For precise window positioning, consider launching with QT_QPA_PLATFORM=xcb")
