@@ -1,3 +1,5 @@
+import importlib
+import src.config as config
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QComboBox,
     QScrollArea, QWidget, QLineEdit, QPushButton, QFormLayout,
@@ -204,3 +206,9 @@ class IniEditorDialog(QDialog):
             self.accept()  # Close dialog on success
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to save changes: {str(e)}")
+        
+        # Reload the configuration file
+        config.load_configuration()
+
+        # Reload the module so all values are updated dynamically
+        importlib.reload(config)

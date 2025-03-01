@@ -214,7 +214,9 @@ class SingleTableViewer(QMainWindow):
         ini_file_path = os.path.expanduser(config.CONFIG_FILE)
         editor_dialog = IniEditorDialog(ini_file_path, self)
         if editor_dialog.exec_():
-            # Optionally refresh settings if needed after dialog is accepted
+            config.load_configuration()
+            self._set_table_name()
+            self.table_list = load_table_list()
             self.update_images()
         self.setFocus()
 
