@@ -18,6 +18,7 @@
     - All images update with fade animation
     - Press Enter to launch table
     - Settings button to configure for your setup
+    - Search button by querry
     * Use the screenshot_art.sh tool to get table media
 
 Dependencies: python3, python3-pyqt5
@@ -41,7 +42,8 @@ import configparser
 from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, QSize
 from PyQt5.QtGui import QPixmap, QPalette, QColor, QGuiApplication, QFont, QFontMetrics, QMovie
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QWidget, QGraphicsOpacityEffect,
-    QVBoxLayout, QScrollArea, QDialog, QFormLayout, QLineEdit, QDialogButtonBox, QPushButton, QMessageBox)
+    QVBoxLayout, QScrollArea, QDialog, QFormLayout, QLineEdit, QDialogButtonBox, QPushButton, 
+    QMessageBox)
 
 # ------------- Configuration --------------
 # ------------------------------------------
@@ -56,6 +58,11 @@ DEFAULT_TABLE_PATH      = "img/default_table.png"
 DEFAULT_WHEEL_PATH      = "img/default_wheel.png"
 DEFAULT_BACKGLASS_PATH  = "img/default_backglass.png"
 DEFAULT_DMD_PATH        = "img/default_dmd.gif"
+
+# Hint side-arrows 
+HINT_ARROW_SIZE         = 48
+HINT_ARROW_COLOR        = "white"
+HINT_ARROW_BG_COLOR     = "#202020"
 
 # Settings panel (portrait)
 SETTINGS_WIDTH          = 500
@@ -84,6 +91,7 @@ FONT_NAME               = "Arial"
 FONT_SIZE               = 22
 BG_COLOR                = "#202020"
 TEXT_COLOR              = "white"
+ICONS_SIZE              = 24
 
 ## Secondary window (backglass)
 SECONDARY_MONITOR_INDEX = 0
@@ -471,7 +479,7 @@ class SecondaryWindow(QMainWindow):
             self.dmd_label.setMovie(self.dmd_movie)
             self.dmd_movie.start()
 
-# Implement the search dialog
+# ---------------- Search Dialog ----------------
 class SearchDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -516,6 +524,8 @@ class SingleTableViewer(QMainWindow):
         central.setStyleSheet(f"background-color: {BG_COLOR};")
         central.setAttribute(Qt.WA_NoSystemBackground, True)
         self.setFocus()
+        
+        ##--- Create TABLE TITLE
         # Create the table label before using it
         self.table_label = QLabel(central)
         self.table_label.setGeometry(0, 0, MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)
@@ -523,49 +533,47 @@ class SingleTableViewer(QMainWindow):
         self.table_label.setStyleSheet("border: none;")
         self.table_effect = QGraphicsOpacityEffect(self.table_label)
         self.table_label.setGraphicsEffect(self.table_effect)
-
         # Create the table name label after other elements are set up
         self.table_name_label = QLabel(central)
         self.table_name_label.setGeometry(10, MAIN_WINDOW_HEIGHT - 30, MAIN_WINDOW_WIDTH - 20, 30)
         self.table_name_label.setStyleSheet(f"color: {TEXT_COLOR}; font-size: {FONT_SIZE}px; text-align: left; background-color: {BG_COLOR};")
         self.table_name_label.setAlignment(Qt.AlignCenter)
-        
         # Set initial table name after loading images
         self._set_table_name()
-        # Add a cogwheel settings button in the top-right corner
+
+        ##--- Add SETTINGS BUTTON
         self.settingsButton = QPushButton("⚙", central)
         self.settingsButton.setFixedSize(40, 40)
         self.settingsButton.move(MAIN_WINDOW_WIDTH - 50, 10)
         self.settingsButton.setFocusPolicy(Qt.NoFocus)
         self.settingsButton.clicked.connect(self.openSettings)
         self.settingsButton.raise_()
-
         # Apply a stylesheet to remove the border and make the background transparent
-        self.settingsButton.setStyleSheet("""
-            QPushButton {
-                font-size:  28px;        /* Increase the font size of the icon */
-                border:     none;        /* Remove the button border */
-                background: transparent; /* Make the background transparent */
-            }
+        self.settingsButton.setStyleSheet(f"""
+            QPushButton {{
+            font-size:  {ICONS_SIZE}px;        /* Increase the font size of the icon */
+            border:     none;        /* Remove the button border */
+            background: transparent; /* Make the background transparent */
+            }}
         """)
 
-        # Add a search button with a magnifier symbol on the top left corner
+        ##--- Add SEARCH BUTTON
         self.searchButton = QPushButton("🔍", central)
         self.searchButton.setFixedSize(40, 40)
-        self.searchButton.move(10, 10)
+        self.searchButton.move(10, 15)
         self.searchButton.setFocusPolicy(Qt.NoFocus)
         self.searchButton.clicked.connect(self.openSearch)
         self.searchButton.raise_()
-
         # Apply a stylesheet to remove the border and make the background transparent
-        self.searchButton.setStyleSheet("""
-            QPushButton {
-                font-size:  28px;        /* Increase the font size of the icon */
-                border:     none;        /* Remove the button border */
-                background: transparent; /* Make the background transparent */
-            }
+        self.searchButton.setStyleSheet(f"""
+            QPushButton {{
+            font-size:  {ICONS_SIZE}px;        /* Increase the font size of the icon */
+            border:     none;        /* Remove the button border */
+            background: transparent; /* Make the background transparent */
+            }}
         """)
 
+        ##--- Add WHEEL IMAGE
         wheel_x = MAIN_WINDOW_WIDTH - WHEEL_IMAGE_SIZE - WHEEL_IMAGE_MARGIN
         wheel_y = MAIN_WINDOW_HEIGHT - WHEEL_IMAGE_SIZE - WHEEL_IMAGE_MARGIN
         self.wheel_label = QLabel(central)
@@ -576,30 +584,30 @@ class SingleTableViewer(QMainWindow):
         self.wheel_effect = QGraphicsOpacityEffect(self.wheel_label)
         self.wheel_label.setGraphicsEffect(self.wheel_effect)
 
-        # Add left and right arrow indicators
+        ##--- Add HINT ARROWS
         self.left_arrow = QLabel("←", central)
         self.right_arrow = QLabel("→", central)
-
         # Style the arrows
-        arrow_style = f"padding-bottom: 5px; color: {TEXT_COLOR}; font-size: 48px; background-color: {BG_COLOR};"
+        arrow_style = (
+            f"padding-bottom: 5px; "
+            f"color: {HINT_ARROW_COLOR}; "
+            f"font-size: {HINT_ARROW_SIZE}px; "
+            f"background-color: {HINT_ARROW_BG_COLOR};"
+        )
         self.left_arrow.setStyleSheet(arrow_style)
         self.right_arrow.setStyleSheet(arrow_style)
-
         # Center the arrows within their background box
         self.left_arrow.setAlignment(Qt.AlignCenter)
         self.right_arrow.setAlignment(Qt.AlignCenter)
-
         # Position arrows
         arrow_y = (2 * MAIN_WINDOW_HEIGHT) // 3 - 25  # Middle of the bottom third of the screen
         self.left_arrow.setGeometry(10, arrow_y, 50, 50)
         self.right_arrow.setGeometry(MAIN_WINDOW_WIDTH - 60, arrow_y, 50, 50)
-
         # Add fade animation to arrows
         self.left_arrow_effect = QGraphicsOpacityEffect(self.left_arrow)
         self.right_arrow_effect = QGraphicsOpacityEffect(self.right_arrow)
         self.left_arrow.setGraphicsEffect(self.left_arrow_effect)
         self.right_arrow.setGraphicsEffect(self.right_arrow_effect)
-
         self.left_arrow_animation = QPropertyAnimation(self.left_arrow_effect, b"opacity")
         self.right_arrow_animation = QPropertyAnimation(self.right_arrow_effect, b"opacity")
 
@@ -612,10 +620,10 @@ class SingleTableViewer(QMainWindow):
             animation.setLoopCount(-1)  # Loop indefinitely
             animation.start()
 
-        # Initial display
+        ##--- Initial display
         self.update_images()
 
-    ## SEARCH
+    ##-- SEARCH Logic
     def openSearch(self):
         dialog = SearchDialog(self)
         if dialog.exec_() == QDialog.Accepted:
@@ -628,7 +636,7 @@ class SingleTableViewer(QMainWindow):
             else:
                 QMessageBox.information(self, "Search", "No matching table found.")
 
-    ## TABLE TITLE
+    ##--- Add TABLE TITLE
     def _set_table_name(self):
         """Sets the table name."""
         table = self.table_list[self.current_index]
@@ -671,7 +679,8 @@ class SingleTableViewer(QMainWindow):
         y_position = MAIN_WINDOW_HEIGHT - label_height - 20  # fixed 20-pixel margin from the bottom
         self.table_name_label.setGeometry(x_position, y_position, label_width, label_height)
 
-    ## FADE OUT table transition
+    ##--- Change ALL IMAGES (switch table)
+    # FADE OUT table transition
     def update_images(self):
         """Update images with fade out animation across all displays."""
         table = self.table_list[self.current_index]
@@ -724,7 +733,7 @@ class SingleTableViewer(QMainWindow):
         if self.fade_out_backglass:
             self.fade_out_backglass.start()
 
-    ## FADE IN table transition
+    # FADE IN table transition
     def _set_new_images(self, table_pixmap, wheel_pixmap, backglass_path, table_folder):
         """Set new images and fade in all displays."""
         self.table_label.setPixmap(table_pixmap)
@@ -755,7 +764,7 @@ class SingleTableViewer(QMainWindow):
             self.fade_in_backglass.setEasingCurve(QEasingCurve.OutQuad)
             self.fade_in_backglass.start()
 
-    ## PLAY
+    ##--- PLAY
     def launch_table(self):
         """Launch the current table."""
         table = self.table_list[self.current_index]
@@ -767,7 +776,7 @@ class SingleTableViewer(QMainWindow):
         except Exception as e:
             print(f"Error launching {table['vpx_file']}: {e}")
 
-    ## SETTINGS
+    ##--- SETTINGS
     def openSettings(self):
         """Opens settings dialog, saves settings if accepted, and updates configuration and UI."""
         dialog = SettingsDialog(self)
@@ -835,7 +844,7 @@ class SingleTableViewer(QMainWindow):
             # self.update_images()
         self.setFocus()
 
-    ## APPLY SETTINGS
+    ##--- APPLY SETTINGS
     def apply_settings(self):
         """Apply settings to update the visuals immediately."""
         self.setFixedSize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)
@@ -853,8 +862,7 @@ class SingleTableViewer(QMainWindow):
             self.secondary.label.setGeometry(0, 0, BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT)
             self.secondary.dmd_label.setGeometry(0, BACKGLASS_IMAGE_HEIGHT, DMD_WIDTH, DMD_HEIGHT)
 
-    ## KEY EVENTS
-    ## KEY EVENTS
+    ##--- KEY EVENTS
     def keyPressEvent(self, event):
         """Handle key press events to navigate tables, launch a table, or close the window."""
         if event.key() == Qt.Key_Left:
@@ -870,7 +878,7 @@ class SingleTableViewer(QMainWindow):
         else:
             super().keyPressEvent(event)  # Handle other key events
 
-    ## QUIT
+    ##--- QUIT
     def closeEvent(self, event):
         if self.secondary:
             self.secondary.close()
