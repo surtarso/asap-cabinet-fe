@@ -107,8 +107,8 @@ TABLE_DMD_PATH          = "images/dmd.gif"
 MAIN_MONITOR_INDEX      = 1
 MAIN_WINDOW_WIDTH       = 1080
 MAIN_WINDOW_HEIGHT      = 1920
-WHEEL_IMAGE_SIZE        = 400
-WHEEL_IMAGE_MARGIN      = 20
+WHEEL_IMAGE_SIZE        = 250
+WHEEL_IMAGE_MARGIN      = 24
 FONT_NAME               = "Arial"
 FONT_SIZE               = 32
 BG_COLOR                = "#202020"
@@ -843,10 +843,30 @@ class SingleTableViewer(QMainWindow):
 
             load_configuration()
             self._set_table_name()
+            self.apply_settings()
             self.table_list = load_table_list()
-            self.update_images()
+            # self.update_images()
         self.setFocus()
 
+    ## APPLY SETTINGS
+    def apply_settings(self):
+        """Apply settings to update the visuals immediately."""
+        self.setFixedSize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)
+        self.table_label.setGeometry(0, 0, MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)
+        self.table_name_label.setFont(QFont(FONT_NAME, FONT_SIZE))
+        self.table_name_label.setStyleSheet(f"color: {TEXT_COLOR}; text-align: left; background-color: {BG_COLOR};")
+        self.settingsButton.move(MAIN_WINDOW_WIDTH - 50, 10)
+        wheel_x = MAIN_WINDOW_WIDTH - WHEEL_IMAGE_SIZE - WHEEL_IMAGE_MARGIN
+        wheel_y = MAIN_WINDOW_HEIGHT - WHEEL_IMAGE_SIZE - WHEEL_IMAGE_MARGIN
+        self.wheel_label.setGeometry(wheel_x, wheel_y, WHEEL_IMAGE_SIZE, WHEEL_IMAGE_SIZE)
+        self.update_images()
+
+        if self.secondary:
+            self.secondary.setFixedSize(BACKGLASS_WINDOW_WIDTH, BACKGLASS_WINDOW_HEIGHT)
+            self.secondary.label.setGeometry(0, 0, BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT)
+            self.secondary.dmd_label.setGeometry(0, BACKGLASS_IMAGE_HEIGHT, DMD_WIDTH, DMD_HEIGHT)
+
+    ## KEY EVENTS
     ## KEY EVENTS
     def keyPressEvent(self, event):
         """Handle key press events to navigate tables, launch a table, or close the window."""
