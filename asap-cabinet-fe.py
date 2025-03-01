@@ -39,11 +39,17 @@ import sys
 import subprocess
 import configparser
 
-from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, QSize, QUrl
-from PyQt5.QtGui import QPixmap, QPalette, QColor, QGuiApplication, QFont, QFontMetrics, QMovie
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QWidget, QGraphicsOpacityEffect,
-    QVBoxLayout, QScrollArea, QDialog, QFormLayout, QLineEdit, QDialogButtonBox, QPushButton, 
-    QMessageBox)
+from PyQt5.QtCore import (
+    Qt, QPropertyAnimation, QEasingCurve, QSize
+)
+from PyQt5.QtGui import (
+    QPixmap, QPalette, QColor, QGuiApplication, QFont, QFontMetrics, QMovie
+)
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QLabel, QWidget, QGraphicsOpacityEffect,
+    QVBoxLayout, QScrollArea, QDialog, QFormLayout, QLineEdit,
+    QDialogButtonBox, QPushButton, QMessageBox
+)
 
 # ------------- Configuration --------------
 # ------------------------------------------
@@ -229,31 +235,31 @@ class SettingsDialog(QDialog):
         self.setWindowTitle(f"[Settings] {ini_path}")
 
         # Create QLineEdit fields for each setting
-        self.vpxRootEdit         = QLineEdit(VPX_ROOT_FOLDER)
-        self.execCmdEdit         = QLineEdit(EXECUTABLE_CMD)
-        self.execSubCmdEdit      = QLineEdit(EXECUTABLE_SUB_CMD)
-        self.tableImageEdit      = QLineEdit(TABLE_IMAGE_PATH)
-        self.wheelImageEdit      = QLineEdit(TABLE_WHEEL_PATH)
-        self.backglassImageEdit  = QLineEdit(TABLE_BACKGLASS_PATH)
-        self.dmdTableEdit        = QLineEdit(TABLE_DMD_PATH)
-        self.mainMonitor         = QLineEdit(str(MAIN_MONITOR_INDEX))
-        self.windowWidthEdit     = QLineEdit(str(MAIN_WINDOW_WIDTH))
-        self.windowHeightEdit    = QLineEdit(str(MAIN_WINDOW_HEIGHT))
-        self.secondaryMonitor    = QLineEdit(str(SECONDARY_MONITOR_INDEX))
-        self.backglassWidthEdit  = QLineEdit(str(BACKGLASS_WINDOW_WIDTH))
-        self.backglassHeightEdit = QLineEdit(str(BACKGLASS_WINDOW_HEIGHT))
+        self.vpxRootEdit             = QLineEdit(VPX_ROOT_FOLDER)
+        self.execCmdEdit             = QLineEdit(EXECUTABLE_CMD)
+        self.execSubCmdEdit          = QLineEdit(EXECUTABLE_SUB_CMD)
+        self.tableImageEdit          = QLineEdit(TABLE_IMAGE_PATH)
+        self.wheelImageEdit          = QLineEdit(TABLE_WHEEL_PATH)
+        self.backglassImageEdit      = QLineEdit(TABLE_BACKGLASS_PATH)
+        self.dmdTableEdit            = QLineEdit(TABLE_DMD_PATH)
+        self.mainMonitor             = QLineEdit(str(MAIN_MONITOR_INDEX))
+        self.windowWidthEdit         = QLineEdit(str(MAIN_WINDOW_WIDTH))
+        self.windowHeightEdit        = QLineEdit(str(MAIN_WINDOW_HEIGHT))
+        self.secondaryMonitor        = QLineEdit(str(SECONDARY_MONITOR_INDEX))
+        self.backglassWidthEdit      = QLineEdit(str(BACKGLASS_WINDOW_WIDTH))
+        self.backglassHeightEdit     = QLineEdit(str(BACKGLASS_WINDOW_HEIGHT))
         self.backglassImageWidthEdit = QLineEdit(str(BACKGLASS_IMAGE_WIDTH))
-        self.backglassImageHeightEdit = QLineEdit(str(BACKGLASS_IMAGE_HEIGHT))
-        self.dmdWidthEdit        = QLineEdit(str(DMD_WIDTH))
-        self.dmdHeightEdit       = QLineEdit(str(DMD_HEIGHT))
-        self.wheelSizeEdit       = QLineEdit(str(WHEEL_IMAGE_SIZE))
-        self.wheelMarginEdit     = QLineEdit(str(WHEEL_IMAGE_MARGIN))
-        self.fontNameEdit        = QLineEdit(FONT_NAME)
-        self.fontSizeEdit        = QLineEdit(str(FONT_SIZE))
-        self.bgColorEdit         = QLineEdit(BG_COLOR)
-        self.textColorEdit       = QLineEdit(TEXT_COLOR)
-        self.fadeDurationEdit    = QLineEdit(str(FADE_DURATION))
-        self.fadeOpacityEdit     = QLineEdit(str(FADE_OPACITY))
+        self.backglassImageHeightEdit= QLineEdit(str(BACKGLASS_IMAGE_HEIGHT))
+        self.dmdWidthEdit            = QLineEdit(str(DMD_WIDTH))
+        self.dmdHeightEdit           = QLineEdit(str(DMD_HEIGHT))
+        self.wheelSizeEdit           = QLineEdit(str(WHEEL_IMAGE_SIZE))
+        self.wheelMarginEdit         = QLineEdit(str(WHEEL_IMAGE_MARGIN))
+        self.fontNameEdit            = QLineEdit(FONT_NAME)
+        self.fontSizeEdit            = QLineEdit(str(FONT_SIZE))
+        self.bgColorEdit             = QLineEdit(BG_COLOR)
+        self.textColorEdit           = QLineEdit(TEXT_COLOR)
+        self.fadeDurationEdit        = QLineEdit(str(FADE_DURATION))
+        self.fadeOpacityEdit         = QLineEdit(str(FADE_OPACITY))
         
         # Add each field to the layout with a descriptive label
         self.add_section_title("Main Paths")
@@ -378,10 +384,10 @@ def load_table_list():
                 vpx_path = os.path.join(root, file)
 
                 # Get paths using the helper function
-                table_img_path = get_image_path(root, TABLE_IMAGE_PATH, DEFAULT_TABLE_PATH)
-                wheel_img_path = get_image_path(root, TABLE_WHEEL_PATH, DEFAULT_WHEEL_PATH)
+                table_img_path     = get_image_path(root, TABLE_IMAGE_PATH, DEFAULT_TABLE_PATH)
+                wheel_img_path     = get_image_path(root, TABLE_WHEEL_PATH, DEFAULT_WHEEL_PATH)
                 backglass_img_path = get_image_path(root, TABLE_BACKGLASS_PATH, DEFAULT_BACKGLASS_PATH)
-                dmd_img_path = get_image_path(root, TABLE_DMD_PATH, DEFAULT_DMD_PATH)
+                dmd_img_path       = get_image_path(root, TABLE_DMD_PATH, DEFAULT_DMD_PATH)
 
                 # Append a dictionary containing all relevant table information to the tables list
                 tables.append({
@@ -460,15 +466,15 @@ class SecondaryWindow(QMainWindow):
             dmd_width, dmd_height = frame_size.width(), frame_size.height()
             if dmd_width > 0 and dmd_height > 0:
                 aspect_ratio = dmd_width / dmd_height
-                new_width = min(DMD_WIDTH, int(DMD_HEIGHT * aspect_ratio))
-                new_height = min(DMD_HEIGHT, int(DMD_WIDTH / aspect_ratio))
+                new_width    = min(DMD_WIDTH, int(DMD_HEIGHT * aspect_ratio))
+                new_height   = min(DMD_HEIGHT, int(DMD_WIDTH / aspect_ratio))
 
                 if new_width > DMD_WIDTH:
-                    new_width = DMD_WIDTH
+                    new_width  = DMD_WIDTH
                     new_height = int(DMD_WIDTH / aspect_ratio)
                 if new_height > DMD_HEIGHT:
                     new_height = DMD_HEIGHT
-                    new_width = int(DMD_HEIGHT * aspect_ratio)
+                    new_width  = int(DMD_HEIGHT * aspect_ratio)
 
                 self.dmd_movie.setScaledSize(QSize(new_width, new_height))
 
@@ -552,9 +558,9 @@ class SingleTableViewer(QMainWindow):
         # Apply a stylesheet to remove the border and make the background transparent
         self.settingsButton.setStyleSheet(f"""
             QPushButton {{
-            font-size:  {TOP_ICONS_SIZE}px;        /* Increase the font size of the icon */
-            border:     none;        /* Remove the button border */
-            background: transparent; /* Make the background transparent */
+            font-size:  {TOP_ICONS_SIZE}px;  /* Increase the font size of the ⚙ icon */
+            border:     none;                /* Remove the ⚙ button border */
+            background: transparent;         /* Make the background transparent */
             }}
         """)
 
@@ -568,9 +574,9 @@ class SingleTableViewer(QMainWindow):
         # Apply a stylesheet to remove the border and make the background transparent
         self.searchButton.setStyleSheet(f"""
             QPushButton {{
-            font-size:  {TOP_ICONS_SIZE}px;        /* Increase the font size of the icon */
-            border:     none;        /* Remove the button border */
-            background: transparent; /* Make the background transparent */
+            font-size:  {TOP_ICONS_SIZE}px;  /* Increase the font size of the 🔍 icon */
+            border:     none;                /* Remove the 🔍 button border */
+            background: transparent;         /* Make the background transparent */
             }}
         """)
 
@@ -591,9 +597,9 @@ class SingleTableViewer(QMainWindow):
         # Style the arrows
         arrow_style = (
             f"padding-bottom: 5px; "
-            f"color: {HINT_ARROW_COLOR}; "
-            f"font-size: {HINT_ARROW_SIZE}px; "
-            f"background-color: {HINT_ARROW_BG_COLOR};"
+            f"color:              {HINT_ARROW_COLOR}; "
+            f"font-size:          {HINT_ARROW_SIZE}px; "
+            f"background-color:   {HINT_ARROW_BG_COLOR};"
         )
         self.left_arrow.setStyleSheet(arrow_style)
         self.right_arrow.setStyleSheet(arrow_style)
@@ -673,11 +679,11 @@ class SingleTableViewer(QMainWindow):
             text_width = font_metrics.width(text)
         
         label_height = font_metrics.height()
-        padding = 10  # add 10 pixels of padding on all sides
-        label_width = text_width + 2 * padding
+        padding      = 10  # add 10 pixels of padding on all sides
+        label_width  = text_width + 2 * padding
         label_height = label_height + 2 * padding
-        x_position = 10  # fixed left margin
-        y_position = MAIN_WINDOW_HEIGHT - label_height - 20  # fixed 20-pixel margin from the bottom
+        x_position   = 10  # fixed left margin
+        y_position   = MAIN_WINDOW_HEIGHT - label_height - 20  # fixed 20-pixel margin from the bottom
         self.table_name_label.setGeometry(x_position, y_position, label_width, label_height)
 
     ##--- Change ALL IMAGES (switch table)
@@ -791,39 +797,39 @@ class SingleTableViewer(QMainWindow):
 
             # Update the configuration with new values
             config['Main Paths'] = {
-                "VPX_ROOT_FOLDER": values["VPX_ROOT_FOLDER"],
-                "EXECUTABLE_CMD": values["EXECUTABLE_CMD"],
-                "EXECUTABLE_SUB_CMD": values["EXECUTABLE_SUB_CMD"],
+                "VPX_ROOT_FOLDER":         values["VPX_ROOT_FOLDER"],
+                "EXECUTABLE_CMD":          values["EXECUTABLE_CMD"],
+                "EXECUTABLE_SUB_CMD":      values["EXECUTABLE_SUB_CMD"],
             }
             config['Custom Images'] = {
-                "TABLE_IMAGE_PATH": values["TABLE_IMAGE_PATH"],
-                "TABLE_WHEEL_PATH": values["TABLE_WHEEL_PATH"],
-                "TABLE_BACKGLASS_PATH": values["TABLE_BACKGLASS_PATH"],
-                "TABLE_DMD_PATH": values["TABLE_DMD_PATH"],
+                "TABLE_IMAGE_PATH":        values["TABLE_IMAGE_PATH"],
+                "TABLE_WHEEL_PATH":        values["TABLE_WHEEL_PATH"],
+                "TABLE_BACKGLASS_PATH":    values["TABLE_BACKGLASS_PATH"],
+                "TABLE_DMD_PATH":          values["TABLE_DMD_PATH"],
             }
             config['Main Window'] = {
-                "MAIN_MONITOR_INDEX": values["MAIN_MONITOR_INDEX"],
-                "MAIN_WINDOW_WIDTH": values["MAIN_WINDOW_WIDTH"],
-                "MAIN_WINDOW_HEIGHT": values["MAIN_WINDOW_HEIGHT"],
-                "WHEEL_IMAGE_SIZE": values["WHEEL_IMAGE_SIZE"],
-                "WHEEL_IMAGE_MARGIN": values["WHEEL_IMAGE_MARGIN"],
-                "FONT_NAME": values["FONT_NAME"],
-                "FONT_SIZE": values["FONT_SIZE"],
-                "BG_COLOR": values["BG_COLOR"],
-                "TEXT_COLOR": values["TEXT_COLOR"],
+                "MAIN_MONITOR_INDEX":      values["MAIN_MONITOR_INDEX"],
+                "MAIN_WINDOW_WIDTH":       values["MAIN_WINDOW_WIDTH"],
+                "MAIN_WINDOW_HEIGHT":      values["MAIN_WINDOW_HEIGHT"],
+                "WHEEL_IMAGE_SIZE":        values["WHEEL_IMAGE_SIZE"],
+                "WHEEL_IMAGE_MARGIN":      values["WHEEL_IMAGE_MARGIN"],
+                "FONT_NAME":               values["FONT_NAME"],
+                "FONT_SIZE":               values["FONT_SIZE"],
+                "BG_COLOR":                values["BG_COLOR"],
+                "TEXT_COLOR":              values["TEXT_COLOR"],
             }
             config['Secondary Window'] = {
                 "SECONDARY_MONITOR_INDEX": values["SECONDARY_MONITOR_INDEX"],
-                "BACKGLASS_WINDOW_WIDTH": values["BACKGLASS_WINDOW_WIDTH"],
+                "BACKGLASS_WINDOW_WIDTH":  values["BACKGLASS_WINDOW_WIDTH"],
                 "BACKGLASS_WINDOW_HEIGHT": values["BACKGLASS_WINDOW_HEIGHT"],
-                "BACKGLASS_IMAGE_WIDTH": values["BACKGLASS_IMAGE_WIDTH"],
-                "BACKGLASS_IMAGE_HEIGHT": values["BACKGLASS_IMAGE_HEIGHT"],
-                "DMD_WIDTH": values["DMD_WIDTH"],
-                "DMD_HEIGHT": values["DMD_HEIGHT"],
+                "BACKGLASS_IMAGE_WIDTH":   values["BACKGLASS_IMAGE_WIDTH"],
+                "BACKGLASS_IMAGE_HEIGHT":  values["BACKGLASS_IMAGE_HEIGHT"],
+                "DMD_WIDTH":               values["DMD_WIDTH"],
+                "DMD_HEIGHT":              values["DMD_HEIGHT"],
             }
             config['Transitions'] = {
-                "FADE_DURATION": values["FADE_DURATION"],
-                "FADE_OPACITY": values["FADE_OPACITY"],
+                "FADE_DURATION":           values["FADE_DURATION"],
+                "FADE_OPACITY":            values["FADE_OPACITY"],
             }
 
             # Ensure the directory exists
