@@ -25,7 +25,8 @@ Dependencies: python3, python3-pyqt5
 Tarso Galvão - feb/2025
 """
 
-# - add animated arrow to indicate left-right to change tables on the sides of the screen, 
+# TODO:
+# - add animated arrow to indicate left-right to change tables on the sides of the screen,
 #   horizontaly centered
 # - make settings window scrollable
 # - redirect launch output to ~/.asap-cabinet-fe/launcher.log
@@ -41,7 +42,7 @@ import configparser
 from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, QSize
 from PyQt5.QtGui import QPixmap, QPalette, QColor, QGuiApplication, QFont, QFontMetrics, QMovie
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QWidget, QGraphicsOpacityEffect,
-                    QDialog, QFormLayout, QLineEdit, QDialogButtonBox, QPushButton, QMessageBox)
+    QVBoxLayout, QScrollArea, QDialog, QFormLayout, QLineEdit, QDialogButtonBox, QPushButton, QMessageBox)
 
 # ------------- Configuration --------------
 # ------------------------------------------
@@ -58,8 +59,8 @@ DEFAULT_BACKGLASS_PATH  = "img/default_backglass.png"
 DEFAULT_DMD_PATH        = "img/default_dmd.gif"
 
 # Settings panel (portrait)
-SETTINGS_WIDTH          = 700
-SETTINGS_HEIGHT         = 1200
+SETTINGS_WIDTH          = 500
+SETTINGS_HEIGHT         = 700
 
 # ------------------------------------------
 ##     Included in settins dialog:
@@ -205,8 +206,15 @@ class SettingsDialog(QDialog):
         super().__init__(parent)
         # Set the fixed size
         self.setFixedSize(SETTINGS_WIDTH, SETTINGS_HEIGHT)
-        # Create a form layout for the settings fields
-        self.layout = QFormLayout(self)
+        
+        # Create a scroll area
+        scroll_area = QScrollArea(self)
+        scroll_area.setWidgetResizable(True)
+        
+        # Create a widget to hold the form layout
+        form_widget = QWidget()
+        self.layout = QFormLayout(form_widget)
+        
         # Use ini path on title
         ini_path = CONFIG_FILE.replace(os.path.expanduser("~"), "~")
         self.setWindowTitle(f"[Settings] {ini_path}")
@@ -294,7 +302,14 @@ class SettingsDialog(QDialog):
         # Adjust the icon size to fill the button area, ensuring a proper icon-only display
         ok_button.setIconSize(ok_button.size())
         cancel_button.setIconSize(cancel_button.size())
-    
+
+        # Set the form widget as the scroll area's widget
+        scroll_area.setWidget(form_widget)
+
+        # Create a vertical layout for the dialog and add the scroll area to it
+        dialog_layout = QVBoxLayout(self)
+        dialog_layout.addWidget(scroll_area)
+
     def getValues(self):
         """Retrieve the current settings values from the dialog."""
         return {
