@@ -57,11 +57,13 @@ if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
     echo -e "Saves them in table_name/images/ folder as: table.png and backglass.png"
     echo -e "${BLUE}Usage: $(basename "$0") [OPTIONS]${NC}"
     echo -e "${GREEN}Options:${NC}\n"
-    echo -e "  ${BLUE}no argument     ${NC}Generate playfield and backglass images (default)"
+    echo -e "  ${BLUE}no argument       ${NC}Generate playfield and backglass missing images (default)"
     echo -e "  ${YELLOW}--dry-run       ${NC}Show what would be done without making changes"
-    echo -e "  ${YELLOW}--missing       ${NC}List tables missing wheel.png image and exit"
+    echo -e "  ${YELLOW}--wheel         ${NC}List tables missing wheel.png image and exit"
+    echo -e "  ${YELLOW}--marquee       ${NC}List tables missing marquee.png image and exit"
+    echo -e "  ${YELLOW}--dmd           ${NC}List tables missing dmd.gif video and exit"
     echo -e "  ${YELLOW}--force         ${NC}Recreate screenshots even if they already exist"
-    echo -e "\n  ${YELLOW}-h, --help      ${NC}Show this help message and exit"
+    echo -e "\n  ${YELLOW}-h, --help    ${NC}Show this help message and exit"
     exit 0
 fi
 
@@ -91,6 +93,26 @@ if [ "$1" == "--wheel" ]; then
     exit 0
 fi
 
+# --marquee argument, list tables missing marquee.png and exit.
+if [ "$1" == "--marquee" ]; then
+    echo -e "${YELLOW}This script can't generate marquee images."
+    echo -e "${BLUE}Using tables directory: $ROOT_FOLDER"
+    echo -e "Checking for tables missing marquee.png...${NC}\n"
+    # Iterate over each table directory that contains a .vpx file.
+    for vpx_file in "$ROOT_FOLDER"/*/*.vpx; do
+        if [ -f "$vpx_file" ]; then
+            table_dir=$(dirname "$vpx_file")
+            wheel_file="$table_dir/images/marquee.png"
+            if [ ! -f "$wheel_file" ]; then
+                echo -e "${GREEN}->${YELLOW} '$(basename "$table_dir")'${NC}"
+            fi
+        fi
+    done
+    echo -e "\n${BLUE}These tables have ${RED}no wheel.png${BLUE} images. You need to download them.${NC}"
+    echo -e "${BLUE}Place them in ${YELLOW}$ROOT_FOLDER<table_folder>/images/${NC}"
+    exit 0
+fi
+
 # --dmd argument, list tables missing dmd.gif and exit.
 if [ "$1" == "--dmd" ]; then
     echo -e "${YELLOW}This script can't generate dmd videos."
@@ -100,7 +122,7 @@ if [ "$1" == "--dmd" ]; then
     for vpx_file in "$ROOT_FOLDER"/*/*.vpx; do
         if [ -f "$vpx_file" ]; then
             table_dir=$(dirname "$vpx_file")
-            wheel_file="$table_dir/images/dmd.gif"
+            wheel_file="$table_dir/video/dmd.gif"
             if [ ! -f "$wheel_file" ]; then
                 echo -e "${GREEN}->${YELLOW} '$(basename "$table_dir")'${NC}"
             fi

@@ -26,14 +26,6 @@ Dependencies: python3, python3-pyqt5, python3-pyqt5.qtmultimedia
 Tarso Galvão - feb/2025
 """
 
-# TODO:
-# - switch video engine to mp4 instead of gif on DMD!
-# - add video engine to table and backglass as well.
-# - use png image if no mp4/f4v/wmv video found (fall back to default as usual)
-# - redirect launch output to ~/.asap-cabinet-fe/launcher.log
-# - redirect other outputs to ~/.asap-cabinet-fe/error.log
-# - separate this script into modules
-
 import os
 import sys
 import subprocess
@@ -92,7 +84,12 @@ EXECUTABLE_SUB_CMD      = "-Play"
 TABLE_IMAGE_PATH        = "images/table.png"
 TABLE_WHEEL_PATH        = "images/wheel.png"
 TABLE_BACKGLASS_PATH    = "images/backglass.png"
-TABLE_DMD_PATH          = "images/dmd.gif"
+TABLE_MARQUEE_PATH      = "images/marquee.png"
+
+# Per table videos path (/tables/<table_dir>/)
+VIDEO_TABLE_PATH        = "video/table.gif"
+VIDEO_BACKGLASS_PATH    = "video/backglass.gif"
+VIDEO_DMD_PATH          = "video/dmd.gif"
 
 ## Main window (vertical)
 MAIN_MONITOR_INDEX      = 1
@@ -123,7 +120,7 @@ def load_configuration():
     """Loads configuration settings from an ini file or creates the file with default settings if it does not exist."""
     
     global VPX_ROOT_FOLDER, EXECUTABLE_CMD, EXECUTABLE_SUB_CMD
-    global TABLE_IMAGE_PATH, TABLE_WHEEL_PATH, TABLE_BACKGLASS_PATH, TABLE_DMD_PATH
+    global TABLE_IMAGE_PATH, TABLE_WHEEL_PATH, TABLE_BACKGLASS_PATH, VIDEO_DMD_PATH
     global MAIN_MONITOR_INDEX, MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT
     global SECONDARY_MONITOR_INDEX, BACKGLASS_WINDOW_WIDTH, BACKGLASS_WINDOW_HEIGHT
     global BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT, DMD_WIDTH, DMD_HEIGHT
@@ -152,7 +149,7 @@ def load_configuration():
             "TABLE_IMAGE_PATH":        TABLE_IMAGE_PATH,
             "TABLE_WHEEL_PATH":        TABLE_WHEEL_PATH,
             "TABLE_BACKGLASS_PATH":    TABLE_BACKGLASS_PATH,
-            "TABLE_DMD_PATH":          TABLE_DMD_PATH,
+            "VIDEO_DMD_PATH":          VIDEO_DMD_PATH,
         }
         config['Main Window'] = {
             "MAIN_MONITOR_INDEX":      str(MAIN_MONITOR_INDEX),
@@ -189,7 +186,7 @@ def load_configuration():
     TABLE_IMAGE_PATH        = ci.get("TABLE_IMAGE_PATH", TABLE_IMAGE_PATH)
     TABLE_WHEEL_PATH        = ci.get("TABLE_WHEEL_PATH", TABLE_WHEEL_PATH)
     TABLE_BACKGLASS_PATH    = ci.get("TABLE_BACKGLASS_PATH", TABLE_BACKGLASS_PATH)
-    TABLE_DMD_PATH          = ci.get("TABLE_DMD_PATH", TABLE_DMD_PATH)
+    VIDEO_DMD_PATH          = ci.get("VIDEO_DMD_PATH", VIDEO_DMD_PATH)
 
     mw = config['Main Window']
     MAIN_MONITOR_INDEX      = int(mw.get("MAIN_MONITOR_INDEX", MAIN_MONITOR_INDEX))
@@ -245,7 +242,7 @@ class SettingsDialog(QDialog):
         self.tableImageEdit          = QLineEdit(TABLE_IMAGE_PATH)
         self.wheelImageEdit          = QLineEdit(TABLE_WHEEL_PATH)
         self.backglassImageEdit      = QLineEdit(TABLE_BACKGLASS_PATH)
-        self.dmdTableEdit            = QLineEdit(TABLE_DMD_PATH)
+        self.dmdTableEdit            = QLineEdit(VIDEO_DMD_PATH)
         self.mainMonitor             = QLineEdit(str(MAIN_MONITOR_INDEX))
         self.windowWidthEdit         = QLineEdit(str(MAIN_WINDOW_WIDTH))
         self.windowHeightEdit        = QLineEdit(str(MAIN_WINDOW_HEIGHT))
@@ -338,7 +335,7 @@ class SettingsDialog(QDialog):
             "TABLE_IMAGE_PATH":        self.tableImageEdit.text(),
             "TABLE_WHEEL_PATH":        self.wheelImageEdit.text(),
             "TABLE_BACKGLASS_PATH":    self.backglassImageEdit.text(),
-            "TABLE_DMD_PATH":          self.dmdTableEdit.text(),
+            "VIDEO_DMD_PATH":          self.dmdTableEdit.text(),
             "MAIN_MONITOR_INDEX":      self.mainMonitor.text(),
             "MAIN_WINDOW_WIDTH":       self.windowWidthEdit.text(),
             "MAIN_WINDOW_HEIGHT":      self.windowHeightEdit.text(),
@@ -391,7 +388,7 @@ def load_table_list():
                 table_img_path     = get_image_path(root, TABLE_IMAGE_PATH, DEFAULT_TABLE_PATH)
                 wheel_img_path     = get_image_path(root, TABLE_WHEEL_PATH, DEFAULT_WHEEL_PATH)
                 backglass_img_path = get_image_path(root, TABLE_BACKGLASS_PATH, DEFAULT_BACKGLASS_PATH)
-                dmd_img_path       = get_image_path(root, TABLE_DMD_PATH, DEFAULT_DMD_PATH)
+                dmd_img_path       = get_image_path(root, VIDEO_DMD_PATH, DEFAULT_DMD_PATH)
 
                 # Append a dictionary containing all relevant table information to the tables list
                 tables.append({
@@ -453,7 +450,7 @@ class SecondaryWindow(QMainWindow):
         self.backglass_effect.setOpacity(1.0)
 
         # --- Determine DMD GIF Path ---
-        table_dmd_path = os.path.join(table_folder, TABLE_DMD_PATH)  # Table-specific DMD
+        table_dmd_path = os.path.join(table_folder, VIDEO_DMD_PATH)  # Table-specific DMD
         dmd_path = table_dmd_path if os.path.exists(table_dmd_path) else DEFAULT_DMD_PATH
 
         # --- Update DMD GIF ---
@@ -815,7 +812,7 @@ class SingleTableViewer(QMainWindow):
                 "TABLE_IMAGE_PATH":        values["TABLE_IMAGE_PATH"],
                 "TABLE_WHEEL_PATH":        values["TABLE_WHEEL_PATH"],
                 "TABLE_BACKGLASS_PATH":    values["TABLE_BACKGLASS_PATH"],
-                "TABLE_DMD_PATH":          values["TABLE_DMD_PATH"],
+                "VIDEO_DMD_PATH":          values["VIDEO_DMD_PATH"],
             }
             config['Main Window'] = {
                 "MAIN_MONITOR_INDEX":      values["MAIN_MONITOR_INDEX"],

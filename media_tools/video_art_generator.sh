@@ -42,8 +42,10 @@ NC="\033[0m"  # No Color
 ROOT_FOLDER="/home/tarso/Games/vpinball/build/tables/"
 VPX_EXECUTABLE="/home/tarso/Games/vpinball/build/VPinballX_GL"
 SCREENSHOT_DELAY=12  # Seconds to wait after launching VPX
-# Animated GIF settings: 10 frames, one every 0.5 seconds (total ~5 sec)
-FRAME_COUNT=10
+# Animated GIF settings: 
+# For ~5 seconds: 10 frames, one every 0.5 seconds
+# For ~3 seconds: 6 frames, one every 0.5 seconds 
+FRAME_COUNT=6
 FRAME_INTERVAL=0.5  # Seconds between frames
 CONVERT_DELAY=50    # Delay for each frame in the GIF (50/100 sec per frame)
 
@@ -183,12 +185,12 @@ echo "$VPX_LIST" | while read VPX_PATH; do
     # Derive table name and images folder
     TABLE_NAME=$(basename "$VPX_PATH" .vpx)
     TABLE_DIR=$(dirname "$VPX_PATH")
-    IMAGES_FOLDER="${TABLE_DIR}/images"
-    TABLE_GIF="$IMAGES_FOLDER/table.gif"
-    BACKGLASS_GIF="$IMAGES_FOLDER/backglass.gif"
+    VIDEO_FOLDER="${TABLE_DIR}/video"
+    TABLE_GIF="$VIDEO_FOLDER/table.gif"
+    BACKGLASS_GIF="$VIDEO_FOLDER/backglass.gif"
 
     echo -e "${BLUE}Processing: $(basename "$TABLE_DIR")${NC}"
-    mkdir -p "$IMAGES_FOLDER"
+    mkdir -p "$VIDEO_FOLDER"
 
     # ----------------------------------------------------------------------
     # Check if GIFs already exist and skip processing entirely if so
@@ -225,7 +227,7 @@ echo "$VPX_LIST" | while read VPX_PATH; do
     if [[ "$MODE" == "now" || "$MODE" == "tables-only" ]]; then
         WINDOW_ID_VPX=$(xdotool search --name "$WINDOW_TITLE_VPX" | head -n 1)
         if [ -n "$WINDOW_ID_VPX" ]; then
-            TMP_TABLE_DIR=$(mktemp -d "$IMAGES_FOLDER/table_tmp_XXXXXX")
+            TMP_TABLE_DIR=$(mktemp -d "$VIDEO_FOLDER/table_tmp_XXXXXX")
             (
                 for i in $(seq 0 $((FRAME_COUNT - 1))); do
                     FRAME_FILE="${TMP_TABLE_DIR}/frame_${i}.png"
@@ -248,7 +250,7 @@ echo "$VPX_LIST" | while read VPX_PATH; do
     if [[ "$MODE" == "now" || "$MODE" == "backglass-only" ]]; then
         WINDOW_ID_BACKGLASS=$(xdotool search --name "$WINDOW_TITLE_BACKGLASS" | head -n 1)
         if [ -n "$WINDOW_ID_BACKGLASS" ]; then
-            TMP_BACKGLASS_DIR=$(mktemp -d "$IMAGES_FOLDER/backglass_tmp_XXXXXX")
+            TMP_BACKGLASS_DIR=$(mktemp -d "$VIDEO_FOLDER/backglass_tmp_XXXXXX")
             (
                 for i in $(seq 0 $((FRAME_COUNT - 1))); do
                     FRAME_FILE="${TMP_BACKGLASS_DIR}/frame_${i}.png"
