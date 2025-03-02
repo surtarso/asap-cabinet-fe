@@ -51,6 +51,8 @@ from PyQt5.QtWidgets import (
     QDialogButtonBox, QPushButton, QMessageBox
 )
 
+from PyQt5.QtMultimedia import QSound
+
 # ------------- Configuration --------------
 # ------------------------------------------
 ##          Default values:
@@ -77,6 +79,8 @@ TOP_ICONS_SIZE          = 24
 SETTINGS_WIDTH          = 500
 SETTINGS_HEIGHT         = 700
 
+# Sounds
+SND_TABLE_CHANGE        = "snd/table_change.wav"
 # ------------------------------------------
 ##     Included in settins dialog:
 # ------------------------------------------
@@ -627,6 +631,12 @@ class SingleTableViewer(QMainWindow):
             animation.setLoopCount(-1)  # Loop indefinitely
             animation.start()
 
+        try:
+            self.table_change_sound = QSound(SND_TABLE_CHANGE)
+        except Exception as e:
+            print(f"Error loading sound: {e}")
+            self.table_change_sound = None
+
         ##--- Initial display
         self.update_images()
 
@@ -869,21 +879,42 @@ class SingleTableViewer(QMainWindow):
             self.secondary.label.setGeometry(0, 0, BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT)
             self.secondary.dmd_label.setGeometry(0, BACKGLASS_IMAGE_HEIGHT, DMD_WIDTH, DMD_HEIGHT)
 
-    ##--- KEY EVENTS
+    # ##--- KEY EVENTS
     def keyPressEvent(self, event):
         """Handle key press events to navigate tables, launch a table, or close the window."""
         if event.key() == Qt.Key_Left:
             self.current_index = (self.current_index - 1) % len(self.table_list)
             self.update_images()  # Update images when switching tables
+            if self.table_change_sound:
+                self.table_change_sound.play()
+
         elif event.key() == Qt.Key_Right:
             self.current_index = (self.current_index + 1) % len(self.table_list)
             self.update_images()  # Update images when switching tables
+            if self.table_change_sound:
+                self.table_change_sound.play()
+
         elif event.key() in (Qt.Key_Return, Qt.Key_Enter):
             self.launch_table()  # Launch the table
         elif event.key() == Qt.Key_Escape:
             self.close()  # Close the window
         else:
             super().keyPressEvent(event)  # Handle other key events
+
+    # def keyPressEvent(self, event):
+    #     """Handle key press events to navigate tables, launch a table, or close the window."""
+    #     if event.key() == Qt.Key_Left:
+    #         self.current_index = (self.current_index - 1) % len(self.table_list)
+    #         self.update_images()  # Update images when switching tables
+    #     elif event.key() == Qt.Key_Right:
+    #         self.current_index = (self.current_index + 1) % len(self.table_list)
+    #         self.update_images()  # Update images when switching tables
+    #     elif event.key() in (Qt.Key_Return, Qt.Key_Enter):
+    #         self.launch_table()  # Launch the table
+    #     elif event.key() == Qt.Key_Escape:
+    #         self.close()  # Close the window
+    #     else:
+    #         super().keyPressEvent(event)  # Handle other key events
 
     ##--- QUIT
     def closeEvent(self, event):
