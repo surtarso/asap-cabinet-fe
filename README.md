@@ -72,8 +72,8 @@ Usage: `./convert_video_to_gif.sh`
 
 ## Roadmap
     - Game title from metadata (instead of filename)
-    - Search/sort buttons
-    - Keymap support
+    - 'jump to letter' mechanics
+    - Keymaping support
     - Generate wheels/dmd somehow (?)
     - Music support (?)
 
