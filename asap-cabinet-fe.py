@@ -76,8 +76,8 @@ SND_TABLE_CHANGE        = "snd/table_change.wav"
 # ------------------------------------------
 ##     Included in settins dialog:
 # ------------------------------------------
-VPX_ROOT_FOLDER         = "/home/tarso/Games/vpinball/build/tables/"
-EXECUTABLE_CMD          = "/home/tarso/Games/vpinball/build/VPinballX_GL"
+VPX_ROOT_FOLDER         = "~/Games/vpinball/build/tables/"
+EXECUTABLE_CMD          = "~/Games/vpinball/build/VPinballX_GL"
 EXECUTABLE_SUB_CMD      = "-Play"
 
 # Per table images path (/tables/<table_dir>/)
