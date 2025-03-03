@@ -16,7 +16,7 @@ on:
       - main
 
 jobs:
-  build:
+  build_linux:
     runs-on: ubuntu-latest
 
     steps:
@@ -36,18 +36,16 @@ jobs:
           pip install -r requirements.txt
 
       - name: Start pulseaudio daemon
-        run: |
-          pulseaudio --start
+        run: pulseaudio --start
 
-      - name: Create directories and files for testing
+      - name: Create test directories and files
         run: |
           mkdir -p /home/runner/Games/vpinball/build/tables/test
           touch /home/runner/Games/vpinball/build/tables/test/test_file.vpx
           touch /home/runner/Games/vpinball/VPinballX_GL
 
       - name: Set QT_QPA_PLATFORM to offscreen
-        run: |
-          echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
+        run: echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
 
       - name: Install pytest
         run: pip install pytest pytest-qt sip
@@ -55,8 +53,90 @@ jobs:
       - name: Run tests
         run: pytest --maxfail=1 --disable-warnings -q
 
-      - name: Run the app (just check if it starts)
+      - name: Run the app (CI auto-exit)
         env:
           CI: "true"
+        run: python3 asap_cabinet_fe.py
+
+      - name: Build Linux Executable
+        run: pyinstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
+
+      - name: Upload Linux Binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: asap_cabinet_fe-linux
+          path: dist/asap_cabinet_fe
+
+      - name: Build .deb Package
         run: |
-          python3 asap_cabinet_fe.py
+          gem install --no-document fpm
+          mkdir -p package/opt/asap_cabinet_fe/img
+          mkdir -p package/opt/asap_cabinet_fe/snd
+          cp asap_cabinet_fe.py package/opt/asap_cabinet_fe/
+          cp -r img/* package/opt/asap_cabinet_fe/img/
+          cp -r snd/* package/opt/asap_cabinet_fe/snd/
+          fpm -s dir -t deb -n asap_cabinet_fe -v 1.0 --prefix / package/opt/asap_cabinet_fe
+        
+      - name: Upload .deb Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: asap_cabinet_fe-deb
+          path: "*.deb"
+
+  build_windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Python and dependencies
+        run: |
+          pip install pyinstaller sip
+          pip install -r requirements.txt
+
+      - name: Build Windows Executable
+        run: pyinstaller --onefile --add-data "img;img" --add-data "snd;snd" asap_cabinet_fe.py
+
+      - name: Upload Windows Binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: asap_cabinet_fe-windows
+          path: dist/asap_cabinet_fe.exe
+
+  build_macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Python and dependencies
+        run: |
+          brew install python3
+          pip3 install pyqt5 pyinstaller
+
+      - name: Build macOS Executable
+        run: pyinstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
+
+      - name: Upload macOS Binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: asap_cabinet_fe-macos
+          path: dist/asap_cabinet_fe
+
+  package_source:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Package Source Code
+        run: zip -r asap_cabinet_fe-1.0.zip asap_cabinet_fe.py img/ snd/
+
+      - name: Upload Source Zip
+        uses: actions/upload-artifact@v3
+        with:
+          name: asap_cabinet_fe-source
+          path: asap_cabinet_fe-1.0.zip
