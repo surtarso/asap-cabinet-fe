@@ -46,10 +46,14 @@ It will than save those pictures in **tables/my_table/images/** as .png and they
 
 **screenshot_art_generator.sh flags:** 
 
-    --wheel       Display all tables without a wheel.png file.
-    --dmd         Display all tables without a dmd.gif file.
-    --force       Override existing table/backglass images with new ones.
-    --dry-run     Print execution without doing anything.
+    no argument     Generate playfield and backglass missing images (default)
+    --dry-run       Show what would be done without making changes
+    --wheel         List tables missing wheel.png image and exit
+    --marquee       List tables missing marquee.png image and exit
+    --dmd           List tables missing dmd.gif video and exit
+    --force         Recreate screenshots even if they already exist
+  
+    -h, --help    Show this help message and exit
 
 ## Using the 'convert_video_to_gif.sh' tool:
 
