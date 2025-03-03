@@ -73,6 +73,7 @@ SETTINGS_HEIGHT         = 700
 
 # Sounds
 SND_TABLE_CHANGE        = "snd/table_change.wav"
+SND_TABLE_LOAD          = "snd/table_load.wav"
 # ------------------------------------------
 ##     Included in settins dialog:
 # ------------------------------------------
@@ -633,6 +634,11 @@ class SingleTableViewer(QMainWindow):
         except Exception as e:
             print(f"Error loading sound: {e}")
             self.table_change_sound = None
+        try:
+            self.table_load_sound = QSound(SND_TABLE_LOAD)
+        except Exception as e:
+            print(f"Error loading sound: {e}")
+            self.table_load_sound = None
 
         ##--- Initial display
         self.update_images()
@@ -783,6 +789,8 @@ class SingleTableViewer(QMainWindow):
         """Launch the current table."""
         table = self.table_list[self.current_index]
         command = [EXECUTABLE_CMD, EXECUTABLE_SUB_CMD, table["vpx_file"]]
+        if self.table_load_sound:
+                self.table_load_sound.play()
         try:
             # Launch the game and wait for it to finish
             process = subprocess.Popen(command)
@@ -897,21 +905,6 @@ class SingleTableViewer(QMainWindow):
             self.close()  # Close the window
         else:
             super().keyPressEvent(event)  # Handle other key events
-
-    # def keyPressEvent(self, event):
-    #     """Handle key press events to navigate tables, launch a table, or close the window."""
-    #     if event.key() == Qt.Key_Left:
-    #         self.current_index = (self.current_index - 1) % len(self.table_list)
-    #         self.update_images()  # Update images when switching tables
-    #     elif event.key() == Qt.Key_Right:
-    #         self.current_index = (self.current_index + 1) % len(self.table_list)
-    #         self.update_images()  # Update images when switching tables
-    #     elif event.key() in (Qt.Key_Return, Qt.Key_Enter):
-    #         self.launch_table()  # Launch the table
-    #     elif event.key() == Qt.Key_Escape:
-    #         self.close()  # Close the window
-    #     else:
-    #         super().keyPressEvent(event)  # Handle other key events
 
     ##--- QUIT
     def closeEvent(self, event):
