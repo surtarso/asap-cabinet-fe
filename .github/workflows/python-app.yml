@@ -49,6 +49,9 @@ jobs:
         run: |
           echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
 
+      - name: Install pytest
+        run: pip install pytest        
+
       - name: Run tests
         run: pytest --maxfail=1 --disable-warnings -q
 
