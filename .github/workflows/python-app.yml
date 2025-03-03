@@ -1,0 +1,36 @@
+name: Python CI for PyQt5 App
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # This tells GitHub to run the job on a computer using Ubuntu
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2  # This gets the latest version of your code
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11.2'  # Make sure this is the Python version your app uses
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-pyqt5  # Install your system-wide dependencies
+
+      # - name: Install Python dependencies (from requirements.txt)
+        # run: |
+          # python -m pip install --upgrade pip
+          # pip install -r requirements.txt  # Install PyQt5 and PyQt5-sip if they are in requirements.txt
+
+      - name: Run the app (just check if it starts)
+        run: |
+          python asap-cabinet-fe.py  # Replace this with the name of your Python script that runs your PyQt5 app
