@@ -17,10 +17,16 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.11'
+
+      - name: Check Python version
+        run: |
+          python3 --version
+          pip --version
 
       - name: Install system dependencies
         run: |
@@ -29,8 +35,9 @@ jobs:
 
       - name: Ensure PyQt5 is available via pip
         run: |
-          python3 -m pip install PyQt5==5.15.9
-
+          python3 -m pip install --upgrade pip  # Ensure pip is upgraded
+          pip install -r requirements.txt
+          
       - name: Run the app (just check if it starts)
         run: |
           python3 asap-cabinet-fe.py
