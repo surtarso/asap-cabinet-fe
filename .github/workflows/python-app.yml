@@ -36,6 +36,12 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Mock .vpx files folder (if necessary)
+        run: |
+          mkdir -p /home/tarso/Games/vpinball/build/tables/
+          touch /home/tarso/Games/vpinball/build/tables/test_file.vpx
+          touch /home/tarso/Games/vpinball/build/VPinballX_GL
+
       - name: Set QT_QPA_PLATFORM to offscreen
         run: |
           echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
