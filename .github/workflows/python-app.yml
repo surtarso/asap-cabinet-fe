@@ -49,6 +49,9 @@ jobs:
         run: |
           echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
 
+      - name: Run tests
+        run: pytest --maxfail=1 --disable-warnings -q
+
       - name: Run the app (just check if it starts)
         env:
           CI: "true"
