@@ -43,5 +43,7 @@ jobs:
           echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
 
       - name: Run the app (just check if it starts)
+        env:
+          CI: "true"
         run: |
           python3 asap-cabinet-fe.py

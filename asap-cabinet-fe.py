@@ -32,7 +32,7 @@ import subprocess
 import configparser
 
 from PyQt5.QtCore import (
-    Qt, QPropertyAnimation, QEasingCurve, QSize
+    Qt, QPropertyAnimation, QEasingCurve, QSize, QTimer
 )
 from PyQt5.QtGui import (
     QPixmap, QPalette, QColor, QGuiApplication, QFont, QFontMetrics, QMovie
@@ -948,5 +948,9 @@ if __name__ == "__main__":
         secondary_window.windowHandle().setScreen(secondary_screen)
         secondary_window.move(sec_geom.topLeft())
         secondary_window.setGeometry(sec_geom.x(), sec_geom.y(), BACKGLASS_WINDOW_WIDTH, BACKGLASS_WINDOW_HEIGHT)
+
+    # Auto-quit after 10 seconds if running in CI environment
+    if os.environ.get("CI") or os.environ.get("GITHUB_ACTIONS"):
+        QTimer.singleShot(10000, app.quit)  # 10000 ms = 10 seconds
 
     sys.exit(app.exec_())
