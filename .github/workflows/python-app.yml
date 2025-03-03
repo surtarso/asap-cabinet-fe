@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'README.md'
+      - 'img/*'
+      - 'snd/*'
+      - 'media_tools/README.md'
+      - 'launch.sh'
+      - 'TODO'
   pull_request:
     branches:
       - main
