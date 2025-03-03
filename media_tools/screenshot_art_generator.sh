@@ -102,8 +102,8 @@ if [ "$1" == "--marquee" ]; then
     for vpx_file in "$ROOT_FOLDER"/*/*.vpx; do
         if [ -f "$vpx_file" ]; then
             table_dir=$(dirname "$vpx_file")
-            wheel_file="$table_dir/images/marquee.png"
-            if [ ! -f "$wheel_file" ]; then
+            marquee_file="$table_dir/images/marquee.png"
+            if [ ! -f "$marquee_file" ]; then
                 echo -e "${GREEN}->${YELLOW} '$(basename "$table_dir")'${NC}"
             fi
         fi
@@ -115,20 +115,20 @@ fi
 
 # --dmd argument, list tables missing dmd.gif and exit.
 if [ "$1" == "--dmd" ]; then
-    echo -e "${YELLOW}This script can't generate dmd videos."
+    echo -e "${YELLOW}This script can't generate dmd gif videos."
     echo -e "${BLUE}Using tables directory: $ROOT_FOLDER"
     echo -e "Checking for tables missing dmd.gif...${NC}\n"
     # Iterate over each table directory that contains a .vpx file.
     for vpx_file in "$ROOT_FOLDER"/*/*.vpx; do
         if [ -f "$vpx_file" ]; then
             table_dir=$(dirname "$vpx_file")
-            wheel_file="$table_dir/video/dmd.gif"
-            if [ ! -f "$wheel_file" ]; then
+            dmd_file="$table_dir/video/dmd.gif"
+            if [ ! -f "$dmd_file" ]; then
                 echo -e "${GREEN}->${YELLOW} '$(basename "$table_dir")'${NC}"
             fi
         fi
     done
-    echo -e "\n${BLUE}These tables have ${RED}no dmd.gif${BLUE} images. You need to download them.${NC}"
+    echo -e "\n${BLUE}These tables have ${RED}no dmd.gif${BLUE} images. You need to download/convert them.${NC}"
     echo -e "${BLUE}Place them in ${YELLOW}$ROOT_FOLDER<table_folder>/images/${NC}"
     exit 0
 fi
