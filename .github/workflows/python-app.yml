@@ -10,37 +10,41 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # This tells GitHub to run the job on a computer using Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v2  # This gets the latest version of your code
+        uses: actions/checkout@v2
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.11'  # Using Python 3.11 as you mentioned
+          python-version: '3.11'
 
       - name: Check Python version
         run: |
-          python3 --version  # Check if python3 is correctly installed
-          pip --version  # Check if pip is correctly installed
+          python3 --version
+          pip --version
 
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3 python3-pyqt5  # Install your system-wide dependencies
-          
+          sudo apt-get install -y python3 python3-pyqt5
+
       - name: Verify Python and pip installation
         run: |
-          which python3  # Check the path where python3 is installed
-          which pip  # Check the path where pip is installed
+          which python3
+          which pip
 
       - name: Install Python dependencies from requirements.txt
         run: |
-          python3 -m pip install --upgrade pip  # Upgrade pip to the latest version
-          pip install -r requirements.txt  # Install dependencies from requirements.txt
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Check if PyQt5 is installed
+        run: |
+          python3 -c "import PyQt5"
 
       - name: Run the app (just check if it starts)
         run: |
-          python3 asap-cabinet-fe.py  # Use python3 explicitly to run the script
+          python3 asap-cabinet-fe.py
