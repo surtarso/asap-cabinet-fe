@@ -62,7 +62,7 @@ jobs:
         run: pyinstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
 
       - name: Upload Linux Binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: asap_cabinet_fe-linux
           path: dist/asap_cabinet_fe
@@ -78,7 +78,7 @@ jobs:
           fpm -s dir -t deb -n asap_cabinet_fe -v 1.0 --prefix / package/opt/asap_cabinet_fe
         
       - name: Upload .deb Package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: asap_cabinet_fe-deb
           path: "*.deb"
@@ -99,7 +99,7 @@ jobs:
         run: pyinstaller --onefile --add-data "img;img" --add-data "snd;snd" asap_cabinet_fe.py
 
       - name: Upload Windows Binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: asap_cabinet_fe-windows
           path: dist/asap_cabinet_fe.exe
@@ -120,7 +120,7 @@ jobs:
         run: pyinstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
 
       - name: Upload macOS Binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: asap_cabinet_fe-macos
           path: dist/asap_cabinet_fe
@@ -136,7 +136,7 @@ jobs:
         run: zip -r asap_cabinet_fe-1.0.zip asap_cabinet_fe.py img/ snd/
 
       - name: Upload Source Zip
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: asap_cabinet_fe-source
           path: asap_cabinet_fe-1.0.zip
