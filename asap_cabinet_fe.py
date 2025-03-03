@@ -32,7 +32,7 @@ import subprocess
 import configparser
 
 from PyQt5.QtCore import (
-    Qt, QPropertyAnimation, QEasingCurve, QSize, QTimer
+    Qt, QPropertyAnimation, QEasingCurve, QSize, QTimer, QObject
 )
 from PyQt5.QtGui import (
     QPixmap, QPalette, QColor, QGuiApplication, QFont, QFontMetrics, QMovie
@@ -217,7 +217,7 @@ def load_configuration():
 load_configuration()
 
 # ---------------- Settings Dialog ----------------
-class SettingsDialog(QDialog):
+class SettingsDialog(QDialog, QObject):
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -409,7 +409,7 @@ def load_table_list():
     return tables
 
 # ---------------- Secondary Window ----------------
-class SecondaryWindow(QMainWindow):
+class SecondaryWindow(QMainWindow, QObject):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Secondary Display (Backglass)")
@@ -489,7 +489,7 @@ class SecondaryWindow(QMainWindow):
             self.dmd_movie.start()
 
 # ---------------- Search Dialog ----------------
-class SearchDialog(QDialog):
+class SearchDialog(QDialog, QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Search Tables")
@@ -506,7 +506,7 @@ class SearchDialog(QDialog):
         return self.searchEdit.text()
 
 # ---------------- Main Window ----------------
-class SingleTableViewer(QMainWindow):
+class SingleTableViewer(QMainWindow, QObject):
 
     def __init__(self, secondary_window=None):
         """Initializes the primary display window with table viewer and settings button."""
