@@ -59,4 +59,4 @@ jobs:
         env:
           CI: "true"
         run: |
-          python3 asap-cabinet-fe.py
+          python3 asap_cabinet_fe.py
