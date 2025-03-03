@@ -30,9 +30,9 @@ jobs:
 
       - name: Create directories and files for testing
         run: |
-          mkdir -p $GITHUB_WORKSPACE/Games/vpinball/build/tables/test
-          touch $GITHUB_WORKSPACE/Games/vpinball/build/tables/test/test_file.vpx
-          touch $GITHUB_WORKSPACE/Games/vpinball/VPinballX_GL
+          mkdir -p /home/runner/Games/vpinball/build/tables/test
+          touch /home/runner/Games/vpinball/build/tables/test/test_file.vpx
+          touch /home/runner/Games/vpinball/VPinballX_GL
 
       - name: Set QT_QPA_PLATFORM to offscreen
         run: |
