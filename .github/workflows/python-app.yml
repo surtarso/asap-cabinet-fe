@@ -4,14 +4,14 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - '.gitignore'
-      - 'README.md'
+    paths:
       - 'img/*'
       - 'snd/*'
-      - 'media_tools/README.md'
-      - 'launch.sh'
-      - 'TODO'
+      - 'asap-cabinet-fe'
+      - 'asap-cabinet-fe-x11'
+      - 'asap_cabine_fe.py'
+      - 'requirements.txt'
+      - 'test_asap_cabinet_fe.py'
   pull_request:
     branches:
       - main
@@ -58,6 +58,47 @@ jobs:
         env:
           CI: "true"
         run: python3 asap_cabinet_fe.py
+
+  build_nuitka:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+          cache: 'pip'
+          cache-dependency-path: |
+            **/requirements*.txt
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Build Executable
+        uses: Nuitka/Nuitka-Action@main
+        with:
+          nuitka-version: main
+          script-name: kasa_cli
+          mode: app
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }} Build
+          path: |
+            build/*.exe
+            build/*.bin
+            build/*.app/**/*
+          include-hidden-files: true
 
   # build_linux_binary:
   #   runs-on: ubuntu-latest
