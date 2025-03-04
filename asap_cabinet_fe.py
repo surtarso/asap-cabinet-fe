@@ -8,10 +8,10 @@
     Features:
     - Scans VPX_ROOT_FOLDER recursively for .vpx files.
     - For each table, uses:
-        - Table image: table.png (or DEFAULT_TABLE_PATH if missing)
-        - Backglass image: backglass.png (or DEFAULT_BACKGLASS_PATH if missing)
-        - Wheel image: wheel.png (or DEFAULT_WHEEL_PATH if missing)
-        - DMD animation: dmd.gif (of DEFAULT_DMD_PATH if missing)
+        - Table image: table.png (or DEFAULT_TABLE_IMAGE if missing)
+        - Backglass image: backglass.png (or DEFAULT_BACKGLASS_IMAGE if missing)
+        - Wheel image: wheel.png (or DEFAULT_WHEEL_IMAGE if missing)
+        - DMD animation: dmd.gif (of DEFAULT_DMD_VIDEO if missing)
     - Main Window (1080x1920): Displays table image full screen with wheel overlay
     - Secondary Window (1280x1024): Displays backglass image and DMD
     - Uses left/right arrow/shift keys for infinite scrolling between tables
@@ -53,10 +53,10 @@ CONFIG_FILE             = "~/.asap-cabinet-fe/settings.ini"
 # ERROR_LOGFILE           = "~/.asap-cabinet-fe/errors.log"
 
 # Default images path
-DEFAULT_TABLE_PATH      = "img/default_table.png"
-DEFAULT_WHEEL_PATH      = "img/default_wheel.png"
-DEFAULT_BACKGLASS_PATH  = "img/default_backglass.png"
-DEFAULT_DMD_PATH        = "img/default_dmd.gif"
+DEFAULT_TABLE_IMAGE      = "img/default_table.png"
+DEFAULT_WHEEL_IMAGE      = "img/default_wheel.png"
+DEFAULT_BACKGLASS_IMAGE  = "img/default_backglass.png"
+DEFAULT_DMD_VIDEO        = "img/default_dmd.gif"
 
 # Hint side-arrows 
 HINT_ARROW_SIZE         = 48
@@ -77,19 +77,19 @@ SND_TABLE_LOAD          = "snd/table_load.wav"
 ##     Included in settins dialog:
 # ------------------------------------------
 VPX_ROOT_FOLDER = os.path.expanduser("~/Games/vpinball/build/tables/")
-EXECUTABLE_CMD = os.path.expanduser("~/Games/vpinball/build/VPinballX_GL")
+VPX_EXECUTABLE = os.path.expanduser("~/Games/vpinball/build/VPinballX_GL")
 EXECUTABLE_SUB_CMD      = "-Play"
 
-# Per table images path (/tables/<table_dir>/)
-TABLE_IMAGE_PATH        = "images/table.png"
-TABLE_WHEEL_PATH        = "images/wheel.png"
-TABLE_BACKGLASS_PATH    = "images/backglass.png"
-TABLE_MARQUEE_PATH      = "images/marquee.png"
+# Per table custom images path (/tables/<table_dir>/)
+CUSTOM_TABLE_IMAGE        = "images/table.png"
+CUSTOM_WHEEL_IMAGE        = "images/wheel.png"
+CUSTOM_BACKGLASS_IMAGE    = "images/backglass.png"
+CUSTOM_MARQUEE_IMAGE      = "images/marquee.png"
 
-# Per table videos path (/tables/<table_dir>/)
-VIDEO_TABLE_PATH        = "video/table.gif"
-VIDEO_BACKGLASS_PATH    = "video/backglass.gif"
-VIDEO_DMD_PATH          = "video/dmd.gif"
+# Per table custom videos path (/tables/<table_dir>/)
+CUSTOM_TABLE_VIDEO        = "video/table.gif"
+CUSTOM_BACKGLASS_VIDEO    = "video/backglass.gif"
+CUSTOM_DMD_VIDEO          = "video/dmd.gif"
 
 ## Main window (vertical)
 MAIN_MONITOR_INDEX      = 1
@@ -119,8 +119,9 @@ FADE_OPACITY            = 0.5
 def load_configuration():
     """Loads configuration settings from an ini file or creates the file with default settings if it does not exist."""
     
-    global VPX_ROOT_FOLDER, EXECUTABLE_CMD, EXECUTABLE_SUB_CMD
-    global TABLE_IMAGE_PATH, TABLE_WHEEL_PATH, TABLE_BACKGLASS_PATH, VIDEO_DMD_PATH
+    global VPX_ROOT_FOLDER, VPX_EXECUTABLE, EXECUTABLE_SUB_CMD
+    global CUSTOM_TABLE_IMAGE, CUSTOM_WHEEL_IMAGE, CUSTOM_BACKGLASS_IMAGE, CUSTOM_MARQUEE_IMAGE
+    global CUSTOM_TABLE_VIDEO, CUSTOM_BACKGLASS_VIDEO, CUSTOM_DMD_VIDEO
     global MAIN_MONITOR_INDEX, MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT
     global SECONDARY_MONITOR_INDEX, BACKGLASS_WINDOW_WIDTH, BACKGLASS_WINDOW_HEIGHT
     global BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT, DMD_WIDTH, DMD_HEIGHT
@@ -142,14 +143,17 @@ def load_configuration():
     if 'Main Paths' not in config:
         config['Main Paths'] = {
             "VPX_ROOT_FOLDER":         VPX_ROOT_FOLDER,
-            "EXECUTABLE_CMD":          EXECUTABLE_CMD,
+            "VPX_EXECUTABLE":          VPX_EXECUTABLE,
             "EXECUTABLE_SUB_CMD":      EXECUTABLE_SUB_CMD,
         }
-        config['Custom Images'] = {
-            "TABLE_IMAGE_PATH":        TABLE_IMAGE_PATH,
-            "TABLE_WHEEL_PATH":        TABLE_WHEEL_PATH,
-            "TABLE_BACKGLASS_PATH":    TABLE_BACKGLASS_PATH,
-            "VIDEO_DMD_PATH":          VIDEO_DMD_PATH,
+        config['Custom Media'] = {
+            "CUSTOM_TABLE_IMAGE":        CUSTOM_TABLE_IMAGE,
+            "CUSTOM_WHEEL_IMAGE":        CUSTOM_WHEEL_IMAGE,
+            "CUSTOM_BACKGLASS_IMAGE":    CUSTOM_BACKGLASS_IMAGE,
+            "CUSTOM_MARQUEE_IMAGE":      CUSTOM_MARQUEE_IMAGE,
+            "CUSTOM_TABLE_VIDEO":        CUSTOM_TABLE_VIDEO,
+            "CUSTOM_BACKGLASS_VIDEO":    CUSTOM_BACKGLASS_VIDEO,
+            "CUSTOM_DMD_VIDEO":          CUSTOM_DMD_VIDEO,
         }
         config['Main Window'] = {
             "MAIN_MONITOR_INDEX":      str(MAIN_MONITOR_INDEX),
@@ -171,7 +175,7 @@ def load_configuration():
             "DMD_WIDTH":               str(DMD_WIDTH),
             "DMD_HEIGHT":              str(DMD_HEIGHT),
         }
-        config['Transitions'] = {
+        config['Transition Settings'] = {
             "FADE_DURATION":           str(FADE_DURATION),
             "FADE_OPACITY":            str(FADE_OPACITY),
         }
@@ -179,14 +183,18 @@ def load_configuration():
             config.write(f)
     p = config['Main Paths']
     VPX_ROOT_FOLDER         = p.get("VPX_ROOT_FOLDER", VPX_ROOT_FOLDER)
-    EXECUTABLE_CMD          = p.get("EXECUTABLE_CMD", EXECUTABLE_CMD)
+    VPX_EXECUTABLE          = p.get("VPX_EXECUTABLE", VPX_EXECUTABLE)
     EXECUTABLE_SUB_CMD      = p.get("EXECUTABLE_SUB_CMD", EXECUTABLE_SUB_CMD)
 
-    ci = config['Custom Images']
-    TABLE_IMAGE_PATH        = ci.get("TABLE_IMAGE_PATH", TABLE_IMAGE_PATH)
-    TABLE_WHEEL_PATH        = ci.get("TABLE_WHEEL_PATH", TABLE_WHEEL_PATH)
-    TABLE_BACKGLASS_PATH    = ci.get("TABLE_BACKGLASS_PATH", TABLE_BACKGLASS_PATH)
-    VIDEO_DMD_PATH          = ci.get("VIDEO_DMD_PATH", VIDEO_DMD_PATH)
+    ci = config['Custom Media']
+    CUSTOM_TABLE_IMAGE        = ci.get("CUSTOM_TABLE_IMAGE", CUSTOM_TABLE_IMAGE)
+    CUSTOM_WHEEL_IMAGE        = ci.get("CUSTOM_WHEEL_IMAGE", CUSTOM_WHEEL_IMAGE)
+    CUSTOM_BACKGLASS_IMAGE    = ci.get("CUSTOM_BACKGLASS_IMAGE", CUSTOM_BACKGLASS_IMAGE)
+    CUSTOM_MARQUEE_IMAGE      = ci.get("CUSTOM_MARQUEE_IMAGE", CUSTOM_MARQUEE_IMAGE)
+
+    CUSTOM_TABLE_VIDEO        = ci.get("CUSTOM_TABLE_VIDEO", CUSTOM_TABLE_VIDEO)
+    CUSTOM_BACKGLASS_VIDEO    = ci.get("CUSTOM_BACKGLASS_VIDEO", CUSTOM_BACKGLASS_VIDEO)
+    CUSTOM_DMD_VIDEO          = ci.get("CUSTOM_DMD_VIDEO", CUSTOM_DMD_VIDEO)
 
     mw = config['Main Window']
     MAIN_MONITOR_INDEX      = int(mw.get("MAIN_MONITOR_INDEX", MAIN_MONITOR_INDEX))
@@ -208,7 +216,7 @@ def load_configuration():
     DMD_WIDTH               = int(sw.get("DMD_WIDTH", DMD_WIDTH))
     DMD_HEIGHT              = int(sw.get("DMD_HEIGHT", DMD_HEIGHT))
 
-    t = config['Transitions']
+    t = config['Transition Settings']
     FADE_DURATION           = int(t.get("FADE_DURATION", FADE_DURATION))
     FADE_OPACITY            = float(t.get("FADE_OPACITY", FADE_OPACITY))
 
@@ -237,12 +245,15 @@ class SettingsDialog(QDialog, QObject):
 
         # Create QLineEdit fields for each setting
         self.vpxRootEdit             = QLineEdit(VPX_ROOT_FOLDER)
-        self.execCmdEdit             = QLineEdit(EXECUTABLE_CMD)
+        self.execCmdEdit             = QLineEdit(VPX_EXECUTABLE)
         self.execSubCmdEdit          = QLineEdit(EXECUTABLE_SUB_CMD)
-        self.tableImageEdit          = QLineEdit(TABLE_IMAGE_PATH)
-        self.wheelImageEdit          = QLineEdit(TABLE_WHEEL_PATH)
-        self.backglassImageEdit      = QLineEdit(TABLE_BACKGLASS_PATH)
-        self.dmdTableEdit            = QLineEdit(VIDEO_DMD_PATH)
+        self.tableImageEdit          = QLineEdit(CUSTOM_TABLE_IMAGE)
+        self.wheelImageEdit          = QLineEdit(CUSTOM_WHEEL_IMAGE)
+        self.backglassImageEdit      = QLineEdit(CUSTOM_BACKGLASS_IMAGE)
+        self.marqueeImageEdit        = QLineEdit(CUSTOM_MARQUEE_IMAGE)
+        self.videoTableEdit          = QLineEdit(CUSTOM_TABLE_VIDEO)
+        self.videoBackglassEdit      = QLineEdit(CUSTOM_BACKGLASS_VIDEO)
+        self.dmdTableEdit            = QLineEdit(CUSTOM_DMD_VIDEO)
         self.mainMonitor             = QLineEdit(str(MAIN_MONITOR_INDEX))
         self.windowWidthEdit         = QLineEdit(str(MAIN_WINDOW_WIDTH))
         self.windowHeightEdit        = QLineEdit(str(MAIN_WINDOW_HEIGHT))
@@ -267,15 +278,28 @@ class SettingsDialog(QDialog, QObject):
         self.layout.addRow("Tables Folder:",        self.vpxRootEdit)
         self.layout.addRow("VPX Executable:",       self.execCmdEdit)
         self.layout.addRow("VPX Argument:",         self.execSubCmdEdit)
-        self.add_section_title("Custom Images")
+
+        self.add_section_title("Custom Media")
         self.layout.addRow("Playfield Images Path:",self.tableImageEdit)
         self.layout.addRow("Wheel Images Path:",    self.wheelImageEdit)
         self.layout.addRow("Backglass Images Path:",self.backglassImageEdit)
+        self.layout.addRow("Marquee Images Path:",  self.marqueeImageEdit)
+        self.layout.addRow("Playfield GIFs Path:",  self.videoTableEdit)
+        self.layout.addRow("Backglass GIFs Path:",  self.videoBackglassEdit)
         self.layout.addRow("DMD GIFs Path:",        self.dmdTableEdit)
-        self.add_section_title("Screens Dimensions")
+
+        self.add_section_title("Main Window")
         self.layout.addRow("Playfield Monitor:",    self.mainMonitor)
         self.layout.addRow("Playfield Width:",      self.windowWidthEdit)
         self.layout.addRow("Playfield Height:",     self.windowHeightEdit)
+        self.layout.addRow("Wheel Size:",           self.wheelSizeEdit)
+        self.layout.addRow("Wheel Margin:",         self.wheelMarginEdit)
+        self.layout.addRow("Font Name:",            self.fontNameEdit)
+        self.layout.addRow("Font Size:",            self.fontSizeEdit)
+        self.layout.addRow("Background Color:",     self.bgColorEdit)
+        self.layout.addRow("Text Color:",           self.textColorEdit)
+
+        self.add_section_title("Secondary Window")
         self.layout.addRow("Backglass Monitor:",    self.secondaryMonitor)
         self.layout.addRow("Backglass Width:",      self.backglassWidthEdit)
         self.layout.addRow("Backglass Height:",     self.backglassHeightEdit)
@@ -283,13 +307,7 @@ class SettingsDialog(QDialog, QObject):
         self.layout.addRow("Backglass Image Height:",self.backglassImageHeightEdit)
         self.layout.addRow("DMD Width:",            self.dmdWidthEdit)
         self.layout.addRow("DMD Height:",           self.dmdHeightEdit)
-        self.add_section_title("Table Title Style")
-        self.layout.addRow("Wheel Size:",           self.wheelSizeEdit)
-        self.layout.addRow("Wheel Margin:",         self.wheelMarginEdit)
-        self.layout.addRow("Font Name:",            self.fontNameEdit)
-        self.layout.addRow("Font Size:",            self.fontSizeEdit)
-        self.layout.addRow("Background Color:",     self.bgColorEdit)
-        self.layout.addRow("Text Color:",           self.textColorEdit)
+
         self.add_section_title("Transition Settings")
         self.layout.addRow("Transition Duration:",  self.fadeDurationEdit)
         self.layout.addRow("Fade Opacity:",         self.fadeOpacityEdit)
@@ -330,12 +348,15 @@ class SettingsDialog(QDialog, QObject):
         """Retrieve the current settings values from the dialog."""
         return {
             "VPX_ROOT_FOLDER":         self.vpxRootEdit.text(),
-            "EXECUTABLE_CMD":          self.execCmdEdit.text(),
+            "VPX_EXECUTABLE":          self.execCmdEdit.text(),
             "EXECUTABLE_SUB_CMD":      self.execSubCmdEdit.text(),
-            "TABLE_IMAGE_PATH":        self.tableImageEdit.text(),
-            "TABLE_WHEEL_PATH":        self.wheelImageEdit.text(),
-            "TABLE_BACKGLASS_PATH":    self.backglassImageEdit.text(),
-            "VIDEO_DMD_PATH":          self.dmdTableEdit.text(),
+            "CUSTOM_TABLE_IMAGE":        self.tableImageEdit.text(),
+            "CUSTOM_WHEEL_IMAGE":        self.wheelImageEdit.text(),
+            "CUSTOM_BACKGLASS_IMAGE":    self.backglassImageEdit.text(),
+            "CUSTOM_MARQUEE_IMAGE":      self.marqueeImageEdit.text(),
+            "CUSTOM_TABLE_VIDEO":        self.videoTableEdit.text(),
+            "CUSTOM_BACKGLASS_VIDEO":    self.videoBackglassEdit.text(),
+            "CUSTOM_DMD_VIDEO":          self.dmdTableEdit.text(),
             "MAIN_MONITOR_INDEX":      self.mainMonitor.text(),
             "MAIN_WINDOW_WIDTH":       self.windowWidthEdit.text(),
             "MAIN_WINDOW_HEIGHT":      self.windowHeightEdit.text(),
@@ -363,10 +384,20 @@ class SettingsDialog(QDialog, QObject):
         self.layout.addWidget(title_label)
 
 # ---------------- Table Data Loader ----------------
-def get_image_path(root, subpath, default):
+def get_image_path(root, preferred_media_path, fallback_media_path, default_media_path):
     """Returns the image path if it exists, otherwise returns the default path."""
-    path = os.path.join(root, subpath)
-    return path if os.path.exists(path) else default
+    # Check preferred path
+    preferred_path = os.path.join(root, preferred_media_path)
+    if os.path.exists(preferred_path):
+        return preferred_path
+
+    # Check fallback path
+    fallback_path = os.path.join(root, fallback_media_path)
+    if os.path.exists(fallback_path):
+        return fallback_path
+
+    # If neither preferred nor fallback exist, return default
+    return os.path.join(root, default_media_path)
 
 def load_table_list():
     """Loads and returns a sorted list of dictionaries containing information about .vpx tables found in the VPX_ROOT_FOLDER directory and its subdirectories."""
@@ -385,10 +416,10 @@ def load_table_list():
                 vpx_path = os.path.join(root, file)
 
                 # Get paths using the helper function
-                table_img_path     = get_image_path(root, TABLE_IMAGE_PATH, DEFAULT_TABLE_PATH)
-                wheel_img_path     = get_image_path(root, TABLE_WHEEL_PATH, DEFAULT_WHEEL_PATH)
-                backglass_img_path = get_image_path(root, TABLE_BACKGLASS_PATH, DEFAULT_BACKGLASS_PATH)
-                dmd_img_path       = get_image_path(root, VIDEO_DMD_PATH, DEFAULT_DMD_PATH)
+                table_img_path     = get_image_path(root, CUSTOM_TABLE_VIDEO, CUSTOM_TABLE_IMAGE, DEFAULT_TABLE_IMAGE)
+                wheel_img_path     = get_image_path(root, CUSTOM_WHEEL_IMAGE, DEFAULT_WHEEL_IMAGE, DEFAULT_WHEEL_IMAGE)
+                backglass_img_path = get_image_path(root, CUSTOM_BACKGLASS_VIDEO, CUSTOM_BACKGLASS_IMAGE, DEFAULT_BACKGLASS_IMAGE)
+                dmd_img_path       = get_image_path(root, CUSTOM_DMD_VIDEO, CUSTOM_MARQUEE_IMAGE, DEFAULT_DMD_VIDEO)
 
                 # Append a dictionary containing all relevant table information to the tables list
                 tables.append({
@@ -433,59 +464,100 @@ class SecondaryWindow(QMainWindow, QObject):
         self.dmd_label.setAlignment(Qt.AlignCenter)
 
     def update_image(self, image_path, table_folder):
-        """Update backglass image and DMD GIF, prioritizing table-specific DMD if available."""
-        
-        # --- Update Backglass Image ---
-        if not os.path.exists(image_path):
-            image_path = DEFAULT_BACKGLASS_PATH
+        """Update backglass image and DMD media, prioritizing table-specific media if available."""
 
-        pixmap = QPixmap(image_path)
-        if pixmap.isNull():
-            pixmap = QPixmap(BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT)
-            pixmap.fill(Qt.black)
+        # --- Update Backglass (Video -> Image -> Fallback) ---
+        if image_path.lower().endswith('.gif') and os.path.exists(image_path):
+            # Play backglass video using QMovie
+            self.backglass_movie = QMovie(image_path)
+            self.backglass_movie.setCacheMode(QMovie.CacheAll)
+
+            # Start to determine frame size then stop
+            self.backglass_movie.start()
+            frame_size = self.backglass_movie.currentPixmap().size()
+            self.backglass_movie.stop()
+
+            # Scale while keeping aspect ratio
+            width, height = frame_size.width(), frame_size.height()
+            if width > 0 and height > 0:
+                aspect_ratio = width / height
+                new_width = min(BACKGLASS_IMAGE_WIDTH, int(BACKGLASS_IMAGE_HEIGHT * aspect_ratio))
+                new_height = min(BACKGLASS_IMAGE_HEIGHT, int(BACKGLASS_IMAGE_WIDTH / aspect_ratio))
+                if new_width > BACKGLASS_IMAGE_WIDTH:
+                    new_width = BACKGLASS_IMAGE_WIDTH
+                    new_height = int(BACKGLASS_IMAGE_WIDTH / aspect_ratio)
+                if new_height > BACKGLASS_IMAGE_HEIGHT:
+                    new_height = BACKGLASS_IMAGE_HEIGHT
+                    new_width = int(BACKGLASS_IMAGE_HEIGHT * aspect_ratio)
+
+                # Center the video inside the label
+                x_offset = (BACKGLASS_IMAGE_WIDTH - new_width) // 2
+                y_offset = (BACKGLASS_IMAGE_HEIGHT - new_height) // 2
+                self.label.setGeometry(x_offset, y_offset, new_width, new_height)
+                self.backglass_movie.setScaledSize(QSize(new_width, new_height))
+            self.label.setMovie(self.backglass_movie)
+            self.backglass_movie.start()
         else:
-            pixmap = pixmap.scaled(BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            # Fallback: load backglass as static image
+            pixmap = QPixmap(image_path)
+            if pixmap.isNull():
+                pixmap = QPixmap(BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT)
+                pixmap.fill(Qt.black)
+            else:
+                pixmap = pixmap.scaled(BACKGLASS_IMAGE_WIDTH, BACKGLASS_IMAGE_HEIGHT,
+                                    Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.label.setPixmap(pixmap)
+            self.backglass_effect.setOpacity(1.0)
 
-        self.label.setPixmap(pixmap)
-        self.backglass_effect.setOpacity(1.0)
+        # --- Determine DMD Media Path (Custom Video -> Custom Image -> Default Video) ---
+        custom_dmd_video_path = os.path.join(table_folder, CUSTOM_DMD_VIDEO)
+        custom_dmd_image_path = os.path.join(table_folder, CUSTOM_MARQUEE_IMAGE)
+        if os.path.exists(custom_dmd_video_path):
+            dmd_path = custom_dmd_video_path
+        elif os.path.exists(custom_dmd_image_path):
+            dmd_path = custom_dmd_image_path
+        else:
+            dmd_path = DEFAULT_DMD_VIDEO
 
-        # --- Determine DMD GIF Path ---
-        table_dmd_path = os.path.join(table_folder, VIDEO_DMD_PATH)  # Table-specific DMD
-        dmd_path = table_dmd_path if os.path.exists(table_dmd_path) else DEFAULT_DMD_PATH
-
-        # --- Update DMD GIF ---
-        if os.path.exists(dmd_path):
+        # --- Update DMD Media ---
+        if dmd_path.lower().endswith('.gif'):
+            # If it's a GIF, use QMovie
             self.dmd_movie = QMovie(dmd_path)
             self.dmd_movie.setCacheMode(QMovie.CacheAll)
-
-            # Get original GIF size
-            self.dmd_movie.start()  # Start to get correct frame size
+            self.dmd_movie.start()
             frame_size = self.dmd_movie.currentPixmap().size()
             self.dmd_movie.stop()
 
-            # Scale while maintaining aspect ratio
             dmd_width, dmd_height = frame_size.width(), frame_size.height()
             if dmd_width > 0 and dmd_height > 0:
                 aspect_ratio = dmd_width / dmd_height
-                new_width    = min(DMD_WIDTH, int(DMD_HEIGHT * aspect_ratio))
-                new_height   = min(DMD_HEIGHT, int(DMD_WIDTH / aspect_ratio))
-
+                new_width = min(DMD_WIDTH, int(DMD_HEIGHT * aspect_ratio))
+                new_height = min(DMD_HEIGHT, int(DMD_WIDTH / aspect_ratio))
                 if new_width > DMD_WIDTH:
-                    new_width  = DMD_WIDTH
+                    new_width = DMD_WIDTH
                     new_height = int(DMD_WIDTH / aspect_ratio)
                 if new_height > DMD_HEIGHT:
                     new_height = DMD_HEIGHT
-                    new_width  = int(DMD_HEIGHT * aspect_ratio)
+                    new_width = int(DMD_HEIGHT * aspect_ratio)
 
                 self.dmd_movie.setScaledSize(QSize(new_width, new_height))
-
-                # Center the GIF inside the 1024x256 area
+                # Center the DMD inside its area (below the backglass)
                 x_offset = (DMD_WIDTH - new_width) // 2
                 y_offset = (DMD_HEIGHT - new_height) // 2
+                # Position DMD below the backglass image
                 self.dmd_label.setGeometry(x_offset, BACKGLASS_IMAGE_HEIGHT + y_offset, new_width, new_height)
-
             self.dmd_label.setMovie(self.dmd_movie)
             self.dmd_movie.start()
+        else:
+            # Otherwise, assume it's an image and use QPixmap
+            dmd_pixmap = QPixmap(dmd_path)
+            if dmd_pixmap.isNull():
+                dmd_pixmap = QPixmap(DMD_WIDTH, DMD_HEIGHT)
+                dmd_pixmap.fill(Qt.black)
+            else:
+                dmd_pixmap = dmd_pixmap.scaled(DMD_WIDTH, DMD_HEIGHT,
+                                            Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.dmd_label.setPixmap(dmd_pixmap)
 
 # ---------------- Search Dialog ----------------
 class SearchDialog(QDialog, QObject):
@@ -704,29 +776,71 @@ class SingleTableViewer(QMainWindow, QObject):
         """Update images with fade out animation across all displays."""
         table = self.table_list[self.current_index]
 
-        # Prepare new pixmaps for table and wheel images
-        table_pixmap = QPixmap(table["table_img"])
-        if table_pixmap.isNull():
-            table_pixmap = QPixmap(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)
-            table_pixmap.fill(Qt.black)
-        table_scaled = table_pixmap.scaled(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT,
-                                        Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        # Ensure a default empty pixmap exists for static images
+        table_scaled = None
+        playing_gif = False  # Track if we're using a GIF
 
+        if table["table_img"].lower().endswith('.gif') and os.path.exists(table["table_img"]):
+            # --- Play Table GIF using QMovie ---
+            self.table_movie = QMovie(table["table_img"])
+            self.table_movie.setCacheMode(QMovie.CacheAll)
+
+            # Start movie to get frame size
+            self.table_movie.start()
+            frame_size = self.table_movie.currentPixmap().size()
+            self.table_movie.stop()
+
+            if frame_size.width() > 0 and frame_size.height() > 0:
+                aspect_ratio = frame_size.width() / frame_size.height()
+                new_width = min(MAIN_WINDOW_WIDTH, int(MAIN_WINDOW_HEIGHT * aspect_ratio))
+                new_height = min(MAIN_WINDOW_HEIGHT, int(MAIN_WINDOW_WIDTH / aspect_ratio))
+
+                if new_width > MAIN_WINDOW_WIDTH:
+                    new_width = MAIN_WINDOW_WIDTH
+                    new_height = int(MAIN_WINDOW_WIDTH / aspect_ratio)
+                if new_height > MAIN_WINDOW_HEIGHT:
+                    new_height = MAIN_WINDOW_HEIGHT
+                    new_width = int(MAIN_WINDOW_HEIGHT * aspect_ratio)
+
+                self.table_movie.setScaledSize(QSize(new_width, new_height))
+
+                # Center the GIF inside the QLabel
+                x_offset = (MAIN_WINDOW_WIDTH - new_width) // 2
+                y_offset = (MAIN_WINDOW_HEIGHT - new_height) // 2
+                self.table_label.setGeometry(x_offset, y_offset, new_width, new_height)
+
+            self.table_label.setMovie(self.table_movie)
+            self.table_movie.start()
+            playing_gif = True  # Mark that a GIF is playing
+
+        else:
+            # --- Load Static Table Image ---
+            table_pixmap = QPixmap(table["table_img"])
+            if table_pixmap.isNull():
+                table_pixmap = QPixmap(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)
+                table_pixmap.fill(Qt.black)
+            
+            table_scaled = table_pixmap.scaled(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT,
+                                            Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+            self.table_label.setPixmap(table_scaled)
+
+        # --- Load Wheel Image ---
         wheel_pixmap = QPixmap(table["wheel_img"])
         if wheel_pixmap.isNull():
             wheel_pixmap = QPixmap(WHEEL_IMAGE_SIZE, WHEEL_IMAGE_SIZE)
             wheel_pixmap.fill(Qt.transparent)
+        
         wheel_scaled = wheel_pixmap.scaled(WHEEL_IMAGE_SIZE, WHEEL_IMAGE_SIZE,
                                         Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
-        # Update the table name label
-        table_name = os.path.splitext(os.path.basename(table["vpx_file"]))[0]  # Get file name without extension
+        # --- Update Table Name ---
+        table_name = os.path.splitext(os.path.basename(table["vpx_file"]))[0]
         self.table_name_label.setText(table_name)
-        self.table_name_label.adjustSize()  # Adjust the label width to fit the name
+        self.table_name_label.adjustSize()
         self.table_name_label.setStyleSheet(f"color: {TEXT_COLOR}; text-align: left; background-color: {BG_COLOR};")
         self._update_table_name_label_geometry()
 
-        # Fade out all elements
+        # --- Fade Out All Elements ---
         self.fade_out_table = QPropertyAnimation(self.table_effect, b"opacity")
         self.fade_out_table.setDuration(FADE_DURATION // 2)
         self.fade_out_table.setStartValue(1.0)
@@ -739,14 +853,21 @@ class SingleTableViewer(QMainWindow, QObject):
         self.fade_out_wheel.setEndValue(FADE_OPACITY)
         self.fade_out_wheel.setEasingCurve(QEasingCurve.InQuad)
 
-        self.fade_out_backglass = QPropertyAnimation(self.secondary.backglass_effect, b"opacity") if self.secondary else None
+        self.fade_out_backglass = (
+            QPropertyAnimation(self.secondary.backglass_effect, b"opacity")
+            if self.secondary else None
+        )
         if self.fade_out_backglass:
             self.fade_out_backglass.setDuration(FADE_DURATION // 2)
             self.fade_out_backglass.setStartValue(1.0)
             self.fade_out_backglass.setEndValue(FADE_OPACITY)
             self.fade_out_backglass.setEasingCurve(QEasingCurve.InQuad)
 
-        self.fade_out_table.finished.connect(lambda: self._set_new_images(table_scaled, wheel_scaled, table["backglass_img"], table["folder"]))
+        # --- Ensure Backglass and Wheel Update Even if GIF is Playing ---
+        self.fade_out_table.finished.connect(lambda: self._set_new_images(
+            None if playing_gif else table_scaled, wheel_scaled, table["backglass_img"], table["folder"]
+        ))
+
         self.fade_out_table.start()
         self.fade_out_wheel.start()
         if self.fade_out_backglass:
@@ -755,7 +876,9 @@ class SingleTableViewer(QMainWindow, QObject):
     # FADE IN table transition
     def _set_new_images(self, table_pixmap, wheel_pixmap, backglass_path, table_folder):
         """Set new images and fade in all displays."""
-        self.table_label.setPixmap(table_pixmap)
+        # Only update table image if a static pixmap was provided.
+        if table_pixmap is not None:
+            self.table_label.setPixmap(table_pixmap)
         self.wheel_label.setPixmap(wheel_pixmap)
         if self.secondary:
             self.secondary.update_image(backglass_path, table_folder)
@@ -787,7 +910,7 @@ class SingleTableViewer(QMainWindow, QObject):
     def launch_table(self):
         """Launch the current table."""
         table = self.table_list[self.current_index]
-        command = [EXECUTABLE_CMD, EXECUTABLE_SUB_CMD, table["vpx_file"]]
+        command = [VPX_EXECUTABLE, EXECUTABLE_SUB_CMD, table["vpx_file"]]
         if self.table_load_sound:
                 self.table_load_sound.play()
         try:
@@ -812,14 +935,17 @@ class SingleTableViewer(QMainWindow, QObject):
             # Update the configuration with new values
             config['Main Paths'] = {
                 "VPX_ROOT_FOLDER":         values["VPX_ROOT_FOLDER"],
-                "EXECUTABLE_CMD":          values["EXECUTABLE_CMD"],
+                "VPX_EXECUTABLE":          values["VPX_EXECUTABLE"],
                 "EXECUTABLE_SUB_CMD":      values["EXECUTABLE_SUB_CMD"],
             }
-            config['Custom Images'] = {
-                "TABLE_IMAGE_PATH":        values["TABLE_IMAGE_PATH"],
-                "TABLE_WHEEL_PATH":        values["TABLE_WHEEL_PATH"],
-                "TABLE_BACKGLASS_PATH":    values["TABLE_BACKGLASS_PATH"],
-                "VIDEO_DMD_PATH":          values["VIDEO_DMD_PATH"],
+            config['Custom Media'] = {
+                "CUSTOM_TABLE_IMAGE":        values["CUSTOM_TABLE_IMAGE"],
+                "CUSTOM_WHEEL_IMAGE":        values["CUSTOM_WHEEL_IMAGE"],
+                "CUSTOM_BACKGLASS_IMAGE":    values["CUSTOM_BACKGLASS_IMAGE"],
+                "CUSTOM_MARQUEE_IMAGE":      values["CUSTOM_MARQUEE_IMAGE"],
+                "CUSTOM_TABLE_VIDEO":        values["CUSTOM_TABLE_VIDEO"],
+                "CUSTOM_BACKGLASS_VIDEO":    values["CUSTOM_BACKGLASS_VIDEO"],
+                "CUSTOM_DMD_VIDEO":          values["CUSTOM_DMD_VIDEO"],
             }
             config['Main Window'] = {
                 "MAIN_MONITOR_INDEX":      values["MAIN_MONITOR_INDEX"],
@@ -841,7 +967,7 @@ class SingleTableViewer(QMainWindow, QObject):
                 "DMD_WIDTH":               values["DMD_WIDTH"],
                 "DMD_HEIGHT":              values["DMD_HEIGHT"],
             }
-            config['Transitions'] = {
+            config['Transition Settings'] = {
                 "FADE_DURATION":           values["FADE_DURATION"],
                 "FADE_OPACITY":            values["FADE_OPACITY"],
             }
