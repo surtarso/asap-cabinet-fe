@@ -1,3 +1,3 @@
 #!/bin/bash
 # As Simple as Possible Cabinet Front-End
-python3 /opt/asap_cabinet_fe/asap_cabinet_fe.py
+python3 asap_cabinet_fe.py
