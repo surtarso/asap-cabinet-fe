@@ -14,12 +14,11 @@
         - DMD animation: dmd.gif (of DEFAULT_DMD_PATH if missing)
     - Main Window (1080x1920): Displays table image full screen with wheel overlay
     - Secondary Window (1280x1024): Displays backglass image and DMD
-    - Uses left/right arrow keys for infinite scrolling between tables
+    - Uses left/right arrow/shift keys for infinite scrolling between tables
     - All images update with fade animation
     - Press Enter to launch table
     - Settings button to configure for your setup
     - Search button by querry
-    * Use the screenshot_art.sh tool to get table media
 
 Dependencies: python3, python3-pyqt5, python3-pyqt5.qtmultimedia
 
