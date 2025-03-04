@@ -1,6 +1,4 @@
 TODO:
-- add gif engine to table and backglass as well.
-- use png image if no gif video found (fall back to default as usual)
 - redirect launch output to ~/.asap-cabinet-fe/launcher.log
 - redirect other outputs to ~/.asap-cabinet-fe/error.log
 - separate this script into modules
