@@ -62,28 +62,35 @@ jobs:
         run: |
           # Ensure python3 and pip3 are installed
           sudo apt update
-          sudo apt install -y python3 python3-pip
+          sudo apt install -y python3 python3-pip ruby-full
           pip3 install pyqt5 pyinstaller
   
       - name: Build Linux Executable
-        run: pyinstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
-
+        run: |
+          # Build the executable using pyinstaller
+          python3 -m PyInstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
+  
       - name: Upload Linux Binary
         uses: actions/upload-artifact@v4
         with:
           name: asap_cabinet_fe-linux
           path: dist/asap_cabinet_fe
-
+  
       - name: Build .deb Package
         run: |
-          gem install --no-document fpm
+          # Install fpm using the --user-install flag to avoid permission issues
+          gem install --no-document fpm --user-install
+          
+          # Create necessary directories and copy files
           mkdir -p package/opt/asap_cabinet_fe/img
           mkdir -p package/opt/asap_cabinet_fe/snd
           cp asap_cabinet_fe.py package/opt/asap_cabinet_fe/
           cp -r img/* package/opt/asap_cabinet_fe/img/
           cp -r snd/* package/opt/asap_cabinet_fe/snd/
+  
+          # Build the .deb package
           fpm -s dir -t deb -n asap_cabinet_fe -v 1.0 --prefix / package/opt/asap_cabinet_fe
-        
+          
       - name: Upload .deb Package
         uses: actions/upload-artifact@v4
         with:
@@ -127,10 +134,20 @@ jobs:
           else
             echo "Python 3 is already installed"
           fi
-          pip3 install pyqt5 pyinstaller
+
+          # Create and activate a virtual environment
+          python3 -m venv venv
+          source venv/bin/activate
+          
+          # Upgrade pip in the virtual environment and install dependencies
+          python3 -m pip install --upgrade pip
+          pip install pyqt5 pyinstaller
 
       - name: Build macOS Executable
-        run: pyinstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
+        run: |
+          # Ensure virtual environment is activated
+          source venv/bin/activate
+          pyinstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
 
       - name: Upload macOS Binary
         uses: actions/upload-artifact@v4
