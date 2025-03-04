@@ -68,7 +68,7 @@ jobs:
       - name: Build Linux Executable
         run: |
           # Build the executable using pyinstaller
-          python3 -m PyInstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
+          python3 -m PyInstaller --onefile --add-data "img:img" --add-data "snd:snd" --no-binary asap_cabinet_fe.py
       
       - name: Upload Linux Binary
         uses: actions/upload-artifact@v4
@@ -85,14 +85,14 @@ jobs:
           export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
           
           # Create necessary directories and copy files into the package structure
-          mkdir -p package/opt/asap_cabinet_fe/img
-          mkdir -p package/opt/asap_cabinet_fe/snd
-          cp asap_cabinet_fe.py package/opt/asap_cabinet_fe/
-          cp -r img/* package/opt/asap_cabinet_fe/img/
-          cp -r snd/* package/opt/asap_cabinet_fe/snd/
+          mkdir -p opt/asap_cabinet_fe/img
+          mkdir -p opt/asap_cabinet_fe/snd
+          cp asap_cabinet_fe.py opt/asap_cabinet_fe/
+          cp -r img/* opt/asap_cabinet_fe/img/
+          cp -r snd/* opt/asap_cabinet_fe/snd/
           
           # Build the .deb package using fpm
-          fpm -s dir -t deb -n asap_cabinet_fe -v 1.0 --prefix / package/opt/asap_cabinet_fe
+          fpm -s dir -t deb -n asap_cabinet_fe -v 1.0 --prefix / opt/asap_cabinet_fe
       
       - name: Upload .deb Package
         uses: actions/upload-artifact@v4
@@ -100,63 +100,63 @@ jobs:
           name: asap_cabinet_fe-deb
           path: "*.deb"
       
-  build_windows:
-    runs-on: windows-latest
+  # build_windows:
+  #   runs-on: windows-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
 
-      - name: Install Python and dependencies
-        run: |
-          pip install pyinstaller sip
-          pip install -r requirements.txt
+  #     - name: Install Python and dependencies
+  #       run: |
+  #         pip install pyinstaller sip
+  #         pip install -r requirements.txt
 
-      - name: Build Windows Executable
-        run: pyinstaller --onefile --add-data "img;img" --add-data "snd;snd" asap_cabinet_fe.py
+  #     - name: Build Windows Executable
+  #       run: pyinstaller --onefile --add-data "img;img" --add-data "snd;snd" asap_cabinet_fe.py
 
-      - name: Upload Windows Binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: asap_cabinet_fe-windows
-          path: dist/asap_cabinet_fe.exe
+  #     - name: Upload Windows Binary
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: asap_cabinet_fe-windows
+  #         path: dist/asap_cabinet_fe.exe
 
-  build_macos:
-    runs-on: macos-latest
+  # build_macos:
+  #   runs-on: macos-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
 
-      - name: Install Python and dependencies
-        run: |
-          # Ensure python3 is installed, skip if already present
-          if ! command -v python3 &> /dev/null
-          then
-            brew install python3
-          else
-            echo "Python 3 is already installed"
-          fi
+  #     - name: Install Python and dependencies
+  #       run: |
+  #         # Ensure python3 is installed, skip if already present
+  #         if ! command -v python3 &> /dev/null
+  #         then
+  #           brew install python3
+  #         else
+  #           echo "Python 3 is already installed"
+  #         fi
 
-          # Create and activate a virtual environment
-          python3 -m venv venv
-          source venv/bin/activate
+  #         # Create and activate a virtual environment
+  #         python3 -m venv venv
+  #         source venv/bin/activate
           
-          # Upgrade pip in the virtual environment and install dependencies
-          python3 -m pip install --upgrade pip
-          pip install pyqt5 pyinstaller
+  #         # Upgrade pip in the virtual environment and install dependencies
+  #         python3 -m pip install --upgrade pip
+  #         pip install pyqt5 pyinstaller
 
-      - name: Build macOS Executable
-        run: |
-          # Ensure virtual environment is activated
-          source venv/bin/activate
-          pyinstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
+  #     - name: Build macOS Executable
+  #       run: |
+  #         # Ensure virtual environment is activated
+  #         source venv/bin/activate
+  #         pyinstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
 
-      - name: Upload macOS Binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: asap_cabinet_fe-macos
-          path: dist/asap_cabinet_fe
+  #     - name: Upload macOS Binary
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: asap_cabinet_fe-macos
+  #         path: dist/asap_cabinet_fe
 
   package_source:
     runs-on: ubuntu-latest
