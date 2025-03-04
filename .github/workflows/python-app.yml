@@ -30,7 +30,7 @@ jobs:
         sudo apt-get install -y xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 \
           libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 \
           python3-pyqt5 python3-pyqt5.qtmultimedia
-        pip install pytest pytest-qt pytest-mock
+        pip install pyqt5 pytest pytest-qt pytest-mock
     - name: Run tests
       run: |
         xvfb-run --auto-servernum pytest test_asap_cabinet_fe.py -v
@@ -69,7 +69,7 @@ jobs:
       - name: Run the app (CI auto-exit)
         env:
           CI: "true"
-        run: python3 asap_cabinet_fe.py
+        run: python3 asap_cabinet_fe.py && sleep 5 && exit 0
 
   ## --------------------- using NUITKA (multiplatform)
   # build_nuitka:
