@@ -1,223 +1,243 @@
 import os
-import tempfile
+import configparser
+import subprocess
+from pathlib import Path
 import pytest
-from shutil import copyfile
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtTest import QTest
+from PyQt5.QtWidgets import QDialog
 
-# --- Test for SecondaryWindow.update_image ---
-def test_secondary_window_update_image(qtbot, tmp_path, monkeypatch):
-    # Create minimal GIF data (1x1 pixel) for testing QMovie-based media
-    minimal_gif = b"GIF89a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00\xff\xff\xff,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
-    
-    # Create temporary backglass GIF file
-    backglass_gif = tmp_path / "backglass.gif"
-    backglass_gif.write_bytes(minimal_gif)
-    
-    # Create temporary static image for backglass fallback (PNG)
-    image = QImage(10, 10, QImage.Format_RGB32)
-    image.fill(Qt.red)
-    backglass_png = tmp_path / "backglass.png"
-    image.save(str(backglass_png))
-    
-    # Create temporary DMD media files:
-    # Custom DMD video (GIF)
-    custom_dmd_video = tmp_path / "custom_dmd.gif"
-    custom_dmd_video.write_bytes(minimal_gif)
-    
-    # Custom DMD image (PNG)
-    custom_dmd_image = tmp_path / "custom_dmd.png"
-    image.fill(Qt.green)
-    custom_dmd_image_path = tmp_path / "custom_dmd_image.png"
-    image.save(str(custom_dmd_image_path))
-    
-    # Default DMD video (GIF)
-    default_dmd_video = tmp_path / "default_dmd.gif"
-    default_dmd_video.write_bytes(minimal_gif)
-    
-    # Monkey-patch paths for DMD media in the module.
-    from asap_cabinet_fe import SecondaryWindow, CUSTOM_DMD_VIDEO, CUSTOM_MARQUEE_IMAGE, DEFAULT_DMD_VIDEO
-    monkeypatch.setattr("asap_cabinet_fe.CUSTOM_DMD_VIDEO", str(custom_dmd_video.relative_to(tmp_path)))
-    monkeypatch.setattr("asap_cabinet_fe.CUSTOM_MARQUEE_IMAGE", str(custom_dmd_image_path.relative_to(tmp_path)))
-    monkeypatch.setattr("asap_cabinet_fe.DEFAULT_DMD_VIDEO", str(default_dmd_video.relative_to(tmp_path)))
-    
-    # Create a temporary folder to act as the table folder.
-    table_folder = str(tmp_path)
-    
-    # Instantiate SecondaryWindow
-    sec_win = SecondaryWindow()
-    qtbot.addWidget(sec_win)
-    
-    # --- Test Backglass update with GIF ---
-    sec_win.update_image(str(backglass_gif), table_folder)
-    # Check that the backglass label has a movie set.
-    assert sec_win.label.movie() is not None, "Backglass should be using QMovie for a GIF."
-    
-    # --- Test DMD update with custom DMD video available ---
-    sec_win.update_image(str(backglass_gif), table_folder)
-    # Expect dmd_label to have a movie (since custom_dmd_video exists).
-    assert sec_win.dmd_label.movie() is not None, "DMD should use QMovie when a custom DMD video is available."
-    
-    # --- Test DMD update with custom DMD video missing but custom image present ---
-    # Remove custom DMD video
-    custom_dmd_video.unlink()
-    sec_win.update_image(str(backglass_gif), table_folder)
-    # Expect dmd_label to have no movie, but a pixmap instead.
-    assert sec_win.dmd_label.movie() is None, "DMD movie should be None when custom video is missing."
-    assert sec_win.dmd_label.pixmap() is not None, "DMD pixmap should be set when custom DMD image is available."
-    
-    # --- Test DMD update with both custom video and custom image missing ---
-    # Remove custom DMD image
-    custom_dmd_image_path.unlink()
-    sec_win.update_image(str(backglass_gif), table_folder)
-    # Expect fallback to default DMD video.
-    assert sec_win.dmd_label.movie() is not None, "DMD should fall back to default video when custom media are missing."
+# Assuming the script is named 'asap_cabinet_fe.py'
+from asap_cabinet_fe import (
+    load_configuration, CONFIG_FILE, VPX_ROOT_FOLDER, VPX_EXECUTABLE, EXECUTABLE_SUB_CMD,
+    CUSTOM_TABLE_VIDEO, CUSTOM_TABLE_IMAGE, CUSTOM_WHEEL_IMAGE,
+    CUSTOM_BACKGLASS_VIDEO, CUSTOM_BACKGLASS_IMAGE, CUSTOM_DMD_VIDEO, CUSTOM_MARQUEE_IMAGE,
+    DEFAULT_TABLE_IMAGE, DEFAULT_WHEEL_IMAGE, DEFAULT_BACKGLASS_IMAGE, DEFAULT_DMD_VIDEO,
+    get_image_path, load_table_list, SettingsDialog, SingleTableViewer, SearchDialog
+)
 
-# --- Test for SingleTableViewer key events ---
-def test_single_table_viewer_key_events(qtbot, monkeypatch):
-    # Create a dummy table list
-    dummy_table = {
-        "table_name": "Test Table",
-        "vpx_file": "dummy.vpx",
-        "folder": ".",
-        "table_img": "dummy_table.png",
-        "wheel_img": "dummy_wheel.png",
-        "backglass_img": "dummy_backglass.png",
-        "dmd_img": "dummy_dmd.png"
+# --- Configuration Loading Tests ---
+
+def test_config_creation(tmp_path, monkeypatch):
+    """Test that a config file is created with defaults when it doesn't exist."""
+    temp_config_file = tmp_path / "settings.ini"
+    monkeypatch.setattr('asap_cabinet_fe.CONFIG_FILE', str(temp_config_file))
+    
+    assert not temp_config_file.exists()
+    load_configuration()
+    assert temp_config_file.exists()
+    
+    config = configparser.ConfigParser()
+    config.read(temp_config_file)
+    assert config['Main Paths']['VPX_ROOT_FOLDER'] == os.path.expanduser("~/Games/vpinball/build/tables/")
+    assert config['Main Paths']['VPX_EXECUTABLE'] == os.path.expanduser("~/Games/vpinball/build/VPinballX_GL")
+    assert config['Main Paths']['EXECUTABLE_SUB_CMD'] == "-Play"
+    assert config['Custom Media']['CUSTOM_TABLE_VIDEO'] == "video/table.gif"
+    assert config['Main Window']['MAIN_MONITOR_INDEX'] == "1"
+
+def test_config_loading(tmp_path, monkeypatch):
+    """Test that settings are loaded correctly from an existing config file."""
+    temp_config_file = tmp_path / "settings.ini"
+    config = configparser.ConfigParser()
+    config['Main Paths'] = {
+        "VPX_ROOT_FOLDER": "/custom/tables",
+        "VPX_EXECUTABLE": "/custom/vpx",
+        "EXECUTABLE_SUB_CMD": "-custom"
     }
-    # Monkey-patch load_table_list
-    from asap_cabinet_fe import SingleTableViewer
-    monkeypatch.setattr("asap_cabinet_fe.load_table_list", lambda: [dummy_table, dummy_table])
-    
-    # Create an instance of SingleTableViewer
-    viewer = SingleTableViewer(secondary_window=None)
-    qtbot.addWidget(viewer)
-    
-    # Check initial index
-    init_index = viewer.current_index  # Should be 0
-    
-    # Simulate right arrow key press on the viewer itself
-    QTest.keyClick(viewer, Qt.Key_Right)
-    assert viewer.current_index == (init_index + 1) % 2, "Right key should switch to next table."
-    
-    # Simulate left arrow key press on the viewer itself
-    QTest.keyClick(viewer, Qt.Key_Left)
-    assert viewer.current_index == init_index, "Left key should switch back to initial table."
-
-#  --- Test for launch_table without executing an external process ---
-def test_launch_table(monkeypatch):
-    from asap_cabinet_fe import SingleTableViewer
-    dummy_table = {
-        "table_name": "Test Table",
-        "vpx_file": "dummy.vpx",
-        "folder": ".",
-        "table_img": "dummy_table.png",
-        "wheel_img": "dummy_wheel.png",
-        "backglass_img": "dummy_backglass.png",
-        "dmd_img": "dummy_dmd.png"
+    config['Custom Media'] = {
+        "CUSTOM_TABLE_IMAGE": "custom/table.png",
+        "CUSTOM_WHEEL_IMAGE": "custom/wheel.png"
     }
-    monkeyatch_tables = [dummy_table]
+    config['Main Window'] = {
+        "MAIN_MONITOR_INDEX": "2"
+    }
+    with open(temp_config_file, "w") as f:
+        config.write(f)
     
-    # Monkey-patch load_table_list to return our dummy table list.
-    monkeypatch.setattr("asap_cabinet_fe.load_table_list", lambda: monkeyatch_tables)
+    monkeypatch.setattr('asap_cabinet_fe.CONFIG_FILE', str(temp_config_file))
+    load_configuration()
     
-    # Create an instance of SingleTableViewer.
-    viewer = SingleTableViewer(secondary_window=None)
-    
-    # Monkey-patch subprocess.Popen to avoid launching an actual process.
-    called_args = []
-    class DummyProcess:
-        def wait(self):
-            return
-    def dummy_popen(cmd, **kwargs):
-        called_args.append(cmd)
-        return DummyProcess()
-    monkeypatch.setattr("asap_cabinet_fe.subprocess.Popen", dummy_popen)
-    
-    viewer.launch_table()
-    # Check that the command list includes the VPX_EXECUTABLE and table file.
-    assert len(called_args) == 1
-    cmd = called_args[0]
-    assert "dummy.vpx" in cmd[2], "launch_table should include the dummy vpx file in the command."
+    assert VPX_ROOT_FOLDER == "/custom/tables"
+    assert VPX_EXECUTABLE == "/custom/vpx"
+    assert EXECUTABLE_SUB_CMD == "-custom"
+    assert CUSTOM_TABLE_IMAGE == "custom/table.png"
+    assert CUSTOM_WHEEL_IMAGE == "custom/wheel.png"
+    assert isinstance(MAIN_MONITOR_INDEX, int) and MAIN_MONITOR_INDEX == 2
 
-# --- Test for helper functions ---
-
-def test_get_image_path(tmp_path):
-    # Create a temporary file to simulate an image file.
-    file_path = tmp_path / "table.png"
-    file_path.write_text("dummy content")
-    
-    # When the file exists, get_image_path should return its path.
-    from asap_cabinet_fe import get_image_path
-    result = get_image_path(str(tmp_path), "table.png", "nonexistent.png", "default.png")
-    assert result == str(tmp_path / "table.png")
-    
-    # When the file does not exist, it should return the default.
-    result_default = get_image_path(str(tmp_path), "nonexistent.png", "also_nonexistent.png", "default.png")
-    assert result_default == str(tmp_path / "default.png")
+# --- Table Data Loading Tests ---
 
 def test_load_table_list(tmp_path, monkeypatch):
-    # Create a temporary directory to simulate VPX_ROOT_FOLDER.
-    temp_tables_dir = tmp_path / "vpx_tables"
-    temp_tables_dir.mkdir()
+    """Test loading table data from a mock directory structure."""
+    monkeypatch.setattr('asap_cabinet_fe.VPX_ROOT_FOLDER', str(tmp_path))
     
-    # Create a dummy .vpx file inside the temporary directory.
-    dummy_vpx = temp_tables_dir / "test_table.vpx"
-    dummy_vpx.write_text("dummy table content")
+    # Table 1: Full media
+    table1_dir = tmp_path / "table1"
+    table1_dir.mkdir()
+    (table1_dir / "table1.vpx").touch()
+    os.makedirs(table1_dir / "video", exist_ok=True)
+    os.makedirs(table1_dir / "images", exist_ok=True)
+    (table1_dir / "video" / "table.gif").touch()  # CUSTOM_TABLE_VIDEO
+    (table1_dir / "images" / "wheel.png").touch()  # CUSTOM_WHEEL_IMAGE
+    (table1_dir / "video" / "backglass.gif").touch()  # CUSTOM_BACKGLASS_VIDEO
+    (table1_dir / "video" / "dmd.gif").touch()  # CUSTOM_DMD_VIDEO
     
-    # Monkey-patch VPX_ROOT_FOLDER to point to our temporary directory.
-    monkeypatch.setattr("asap_cabinet_fe.VPX_ROOT_FOLDER", str(temp_tables_dir))
+    # Table 2: Partial media
+    table2_dir = tmp_path / "table2"
+    table2_dir.mkdir()
+    (table2_dir / "table2.vpx").touch()
+    os.makedirs(table2_dir / "images", exist_ok=True)
+    (table2_dir / "images" / "table.png").touch()  # CUSTOM_TABLE_IMAGE
     
-    from asap_cabinet_fe import load_table_list
     tables = load_table_list()
-    assert isinstance(tables, list)
-    # Check that our dummy file is found.
-    found = any("test_table.vpx" in table["vpx_file"] for table in tables)
-    assert found, "The dummy .vpx file should be found in the table list."
-
-# --- Test for GUI components using pytest-qt ---
-
-def test_search_dialog(qtbot):
-    # Test the SearchDialog by simulating text input.
-    from asap_cabinet_fe import SearchDialog
-    dialog = SearchDialog()
-    qtbot.addWidget(dialog)
     
-    test_query = "sample search"
-    dialog.searchEdit.setText(test_query)
-    # Check that getSearchQuery returns what we entered.
-    assert dialog.getSearchQuery() == test_query
+    assert len(tables) == 2
+    # Table 1 assertions
+    assert tables[0]["table_name"] == "table1"
+    assert tables[0]["vpx_file"] == str(table1_dir / "table1.vpx")
+    assert tables[0]["table_img"] == str(table1_dir / "video" / "table.gif")
+    assert tables[0]["wheel_img"] == str(table1_dir / "images" / "wheel.png")
+    assert tables[0]["backglass_img"] == str(table1_dir / "video" / "backglass.gif")
+    assert tables[0]["dmd_img"] == str(table1_dir / "video" / "dmd.gif")
+    # Table 2 assertions
+    assert tables[1]["table_name"] == "table2"
+    assert tables[1]["vpx_file"] == str(table2_dir / "table2.vpx")
+    assert tables[1]["table_img"] == str(table2_dir / "images" / "table.png")
+    assert tables[1]["wheel_img"] == DEFAULT_WHEEL_IMAGE
+    assert tables[1]["backglass_img"] == DEFAULT_BACKGLASS_IMAGE
+    assert tables[1]["dmd_img"] == DEFAULT_DMD_VIDEO
 
-def test_settings_dialog(qtbot):
-    # Test the SettingsDialog by setting some fields and retrieving them.
-    from asap_cabinet_fe import SettingsDialog
+# --- Media Path Resolution Tests ---
+
+def test_get_image_path(tmp_path):
+    """Test media path resolution logic."""
+    root = tmp_path
+    preferred = "video/table.gif"
+    fallback = "images/table.png"
+    default = DEFAULT_TABLE_IMAGE
+    
+    # Preferred exists
+    os.makedirs(root / "video", exist_ok=True)
+    (root / "video" / "table.gif").touch()
+    assert get_image_path(str(root), preferred, fallback, default) == str(root / "video" / "table.gif")
+    
+    # Only fallback exists
+    (root / "video" / "table.gif").unlink()
+    os.makedirs(root / "images", exist_ok=True)
+    (root / "images" / "table.png").touch()
+    assert get_image_path(str(root), preferred, fallback, default) == str(root / "images" / "table.png")
+    
+    # Neither exists
+    (root / "images" / "table.png").unlink()
+    assert get_image_path(str(root), preferred, fallback, default) == default
+
+# --- Settings Dialog Tests ---
+
+def test_settings_dialog_values(qtbot):
+    """Test that SettingsDialog returns updated values."""
     dialog = SettingsDialog()
     qtbot.addWidget(dialog)
     
-    # Set some test values.
-    dialog.vpxRootEdit.setText("/dummy/path")
-    dialog.execCmdEdit.setText("/dummy/executable")
-    # Retrieve values.
+    # Modify some fields
+    dialog.vpxRootEdit.setText("/new/tables")
+    dialog.execCmdEdit.setText("/new/vpx")
+    dialog.mainMonitor.setText("0")
+    
+    # Simulate acceptance
+    dialog.accept()
     values = dialog.getValues()
-    assert values["VPX_ROOT_FOLDER"] == "/dummy/path"
-    # Updated expected key from EXECUTABLE_CMD to VPX_EXECUTABLE.
-    assert values["VPX_EXECUTABLE"] == "/dummy/executable"
+    
+    assert values["VPX_ROOT_FOLDER"] == "/new/tables"
+    assert values["VPX_EXECUTABLE"] == "/new/vpx"
+    assert values["MAIN_MONITOR_INDEX"] == "0"
 
-# --- Test for configuration loader ---
+def test_settings_validation(tmp_path, qtbot):
+    """Test settings validation logic."""
+    dialog = SettingsDialog()
+    qtbot.addWidget(dialog)
+    
+    # Invalid VPX_ROOT_FOLDER
+    dialog.vpxRootEdit.setText(str(tmp_path / "nonexistent"))
+    dialog.execCmdEdit.setText(str(tmp_path / "vpx"))
+    (tmp_path / "vpx").touch()
+    errors = dialog.validate_settings(dialog.getValues())
+    assert "is not a valid directory" in errors[0]
+    
+    # No .vpx files
+    dialog.vpxRootEdit.setText(str(tmp_path))
+    errors = dialog.validate_settings(dialog.getValues())
+    assert "No .vpx files found" in errors[0]
+    
+    # Invalid executable
+    dialog.vpxRootEdit.setText(str(tmp_path))
+    (tmp_path / "table.vpx").touch()
+    dialog.execCmdEdit.setText(str(tmp_path / "nonexistent"))
+    errors = dialog.validate_settings(dialog.getValues())
+    assert "is not a valid file" in errors[0]
 
-def test_load_configuration(tmp_path, monkeypatch):
-    # Override CONFIG_FILE to use a temporary settings file.
-    from asap_cabinet_fe import load_configuration, CONFIG_FILE
-    fake_config = tmp_path / "settings.ini"
-    monkeypatch.setenv("HOME", str(tmp_path))
-    monkeypatch.setattr("asap_cabinet_fe.CONFIG_FILE", str(fake_config))
+# --- Search Dialog Tests ---
+
+def test_search_dialog(qtbot):
+    """Test SearchDialog query retrieval."""
+    dialog = SearchDialog()
+    qtbot.addWidget(dialog)
     
-    # Ensure the file doesn't exist before loading configuration.
-    if fake_config.exists():
-        fake_config.unlink()
+    dialog.searchEdit.setText("test query")
+    dialog.accept()
     
-    load_configuration()
+    assert dialog.getSearchQuery() == "test query"
+
+# --- Main Window GUI Tests ---
+
+def test_navigation(qtbot, monkeypatch):
+    """Test table navigation with arrow keys."""
+    tables = [
+        {"table_name": "table1", "vpx_file": "/path/table1.vpx", "folder": "/path",
+         "table_img": DEFAULT_TABLE_IMAGE, "wheel_img": DEFAULT_WHEEL_IMAGE,
+         "backglass_img": DEFAULT_BACKGLASS_IMAGE, "dmd_img": DEFAULT_DMD_VIDEO},
+        {"table_name": "table2", "vpx_file": "/path/table2.vpx", "folder": "/path",
+         "table_img": DEFAULT_TABLE_IMAGE, "wheel_img": DEFAULT_WHEEL_IMAGE,
+         "backglass_img": DEFAULT_BACKGLASS_IMAGE, "dmd_img": DEFAULT_DMD_VIDEO},
+    ]
+    monkeypatch.setattr('asap_cabinet_fe.load_table_list', lambda: tables)
     
-    # After load_configuration, the config file should have been created.
-    assert fake_config.exists()
+    viewer = SingleTableViewer()
+    qtbot.addWidget(viewer)
+    
+    assert viewer.current_index == 0
+    assert viewer.table_name_label.text() == "table1"
+    
+    qtbot.keyClick(viewer, Qt.Key_Right)
+    assert viewer.current_index == 1
+    assert viewer.table_name_label.text() == "table2"
+    
+    qtbot.keyClick(viewer, Qt.Key_Left)
+    assert viewer.current_index == 0
+    assert viewer.table_name_label.text() == "table1"
+
+def test_launch_table(qtbot, monkeypatch):
+    """Test launching a table with Enter key."""
+    mock_popen = mock.Mock()
+    mock_process = mock.Mock()
+    mock_popen.return_value = mock_process
+    monkeypatch.setattr(subprocess, 'Popen', mock_popen)
+    
+    tables = [
+        {"table_name": "table1", "vpx_file": "/path/table1.vpx", "folder": "/path",
+         "table_img": DEFAULT_TABLE_IMAGE, "wheel_img": DEFAULT_WHEEL_IMAGE,
+         "backglass_img": DEFAULT_BACKGLASS_IMAGE, "dmd_img": DEFAULT_DMD_VIDEO},
+    ]
+    monkeypatch.setattr('asap_cabinet_fe.load_table_list', lambda: tables)
+    monkeypatch.setattr('asap_cabinet_fe.VPX_EXECUTABLE', "/vpx")
+    monkeypatch.setattr('asap_cabinet_fe.EXECUTABLE_SUB_CMD', "-play")
+    
+    viewer = SingleTableViewer()
+    qtbot.addWidget(viewer)
+    
+    qtbot.keyClick(viewer, Qt.Key_Enter)
+    mock_popen.assert_called_once_with(["/vpx", "-play", "/path/table1.vpx"])
+    mock_process.wait.assert_called_once()
+
+# Mock for QMessageBox in CI
+@pytest.fixture(autouse=True)
+def mock_qmessagebox(monkeypatch):
+    monkeypatch.setattr('PyQt5.QtWidgets.QMessageBox.critical', lambda *args, **kwargs: None)
+    monkeypatch.setattr('PyQt5.QtWidgets.QMessageBox.information', lambda *args, **kwargs: None)
