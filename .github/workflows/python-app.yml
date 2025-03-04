@@ -98,7 +98,7 @@ jobs:
           # Install Ruby
           sudo apt update
           sudo apt install -y ruby-full
-          
+
       - name: Build .deb Package
         run: |
           # Update PATH in the current shell to include the gem executables directory
@@ -107,30 +107,33 @@ jobs:
           # Install fpm using the --user-install flag to avoid permission issues
           gem install --no-document fpm --user-install
           
-          # Create necessary directories
-          mkdir -p usr/local/bin
-          mkdir -p opt/asap_cabinet_fe/img
-          mkdir -p opt/asap_cabinet_fe/snd
+          # Create necessary directories for the package structure inside the CI workspace
+          mkdir -p ./package/usr/local/bin
+          mkdir -p ./package/opt/asap_cabinet_fe/img
+          mkdir -p ./package/opt/asap_cabinet_fe/snd
 
-          # Make sure the script is executable
+          # Make sure the executables are executable
           chmod +x asap-cabinet-fe
           chmod +x asap-cabinet-fe-x11
 
-          # Copy files into the package structure
-          cp asap-cabinet-fe usr/local/bin/
-          cp asap-cabinet-fe-x11 usr/local/bin/
-          cp asap_cabinet_fe.py opt/asap_cabinet_fe/
-          cp -r img/* opt/asap_cabinet_fe/img/
-          cp -r snd/* opt/asap_cabinet_fe/snd/
-          
+          # Copy the executables to /usr/local/bin inside the package directory
+          cp asap-cabinet-fe ./package/usr/local/bin/
+          cp asap-cabinet-fe-x11 ./package/usr/local/bin/
+
+          # Copy the Python script and other assets into the package structure
+          cp asap_cabinet_fe.py ./package/opt/asap_cabinet_fe/
+          cp -r img/* ./package/opt/asap_cabinet_fe/img/
+          cp -r snd/* ./package/opt/asap_cabinet_fe/snd/
+
           # Build the .deb package using fpm
-          fpm -s dir -t deb -n asap_cabinet_fe -v 1.0 --prefix / opt/asap_cabinet_fe
-      
+          fpm -s dir -t deb -n asap_cabinet_fe -v 1.0 --prefix / ./package/opt/asap_cabinet_fe
+
       - name: Upload .deb Package
         uses: actions/upload-artifact@v4
         with:
           name: asap_cabinet_fe-deb
           path: "*.deb"
+
       
   # build_windows:
   #   runs-on: windows-latest
