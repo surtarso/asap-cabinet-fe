@@ -86,54 +86,51 @@ jobs:
   #         name: asap_cabinet_fe-linux
   #         path: dist/asap_cabinet_fe
 
-  build_linux_deb:
-    runs-on: ubuntu-latest
+  # build_linux_deb:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
 
-      - name: Install dependencies for .deb package
-        run: |
-          # Install Ruby
-          sudo apt update
-          sudo apt install -y ruby-full
-
-      - name: Build .deb Package
-        run: |
-          # Update PATH in the current shell to include the gem executables directory
-          export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
-
-          # Install fpm using the --user-install flag to avoid permission issues
-          gem install --no-document fpm --user-install
+  #     - name: Install dependencies for .deb package
+  #       run: |
+  #         # Install Ruby
+  #         sudo apt update
+  #         sudo apt install -y ruby-full
           
-          # Create necessary directories for the package structure inside the CI workspace
-          mkdir -p ./package/usr/local/bin
-          mkdir -p ./package/opt/asap_cabinet_fe/img
-          mkdir -p ./package/opt/asap_cabinet_fe/snd
+  #     - name: Build .deb Package
+  #       run: |
+  #         # Update PATH in the current shell to include the gem executables directory
+  #         export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
 
-          # Make sure the executables are executable
-          chmod +x asap-cabinet-fe
-          chmod +x asap-cabinet-fe-x11
+  #         # Install fpm using the --user-install flag to avoid permission issues
+  #         gem install --no-document fpm --user-install
+          
+  #         # Create necessary directories
+  #         mkdir -p usr/local/bin
+  #         mkdir -p opt/asap_cabinet_fe/img
+  #         mkdir -p opt/asap_cabinet_fe/snd
 
-          # Copy the executables to /usr/local/bin inside the package directory
-          cp asap-cabinet-fe ./package/usr/local/bin/
-          cp asap-cabinet-fe-x11 ./package/usr/local/bin/
+  #         # Make sure the script is executable
+  #         chmod +x asap-cabinet-fe
+  #         chmod +x asap-cabinet-fe-x11
 
-          # Copy the Python script and other assets into the package structure
-          cp asap_cabinet_fe.py ./package/opt/asap_cabinet_fe/
-          cp -r img/* ./package/opt/asap_cabinet_fe/img/
-          cp -r snd/* ./package/opt/asap_cabinet_fe/snd/
-
-          # Build the .deb package using fpm
-          fpm -s dir -t deb -n asap_cabinet_fe -v 1.0 --prefix / ./package/opt/asap_cabinet_fe
-
-      - name: Upload .deb Package
-        uses: actions/upload-artifact@v4
-        with:
-          name: asap_cabinet_fe-deb
-          path: "*.deb"
-
+  #         # Copy files into the package structure
+  #         cp asap-cabinet-fe opt/asap_cabinet_fe/
+  #         cp asap-cabinet-fe-x11 opt/asap_cabinet_fe/
+  #         cp asap_cabinet_fe.py opt/asap_cabinet_fe/
+  #         cp -r img/* opt/asap_cabinet_fe/img/
+  #         cp -r snd/* opt/asap_cabinet_fe/snd/
+          
+  #         # Build the .deb package using fpm
+  #         fpm -s dir -t deb -n asap_cabinet_fe -v 1.0 --prefix / opt/asap_cabinet_fe
+      
+  #     - name: Upload .deb Package
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: asap_cabinet_fe-deb
+  #         path: "*.deb"
       
   # build_windows:
   #   runs-on: windows-latest
