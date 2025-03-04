@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install dependencies for app
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pyqt5 libpulse-mainloop-glib0 pulseaudio
@@ -58,48 +58,48 @@ jobs:
           CI: "true"
         run: python3 asap_cabinet_fe.py
 
-      - name: Install dependencies
+      - name: Install dependencies for binary and deb
         run: |
-          # Ensure python3 and pip3 are installed
+          # Ensure python3, pip3, and Ruby are installed
           sudo apt update
           sudo apt install -y python3 python3-pip ruby-full
           pip3 install pyqt5 pyinstaller
-  
+      
       - name: Build Linux Executable
         run: |
           # Build the executable using pyinstaller
           python3 -m PyInstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
-  
+      
       - name: Upload Linux Binary
         uses: actions/upload-artifact@v4
         with:
           name: asap_cabinet_fe-linux
           path: dist/asap_cabinet_fe
-  
+      
       - name: Build .deb Package
         run: |
           # Install fpm using the --user-install flag to avoid permission issues
           gem install --no-document fpm --user-install
-
-          # Add gem binary directory to PATH
-          echo "$HOME/.local/share/gem/ruby/3.2.0/bin" >> $GITHUB_ENV
           
-          # Create necessary directories and copy files
+          # Update PATH in the current shell to include the gem executables directory
+          export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
+          
+          # Create necessary directories and copy files into the package structure
           mkdir -p package/opt/asap_cabinet_fe/img
           mkdir -p package/opt/asap_cabinet_fe/snd
           cp asap_cabinet_fe.py package/opt/asap_cabinet_fe/
           cp -r img/* package/opt/asap_cabinet_fe/img/
           cp -r snd/* package/opt/asap_cabinet_fe/snd/
-  
-          # Build the .deb package
-          fpm -s dir -t deb -n asap_cabinet_fe -v 1.0 --prefix / package/opt/asap_cabinet_fe
           
+          # Build the .deb package using fpm
+          fpm -s dir -t deb -n asap_cabinet_fe -v 1.0 --prefix / package/opt/asap_cabinet_fe
+      
       - name: Upload .deb Package
         uses: actions/upload-artifact@v4
         with:
           name: asap_cabinet_fe-deb
           path: "*.deb"
-
+      
   build_windows:
     runs-on: windows-latest
 
