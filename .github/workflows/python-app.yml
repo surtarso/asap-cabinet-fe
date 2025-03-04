@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/*'
+      - '.github/workflows/python-app.yml'
       - 'asap_cabinet_fe.py'
       - 'snd/*'
       - 'img/*'
