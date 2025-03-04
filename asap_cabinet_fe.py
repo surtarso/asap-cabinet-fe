@@ -18,7 +18,7 @@
     - All images update with fade animation
     - Press Enter to launch table
     - Settings button to configure for your setup
-    - Search button by querry (jump to letter soon!)
+    - Search button by querry (jump to letter soon)
 
 Dependencies: python3, python3-pyqt5, python3-pyqt5.qtmultimedia
 
