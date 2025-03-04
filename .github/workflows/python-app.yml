@@ -46,7 +46,7 @@ jobs:
     - name: Run the app (CI auto-exit)
       env:
         CI: "true"
-      run: python3 asap_cabinet_fe.py
+      run: export CI=true && python3 asap_cabinet_fe.py
 
     - name: Install dependencies for tests
       run: |

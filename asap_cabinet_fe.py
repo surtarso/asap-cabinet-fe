@@ -902,7 +902,9 @@ if __name__ == "__main__":
         secondary_window.windowHandle().setScreen(secondary_screen)
         secondary_window.setGeometry(sec_geom.x(), sec_geom.y(), BACKGLASS_WINDOW_WIDTH, BACKGLASS_WINDOW_HEIGHT)
 
-    if os.environ.get("CI") or os.environ.get("GITHUB_ACTIONS"):
-        QTimer.singleShot(10000, app.quit)
+    is_ci = any(os.environ.get(var) == "true" for var in ["CI", "GITHUB_ACTIONS", "TRAVIS", "CIRCLECI"])
+    if is_ci:
+        print("Running in CI, will exit in 5 seconds")
+        QTimer.singleShot(5000, app.quit)
 
     sys.exit(app.exec_())
