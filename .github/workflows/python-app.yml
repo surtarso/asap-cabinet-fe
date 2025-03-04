@@ -58,6 +58,13 @@ jobs:
           CI: "true"
         run: python3 asap_cabinet_fe.py
 
+      - name: Install dependencies
+        run: |
+          # Ensure python3 and pip3 are installed
+          sudo apt update
+          sudo apt install -y python3 python3-pip
+          pip3 install pyqt5 pyinstaller
+  
       - name: Build Linux Executable
         run: pyinstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
 
@@ -113,7 +120,13 @@ jobs:
 
       - name: Install Python and dependencies
         run: |
-          brew install python3
+          # Ensure python3 is installed, skip if already present
+          if ! command -v python3 &> /dev/null
+          then
+            brew install python3
+          else
+            echo "Python 3 is already installed"
+          fi
           pip3 install pyqt5 pyinstaller
 
       - name: Build macOS Executable
