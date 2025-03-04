@@ -5,13 +5,9 @@ on:
     branches:
       - main
     paths:
-      - 'img/*'
-      - 'snd/*'
-      - 'asap-cabinet-fe'
-      - 'asap-cabinet-fe-x11'
       - 'asap_cabine_fe.py'
-      - 'requirements.txt'
-      - 'test_asap_cabinet_fe.py'
+      - 'snd/*'
+      - 'img/*'
   pull_request:
     branches:
       - main
