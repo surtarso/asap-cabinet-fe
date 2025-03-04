@@ -11,12 +11,13 @@ def test_get_image_path(tmp_path):
     
     # When the file exists, get_image_path should return its path.
     from asap_cabinet_fe import get_image_path
-    result = get_image_path(str(tmp_path), "table.png", "default.png")
+    result = get_image_path(str(tmp_path), "table.png", "nonexistent.png", "default.png")
     assert result == str(tmp_path / "table.png")
     
     # When the file does not exist, it should return the default.
-    result_default = get_image_path(str(tmp_path), "nonexistent.png", "default.png")
-    assert result_default == "default.png"
+    result_default = get_image_path(str(tmp_path), "nonexistent.png", "also_nonexistent.png", "default.png")
+    # Note: get_image_path returns os.path.join(root, default_media_path)
+    assert result_default == str(tmp_path / "default.png")
 
 def test_load_table_list(tmp_path, monkeypatch):
     # Create a temporary directory to simulate VPX_ROOT_FOLDER.
@@ -62,7 +63,8 @@ def test_settings_dialog(qtbot):
     # Retrieve values.
     values = dialog.getValues()
     assert values["VPX_ROOT_FOLDER"] == "/dummy/path"
-    assert values["EXECUTABLE_CMD"] == "/dummy/executable"
+    # Updated expected key from EXECUTABLE_CMD to VPX_EXECUTABLE.
+    assert values["VPX_EXECUTABLE"] == "/dummy/executable"
 
 # --- Test for configuration loader ---
 
