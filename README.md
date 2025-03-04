@@ -21,11 +21,11 @@
 
 - Download: `git clone https://github.com/surtarso/asap-cabinet-fe.git && cd asap-cabinet-fe/`
 
-- Dependencies: `sudo apt install python3 python3-pyqt5`
+- Dependencies: `sudo apt install python3 python3-pyqt5 python3-pyqt5.qtmultimedia`
 
-- X11: `python3 asap_cabinet_fe.py`
+- X11: `./asap-cabinet-fe-x11` (or `python3 asap_cabinet_fe.py`)
 
-- Wayland: `./launch.sh` (or `QT_QPA_PLATFORM=xcb python3 asap_cabinet_fe.py`)
+- Wayland: `./asap-cabinet-fe` (or `QT_QPA_PLATFORM=xcb python3 asap_cabinet_fe.py`)
 
 ## Roadmap
     - Game title from metadata (instead of filename)
