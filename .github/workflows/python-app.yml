@@ -112,21 +112,17 @@ jobs:
           mkdir -p opt/asap_cabinet_fe/img
           mkdir -p opt/asap_cabinet_fe/snd
 
+          # Make sure the script is executable
+          chmod +x asap-cabinet-fe
+          chmod +x asap-cabinet-fe-x11
+
           # Copy files into the package structure
-          cp asap-cabinet-fe opt/asap_cabinet_fe/
-          cp asap-cabinet-fe-x11 opt/asap_cabinet_fe/
+          cp asap-cabinet-fe usr/local/bin/
+          cp asap-cabinet-fe-x11 usr/local/bin/
           cp asap_cabinet_fe.py opt/asap_cabinet_fe/
           cp -r img/* opt/asap_cabinet_fe/img/
           cp -r snd/* opt/asap_cabinet_fe/snd/
-
-          # Make sure the script is executable
-          chmod +x opt/asap_cabinet_fe/asap-cabinet-fe
-          chmod +x opt/asap_cabinet_fe/asap-cabinet-fe-x11
-
-          # Create symlink to make the app accessible system-wide
-          ln -s /opt/asap_cabinet_fe/asap-cabinet-fe /usr/local/bin/asap-cabinet-fe
-          ln -s /opt/asap_cabinet_fe/asap-cabinet-fe-x11 /usr/local/bin/asap-cabinet-fe-x11
-
+          
           # Build the .deb package using fpm
           fpm -s dir -t deb -n asap_cabinet_fe -v 1.0 --prefix / opt/asap_cabinet_fe
       
