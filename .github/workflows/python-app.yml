@@ -13,6 +13,7 @@ on:
     branches:
       - main
 
+## --------------------- test and run app
 jobs:
   test_build:
     runs-on: ubuntu-latest
@@ -56,52 +57,54 @@ jobs:
           CI: "true"
         run: python3 asap_cabinet_fe.py
 
-  build_nuitka:
-    strategy:
-      matrix:
-        # os: [macos-latest, ubuntu-latest, windows-latest]
-        os: [ubuntu-latest, windows-latest]
+  ## --------------------- using NUITKA (multiplatform)
+  # build_nuitka:
+  #   strategy:
+  #     matrix:
+  #       # os: [macos-latest, ubuntu-latest, windows-latest]
+  #       os: [ubuntu-latest, windows-latest]
 
-    runs-on: ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
 
-    steps:
-      - name: Check-out repository
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Check-out repository
+  #       uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
-          architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
-          cache: 'pip'
-          cache-dependency-path: |
-            **/requirements*.txt
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+  #         architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+  #         cache: 'pip'
+  #         cache-dependency-path: |
+  #           **/requirements*.txt
 
-      - name: Install Dependencies
-        run: |
-          pip install -r requirements.txt
+  #     - name: Install Dependencies
+  #       run: |
+  #         pip install -r requirements.txt
 
-      - name: Build Executable
-        uses: Nuitka/Nuitka-Action@main
-        with:
-          nuitka-version: main
-          script-name: kasa_cli
-          mode: app
+  #     - name: Build Executable
+  #       uses: Nuitka/Nuitka-Action@main
+  #       with:
+  #         nuitka-version: main
+  #         script-name: kasa_cli
+  #         mode: app
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ runner.os }} Build
-          # path: |
-          #   build/*.exe
-          #   build/*.bin
-          #   build/*.app/**/*
-          # include-hidden-files: true
-          path: |
-            build/*.exe
-            build/*.bin
-          include-hidden-files: true
+  #     - name: Upload Artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ runner.os }} Build
+  #         # path: |
+  #         #   build/*.exe
+  #         #   build/*.bin
+  #         #   build/*.app/**/*
+  #         # include-hidden-files: true
+  #         path: |
+  #           build/*.exe
+  #           build/*.bin
+  #         include-hidden-files: true
 
+  ## --------------------- linux binary
   # build_linux_binary:
   #   runs-on: ubuntu-latest
 
@@ -130,6 +133,7 @@ jobs:
   #         name: asap_cabinet_fe-linux
   #         path: dist/asap_cabinet_fe
 
+  ## ---------------------- linux deb
   # build_linux_deb:
   #   runs-on: ubuntu-latest
 
@@ -176,6 +180,7 @@ jobs:
   #         name: asap_cabinet_fe-deb
   #         path: "*.deb"
       
+  ## --------------------- windows exe
   # build_windows:
   #   runs-on: windows-latest
 
@@ -197,6 +202,7 @@ jobs:
   #         name: asap_cabinet_fe-windows
   #         path: dist/asap_cabinet_fe.exe
 
+  ## --------------------  macos
   # build_macos:
   #   runs-on: macos-latest
 
@@ -234,6 +240,7 @@ jobs:
   #         name: asap_cabinet_fe-macos
   #         path: dist/asap_cabinet_fe
 
+  ## --------------------- source zip
   # package_source:
   #   runs-on: ubuntu-latest
 
