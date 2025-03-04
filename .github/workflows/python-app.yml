@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - '.github/workflows/python-app.yml'
+      - 'test_asap_cabinet_fe.py'
       - 'asap_cabinet_fe.py'
       - 'snd/*'
       - 'img/*'

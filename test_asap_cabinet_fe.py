@@ -86,27 +86,26 @@ def test_single_table_viewer_key_events(qtbot, monkeypatch):
         "backglass_img": "dummy_backglass.png",
         "dmd_img": "dummy_dmd.png"
     }
-    # Monkey-patch load_table_list to return our dummy table list
+    # Monkey-patch load_table_list
     from asap_cabinet_fe import SingleTableViewer
     monkeypatch.setattr("asap_cabinet_fe.load_table_list", lambda: [dummy_table, dummy_table])
     
-    # Create an instance of SingleTableViewer (without a secondary window)
+    # Create an instance of SingleTableViewer
     viewer = SingleTableViewer(secondary_window=None)
     qtbot.addWidget(viewer)
     
     # Check initial index
-    init_index = viewer.current_index
-    # Simulate right arrow key press
-    QTest.keyClick(viewer.centralWidget(), Qt.Key_Right)
-    # current_index should increase
+    init_index = viewer.current_index  # Should be 0
+    
+    # Simulate right arrow key press on the viewer itself
+    QTest.keyClick(viewer, Qt.Key_Right)
     assert viewer.current_index == (init_index + 1) % 2, "Right key should switch to next table."
     
-    # Simulate left arrow key press
-    QTest.keyClick(viewer.centralWidget(), Qt.Key_Left)
-    # current_index should wrap around or decrease accordingly
-    assert viewer.current_index == init_index, "Left key should switch back to the original table."
+    # Simulate left arrow key press on the viewer itself
+    QTest.keyClick(viewer, Qt.Key_Left)
+    assert viewer.current_index == init_index, "Left key should switch back to initial table."
 
-# --- Test for launch_table without executing an external process ---
+#  --- Test for launch_table without executing an external process ---
 def test_launch_table(monkeypatch):
     from asap_cabinet_fe import SingleTableViewer
     dummy_table = {
