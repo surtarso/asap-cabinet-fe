@@ -16,7 +16,7 @@ on:
 
 ## --------------------- test and run app
 jobs:
-  test:
+  test_app:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -24,52 +24,41 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
-    - name: Install dependencies
+    - name: Install dependencies for app
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3 python3-pyqt5 python3-pyqt5.qtmultimedia libpulse-mainloop-glib0 pulseaudio
+        python3 -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Start pulseaudio daemon
+      run: pulseaudio --start
+
+    - name: Create test directories and files
+      run: |
+        mkdir -p /home/runner/Games/vpinball/build/tables/test
+        touch /home/runner/Games/vpinball/build/tables/test/test_file.vpx
+        touch /home/runner/Games/vpinball/VPinballX_GL
+
+    - name: Set QT_QPA_PLATFORM to offscreen
+      run: echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
+
+    - name: Run the app (CI auto-exit)
+      env:
+        CI: "true"
+      run: python3 asap_cabinet_fe.py
+
+    - name: Install dependencies for tests
       run: |
         sudo apt-get update
         sudo apt-get install -y xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 \
           libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 \
           python3-pyqt5 python3-pyqt5.qtmultimedia
         pip install pyqt5 pytest pytest-qt pytest-mock
+
     - name: Run tests
       run: |
         xvfb-run --auto-servernum pytest test_asap_cabinet_fe.py -v
-
-  test_run:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies for app
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3 python3-pyqt5 python3-pyqt5.qtmultimedia libpulse-mainloop-glib0 pulseaudio
-          python3 -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Start pulseaudio daemon
-        run: pulseaudio --start
-
-      - name: Create test directories and files
-        run: |
-          mkdir -p /home/runner/Games/vpinball/build/tables/test
-          touch /home/runner/Games/vpinball/build/tables/test/test_file.vpx
-          touch /home/runner/Games/vpinball/VPinballX_GL
-
-      - name: Set QT_QPA_PLATFORM to offscreen
-        run: echo "QT_QPA_PLATFORM=offscreen" >> $GITHUB_ENV
-
-      - name: Run the app (CI auto-exit)
-        env:
-          CI: "true"
-        run: python3 asap_cabinet_fe.py && sleep 5 && exit 0
 
   ## --------------------- using NUITKA (multiplatform)
   # build_nuitka:
