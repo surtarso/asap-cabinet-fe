@@ -58,33 +58,33 @@ jobs:
           CI: "true"
         run: python3 asap_cabinet_fe.py
 
-  build_linux_binary:
-    runs-on: ubuntu-latest
+  # build_linux_binary:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
 
-      - name: Install dependencies for binary
-        run: |
-          # Install Python and required dependencies
-          sudo apt update
-          sudo apt install -y python3 python3-pip python3-setuptools \
-                             python3-dev build-essential \
-                             libglib2.0-0 libsm6 libxext6 libxrender-dev
-          # Install PyInstaller
-          pip3 install pyinstaller pyqt5
+  #     - name: Install dependencies for binary
+  #       run: |
+  #         # Install Python and required dependencies
+  #         sudo apt update
+  #         sudo apt install -y python3 python3-pip python3-setuptools \
+  #                            python3-dev build-essential \
+  #                            libglib2.0-0 libsm6 libxext6 libxrender-dev
+  #         # Install PyInstaller
+  #         pip3 install pyinstaller pyqt5
 
-      - name: Build Linux Executable
-        run: |
-          # Build the executable using pyinstaller
-          python3 -m PyInstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
+  #     - name: Build Linux Executable
+  #       run: |
+  #         # Build the executable using pyinstaller
+  #         python3 -m PyInstaller --onefile --add-data "img:img" --add-data "snd:snd" asap_cabinet_fe.py
       
-      - name: Upload Linux Binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: asap_cabinet_fe-linux
-          path: dist/asap_cabinet_fe
+  #     - name: Upload Linux Binary
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: asap_cabinet_fe-linux
+  #         path: dist/asap_cabinet_fe
 
   build_linux_deb:
     runs-on: ubuntu-latest
@@ -107,12 +107,22 @@ jobs:
           # Update PATH in the current shell to include the gem executables directory
           export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
           
-          # Create necessary directories and copy files into the package structure
+          # Create necessary directories
+          mkdir -p usr/local/bin
           mkdir -p opt/asap_cabinet_fe/img
           mkdir -p opt/asap_cabinet_fe/snd
+
+          # Copy files into the package structure
+          cp asap_cabinet_fe opt/asap_cabinet_fe/
           cp asap_cabinet_fe.py opt/asap_cabinet_fe/
           cp -r img/* opt/asap_cabinet_fe/img/
           cp -r snd/* opt/asap_cabinet_fe/snd/
+
+          # Make sure the script is executable
+          chmod +x opt/asap_cabinet_fe/asap-cabinet-fe
+
+          # Create symlink to make the app accessible system-wide
+          ln -s /opt/asap_cabinet_fe/asap-cabinet-fe usr/local/bin/asap-cabinet-fe
           
           # Build the .deb package using fpm
           fpm -s dir -t deb -n asap_cabinet_fe -v 1.0 --prefix / opt/asap_cabinet_fe
