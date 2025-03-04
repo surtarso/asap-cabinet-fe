@@ -868,7 +868,7 @@ class SingleTableViewer(QMainWindow):
                 self.table_change_sound.play()
         elif event.key() in (Qt.Key_Return, Qt.Key_Enter):
             self.launch_table()
-        elif event.key() == Qt.Key_Escape:
+        elif event.key() == Qt.Key_Escape or event.key() == Qt.Key_Q:
             self.close()
         else:
             super().keyPressEvent(event)
