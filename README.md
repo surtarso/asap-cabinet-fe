@@ -1,3 +1,10 @@
+<hr><hr><hr>
+
+# IMPORTANT! This project was ported to C++/SDL2 [here](https://github.com/surtarso/ASAPCabinetFE/) and **this Python version will no longer be maintained**.
+
+If you need help installing and configuring Visual Pinball X check my [wiki](https://github.com/surtarso/vpx-gui-tools/wiki/Visual-Pinball-X-on-Debian-Linux) page, also check my [vpx-gui-tools](https://github.com/surtarso/vpx-gui-tools/) to ease the process of settings tables up.
+
+<hr><hr><hr>
 <h1 align="center">As Simple As Possible Cabinet Front-End</h1>
 
 <p align="center">A dual monitor <a href="https://github.com/vpinball/vpinball">VPinballX</a> front-end for your virtual pinball cabinet.</p>
@@ -27,13 +34,13 @@
 
 - Wayland: `./asap-cabinet-fe` (or `QT_QPA_PLATFORM=xcb python3 asap_cabinet_fe.py`)
 
-## Roadmap
+## Roadmap:
     - Game title from metadata (instead of filename)
     - 'jump to letter' mechanics
     - Keymaping support
     - Generate wheels/dmd somehow (?)
     - Music support (?)
 
-### About
+### About¨
 
-This is my personal frontend for my cabinet. It's As Simple As Possible. If you need help installing and configuring Visual Pinball X check my [wiki](https://github.com/surtarso/vpx-gui-tools/wiki/Visual-Pinball-X-on-Debian-Linux) page, also check my [vpx-gui-tools](https://github.com/surtarso/vpx-gui-tools/) to ease the process of settings tables up. I am also currently porting this project to C++/SDL [here](https://github.com/surtarso/ASAPCabinetFE/). (WIP)
+It's As Simple As Possible. 
