@@ -1,6 +1,6 @@
 <hr><hr><hr>
 
-# IMPORTANT! This project was ported to C++/SDL2 [here](https://github.com/surtarso/ASAPCabinetFE/) and **this Python version will no longer be maintained**.
+# IMPORTANT! This project was [ported to C++/SDL2 (here)](https://github.com/surtarso/ASAPCabinetFE/) and **this Python version will no longer be maintained**.
 
 If you need help installing and configuring Visual Pinball X check my [wiki](https://github.com/surtarso/vpx-gui-tools/wiki/Visual-Pinball-X-on-Debian-Linux) page, also check my [vpx-gui-tools](https://github.com/surtarso/vpx-gui-tools/) to ease the process of settings tables up.
 
